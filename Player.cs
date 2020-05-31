@@ -14,10 +14,11 @@ namespace todor_reloaded
     {
         private VoiceNextExtension Voice = null;
 
-        //the ulong is a discord guild id
-        private Dictionary<ulong, DiscordChannel> VoiceChannels = new Dictionary<ulong, DiscordChannel>();
+        //the key is a DiscordGuild id, the value is a DiscorChannel id
+        private Dictionary<ulong, ulong> CurrentVoiceChannels = new Dictionary<ulong, ulong>();
 
-        private static Queue<Song> songs = new Queue<Song>();
+        //the key is a DiscordGuild id, the key is a queue of songs for that guild
+        private Dictionary<ulong, Queue<Song>> SongQueue = new Dictionary<ulong, Queue<Song>>();
 
         public Player()
         {
@@ -43,9 +44,31 @@ namespace todor_reloaded
                 await ctx.RespondAsync("You are not in a voice channel.");
                 return;
             }
-            
+
+            CurrentVoiceChannels.Add(ctx.Guild.Id, CommandSenderVoiceState.Channel.Id);
+
             await Voice.ConnectAsync(CommandSenderVoiceState.Channel);
             await ctx.RespondAsync("Connected to " + CommandSenderVoiceState.Channel.Name);
+        }
+
+        public async Task LeaveChannel(CommandContext ctx)
+        {
+            VoiceNextConnection connection = Voice.GetConnection(ctx.Guild);
+           
+            if (connection == null)
+            {
+                // not connected
+                await ctx.RespondAsync("Not connected in this guild.");
+                return;
+            }
+
+            // disconnect
+            connection.Disconnect();
+            await ctx.RespondAsync("Disconnected from " + ctx.Channel.Name);
+
+
+            //run garbadge collection, helps with memory usage a after lots of songs have been player, this isnt a great idea but it will stay as it is for the time being
+            System.GC.Collect();
         }
 
     }

@@ -8,7 +8,8 @@ namespace todor_reloaded
     public class Song
     { 
         public SongType type { get; private set; }
-        public string path { get; private set; } //can be a link to youtube
+        public string url { get; private set; }
+        public string file { get; set; }
 
         public string name { get; private set; }
         public string uploader { get; private set; }
