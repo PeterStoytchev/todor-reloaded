@@ -1,0 +1,5 @@
+﻿{
+  "discordToken": "NjU5MDQyMjcyMTA0Njc3Mzc2.XtQRWw.QpfQbsXzzvtSlkhBWnx9w26488g",
+  "discordLogLevel": "Debug",
+  "commandPrefixes": [ ">", "@" ]
+}
