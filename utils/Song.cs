@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DSharpPlus.CommandsNext;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -7,13 +8,17 @@ namespace todor_reloaded
 {
     public class Song
     { 
-        public SongType type { get; private set; }
-        public string url { get; private set; }
+        public SongType type { get; set; }
+        public CommandContext ctx { get; set; }
+
+        public string url { get; set; }
         public string file { get; set; }
 
-        public string name { get; private set; }
-        public string uploader { get; private set; }
-        public string duration { get; private set; }
+        public string name { get; set; }
+        public string uploader { get; set; }
+        public string duration { get; set; }
+        public bool isDonwloading { get; set; }
+
     }
 
     public enum SongType

@@ -24,87 +24,28 @@ namespace todor_reloaded
         [Command("leave"), Description("Leaves a voice channel.")]
         public async Task Leave(CommandContext ctx)
         {
-            // check whether VNext is enabled
-            var vnext = ctx.Client.GetVoiceNext();
-            if (vnext == null)
-            {
-                // not enabled
-                await ctx.RespondAsync("VNext is not enabled or configured.");
-                return;
-            }
-
-            // check whether we are connected
-            var vnc = vnext.GetConnection(ctx.Guild);
-            if (vnc == null)
-            {
-                // not connected
-                await ctx.RespondAsync("Not connected in this guild.");
-                return;
-            }
-
-            // disconnect
-            vnc.Disconnect();
-            await ctx.RespondAsync("Disconnected");
-
-            System.GC.Collect();
+            await global.player.LeaveChannel(ctx);
         }
 
-        [Command("queue")]
+        [Command("debugqueue")]
+        [Description("a command that pritns the queeue to the visual studio debug console, do not use")]
+        [RequireOwner]
         public async Task Queue(CommandContext ctx)
         {
-            foreach (string str in songs)
-            {
-                await ctx.Channel.SendMessageAsync(str);
-            }
-
-            await ctx.Channel.SendMessageAsync("queue printed");
+            await global.player.QueueExecutor(ctx);
 
         }
 
 
         [Command("play"), Description("Plays a youtube video")]
-        public async Task Play(CommandContext ctx, [Description("Youtube url")] string filename)
+        public async Task Play(CommandContext ctx, [Description("Youtube url")] string url)
         {
-            var vnc = ctx.Client.GetVoiceNext().GetConnection(ctx.Guild);
-            if (vnc == null)
-            {
-                // already connected
-                await Join(ctx);
-                vnc = ctx.Client.GetVoiceNext().GetConnection(ctx.Guild);
-            }
 
-            if (vnc.IsPlaying)
-            {
-                songs.Enqueue(filename);
-                return;
-            }
+            Song s = new Song();
+            s.type = SongType.Youtube;
+            s.url = url;
 
-            // play
-
-            String file = utils.DownloadYTDL(filename);
-
-            Process ffmpegProcess = utils.CreateFFMPEGProcess(file);
-
-            await ctx.Message.RespondAsync($"Playing `{file}`");
-
-            await vnc.SendSpeakingAsync(true);
-
-            await utils.TransmitToDiscord(vnc, ffmpegProcess);
-
-            await vnc.SendSpeakingAsync(false);
-            await ctx.Message.RespondAsync($"Finished playing `{file}`");
-
-            string newSong = null;
-
-            if (songs.TryDequeue(out newSong))
-            {
-                Play(ctx, newSong);
-            }
-            else
-            {
-                Leave(ctx);
-            }
-
+            global.player.PlaySong(s);
         }
     }
 }

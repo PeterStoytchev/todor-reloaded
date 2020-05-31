@@ -19,60 +19,6 @@ namespace todor_reloaded
 {
     public static class utils
     {
-        public static async Task TransmitToDiscord(VoiceNextConnection discordConnection, Process transcoder)
-        {
-            VoiceTransmitStream discordStream = discordConnection.GetTransmitStream();
-
-            await transcoder.StandardOutput.BaseStream.CopyToAsync(discordStream);
-            Debug.WriteLine("CopyToAsync Done");
-
-            await discordStream.FlushAsync();
-            Debug.WriteLine("discordStream FlushAsync");
-
-            await transcoder.StandardOutput.BaseStream.FlushAsync();
-            Debug.WriteLine("audioStream FlushAsync");
-
-            transcoder.Close();
-            Debug.WriteLine("transcoder freed");
-
-
-            await discordConnection.WaitForPlaybackFinishAsync();
-
-        }
-       
-        public static String DownloadYTDL(string link)
-        {
-            String newName = Guid.NewGuid().ToString();
-
-            var downloadPsi = new ProcessStartInfo
-            {
-                FileName = "youtube-dl",
-                Arguments = @$"{link} --no-playlist -x --audio-format opus -o {newName}.opus",
-                RedirectStandardOutput = false,
-                UseShellExecute = false
-            };
-            var ytdl = Process.Start(downloadPsi);
-
-            ytdl.WaitForExit();
-
-            return $"{newName}"; 
-        }
-
-        public static Process CreateFFMPEGProcess(string filename)
-        {
-            
-            var psi = new ProcessStartInfo
-            {
-                FileName = "ffmpeg",
-                Arguments = $"-i {filename}.opus -ac 2 -f s16le -ar 48000 pipe:1",
-                RedirectStandardOutput = true,
-                UseShellExecute = false
-            };
-
-            var ffmpeg = Process.Start(psi);
-            return ffmpeg;
-        }
-
         public static string ArrayToString(string[] arr, char seperator)
         {
             StringBuilder sb = new StringBuilder();
