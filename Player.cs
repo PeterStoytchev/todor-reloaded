@@ -46,7 +46,15 @@ namespace todor_reloaded
                         await s.ctx.RespondAsync("Loading " + s.url);
                     }
 
-                    SongQueue.Enqueue(s);
+                    //this is suppoesd to prevent song from being stuck in the queue
+                    if (connection != null && !connection.IsPlaying)
+                    {
+                        PlaySong(s);
+                    }
+                    else
+                    {
+                        SongQueue.Enqueue(s);
+                    }
 
                     return;
                 }
@@ -157,7 +165,7 @@ namespace todor_reloaded
 
     public static class PlayerUtils
     {
-        public static String DownloadYTDL(string link, String newName)
+        public static string DownloadYTDL(string link, String newName)
         {
 
             ProcessStartInfo downloadPsi = new ProcessStartInfo
