@@ -98,9 +98,9 @@ namespace todor_reloaded
             foreach (Song s in SongQueue)
             {
                 Debug.WriteLine("====================");
-                Debug.WriteLine($"{tracker}) name: {s.name}");
+               // Debug.WriteLine($"{tracker}) name: {s.name}");
                 Debug.WriteLine($"{tracker}) name: {s.type}");
-                Debug.WriteLine($"{tracker}) name: {s.uploader}");
+               // Debug.WriteLine($"{tracker}) name: {s.uploader}");
                 Debug.WriteLine($"{tracker}) name: {s.file}");
                 Debug.WriteLine("====================");
             }
