@@ -1,7 +1,7 @@
 ﻿{
-  "discordToken": "NTg0MzkxMzkxMjYyNjcwODU5.XtSn9A.GO4WXBZsr5dikttYv6kGklDKIsQ",
+  "discordToken": "NjU5MDQyMjcyMTA0Njc3Mzc2.XtfaCQ.HjB_kBLohjRi6jCggGV3TuJzZss",
   "discordLogLevel": "Debug",
   "commandPrefixes": [ ">", "@" ],
   "fileStorageExtention": "opus",
-  "songCacheDir": "C:\\Users\\TheEagle\\Desktop\\oof\\"
+  "songCacheDir": "C:/Users/TheEagle/Desktop/oof/"
 }

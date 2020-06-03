@@ -35,6 +35,8 @@ namespace todor_reloaded
             {
                 string videoId = utils.ExtractYoutubeId(s.url);
 
+                s.name = videoId;
+
                 if (connection.IsPlaying)
                 {
                     //if we are already playing something, add the song to the queue
@@ -43,10 +45,10 @@ namespace todor_reloaded
                     if (s.file == null)
                     {
                         s.file = PlayerUtils.DownloadYTDL(s.url, videoId);
-                        await s.ctx.RespondAsync("Loading " + s.url);
+                        await s.ctx.RespondAsync("Loading " + s.name);
                     }
 
-                    //this is suppoesd to prevent song from being stuck in the queue
+                    //this is suppoesd to prevent a song from being stuck in the queue
                     if (connection != null && !connection.IsPlaying)
                     {
                         PlaySong(s);
@@ -59,27 +61,16 @@ namespace todor_reloaded
                     return;
                 }
 
-                string fileDir = $"{global.botConfig.songCacheDir}\\{videoId}.{global.botConfig.fileExtention}";
-                
-                Debug.WriteLine($"Checking for file {fileDir}");
-                
-                if (File.Exists(fileDir))
-                {
-                    //if the song is in the cache directory, use that
-                    s.file = fileDir;
-                }
-                else if (s.file == null)
-                {
-                    //if the song isnt in the cache directory, download it from youtube
-                    s.ctx.RespondAsync($"Loading {s.url}, please wait for playback to start.....");
-                    s.file = PlayerUtils.DownloadYTDL(s.url, videoId);
-                }
+                s.file = PlayerUtils.DownloadYTDL(s.url, videoId);
 
                 //create the ffmpeg process that transcodes the file to pcm
                 Process ffmpeg = PlayerUtils.CreateFFMPEGProcess(s.file);
 
                 //transmit the signal to discord
                 await PlayerUtils.TransmitToDiscord(connection, ffmpeg);
+
+                //force a GC, otherwide Dshaprplus doesnt get rid of voice packets in its own queue and eventually we run out of memory
+                System.GC.Collect();
 
                 Song NextSong;
                 if (SongQueue.TryDequeue(out NextSong))
@@ -106,7 +97,7 @@ namespace todor_reloaded
             foreach (Song s in SongQueue)
             {
                 Debug.WriteLine("====================");
-               // Debug.WriteLine($"{tracker}) name: {s.name}");
+                Debug.WriteLine($"{tracker}) name: {s.name}");
                 Debug.WriteLine($"{tracker}) name: {s.type}");
                // Debug.WriteLine($"{tracker}) name: {s.uploader}");
                 Debug.WriteLine($"{tracker}) name: {s.file}");
@@ -168,10 +159,16 @@ namespace todor_reloaded
         public static string DownloadYTDL(string link, String newName)
         {
 
+            BotConfig CurrentConfig = global.botConfig;
+
+            string ouputDir = $"{CurrentConfig.songCacheDir }{newName}.{CurrentConfig.fileExtention}";
+
+            Debug.WriteLine($"YTDL download path: {ouputDir}");
+
             ProcessStartInfo downloadPsi = new ProcessStartInfo
             {
                 FileName = "youtube-dl",
-                Arguments = @$"{link} --no-playlist -x --audio-format {global.botConfig.fileExtention} -o {newName}.{global.botConfig.fileExtention}",
+                Arguments = @$"{link} --no-playlist -x --audio-format {CurrentConfig.fileExtention} -o {ouputDir}",
                 RedirectStandardOutput = false,
                 UseShellExecute = false
             };
@@ -179,8 +176,9 @@ namespace todor_reloaded
 
             ytdl.WaitForExit();
 
-            return $"{newName}.{global.botConfig.fileExtention}";
+            return ouputDir;
         }
+
         public static async Task TransmitToDiscord(VoiceNextConnection discordConnection, Process transcoder)
         {
             await discordConnection.SendSpeakingAsync(true);
@@ -202,11 +200,12 @@ namespace todor_reloaded
 
         public static Process CreateFFMPEGProcess(string filename)
         {
+            Debug.WriteLine("FFMPEG looking for: " + filename);
 
             var psi = new ProcessStartInfo
             {
                 FileName = "ffmpeg",
-                Arguments = $"-i {filename} -ac 2 -f s16le -ar 48000 pipe:1",
+                Arguments = $"-y -i {filename} -ac 2 -f s16le -ar 48000 pipe:1 -f wav C:/Users/TheEagle/Desktop/oof/test.wav",
                 RedirectStandardOutput = true,
                 UseShellExecute = false
             };
