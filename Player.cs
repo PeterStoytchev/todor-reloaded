@@ -32,6 +32,8 @@ namespace todor_reloaded
 
             if (connection != null)
             {
+                String newName = s.url.Split("/").Last();
+
                 if (connection.IsPlaying)
                 {
                     //if we are already playing something, add the song to the queue
@@ -39,7 +41,7 @@ namespace todor_reloaded
                     //if the song isnt downloaded, download it
                     if (s.file == null)
                     {
-                        s.file = PlayerUtils.DownloadYTDL(s.url);
+                        s.file = PlayerUtils.DownloadYTDL(s.url, newName);
                         await s.ctx.RespondAsync("Loading " + s.url);
                     }
 
@@ -51,7 +53,7 @@ namespace todor_reloaded
                 if (s.file == null)
                 {
                     s.ctx.RespondAsync($"Loading {s.url}, please wait for playback to start.....");
-                    s.file = PlayerUtils.DownloadYTDL(s.url);
+                    s.file = PlayerUtils.DownloadYTDL(s.url, newName);
                 }
 
                 //create the ffmpeg process that transcodes the file to pcm
@@ -145,9 +147,8 @@ namespace todor_reloaded
 
     public static class PlayerUtils
     {
-        public static String DownloadYTDL(string link)
+        public static String DownloadYTDL(string link, String newName)
         {
-            String newName = link.Split("/").Last();
 
             ProcessStartInfo downloadPsi = new ProcessStartInfo
             {

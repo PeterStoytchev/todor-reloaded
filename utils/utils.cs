@@ -14,11 +14,35 @@ using System.IO;
 using DSharpPlus.VoiceNext;
 using System.Runtime.InteropServices;
 using System.Data;
+using System.Linq;
 
 namespace todor_reloaded
 {
     public static class utils
     {
+
+        //a temporary function for extracting youtube urls, will be used until support for YouTube Data API V3 arrives
+        public static string ExtractYoutubeId(string link)
+        {
+            //a normal youtube url contains a '='
+            if (link.Contains("="))
+            {
+                return link.Split("=").Last();
+            }
+            //a shortened youtube url is 28 chars long
+            else if (link.Length == 28)
+            {
+                return link.Split("/").Last();
+            }
+            //the function doesnt support any other types
+            else
+            {
+                throw new InvalidDataException("Invalid or unsuported url passed.");
+                return null;
+            }
+
+        }
+
         public static string ArrayToString(string[] arr, char seperator)
         {
             StringBuilder sb = new StringBuilder();
