@@ -16,11 +16,8 @@ namespace todor_reloaded
     {
         private VoiceNextExtension Voice = null;
 
-        //the key is a DiscordGuild id, the value is a DiscorChannel id
-        private ConcurrentDictionary<ulong, ulong> CurrentVoiceChannels = new ConcurrentDictionary<ulong, ulong>();
-
-        //the key is a DiscordGuild id, the key is a queue of songs for that guild
-        private ConcurrentDictionary<ulong, Queue<Song>> GlobalSongQueue = new ConcurrentDictionary<ulong, Queue<Song>>();
+        //the song queue
+        private ConcurrentQueue<Song> SongQueue = new ConcurrentQueue<Song>();
 
         public Player()
         {
@@ -42,14 +39,8 @@ namespace todor_reloaded
                     await s.ctx.RespondAsync("Loading " + s.url);
                 }
 
-
-                //add to the queue
-                Queue<Song> queue;
-                GlobalSongQueue.TryRemove(s.ctx.Guild.Id, out queue);
-
-                queue.Enqueue(s);
-                GlobalSongQueue.TryAdd(s.ctx.Guild.Id, queue);
-
+                SongQueue.Enqueue(s);
+                
                 return;
             }
 
@@ -65,15 +56,10 @@ namespace todor_reloaded
             //transmit the signal to discord
             await PlayerUtils.TransmitToDiscord(connection, ffmpeg);
 
-            Queue<Song> LocalQueue;
-            GlobalSongQueue.TryRemove(s.ctx.Guild.Id, out LocalQueue);
-
             Song NextSong;
 
-            if (LocalQueue.TryDequeue(out NextSong))
+            if (SongQueue.TryDequeue(out NextSong))
             {
-                GlobalSongQueue.TryAdd(s.ctx.Guild.Id, LocalQueue);
-
                 PlaySong(NextSong);
             }
             else
@@ -85,14 +71,10 @@ namespace todor_reloaded
 
         public async Task QueueExecutor(CommandContext ctx)
         {
-            //get the current queue
-            Queue<Song> CurrentQueue;
-            GlobalSongQueue.TryGetValue(ctx.Guild.Id, out CurrentQueue);
-
             Debug.WriteLine($"Song queue for guild {ctx.Guild.Name}");
 
             int tracker = 1;
-            foreach (Song s in CurrentQueue)
+            foreach (Song s in SongQueue)
             {
                 Debug.WriteLine("====================");
                 Debug.WriteLine($"{tracker}) name: {s.name}");
@@ -125,8 +107,6 @@ namespace todor_reloaded
                 await ctx.RespondAsync("You are not in a voice channel.");
                 return;
             }
-
-            CurrentVoiceChannels.Add(ctx.Guild.Id, CommandSenderVoiceState.Channel.Id);
 
             await Voice.ConnectAsync(CommandSenderVoiceState.Channel);
             await ctx.RespondAsync("Connected to " + CommandSenderVoiceState.Channel.Name);
@@ -171,7 +151,7 @@ namespace todor_reloaded
 
             ytdl.WaitForExit();
 
-            return $"{newName}";
+            return $"{newName}.opus";
         }
         public static async Task TransmitToDiscord(VoiceNextConnection discordConnection, Process transcoder)
         {

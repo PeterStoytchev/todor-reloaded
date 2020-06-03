@@ -38,6 +38,7 @@ namespace todor_reloaded
             global.commands.RegisterCommands<SoundPlayback>();
 
             //voice stuffs
+            global.player = new Player();
 
             //connect
             await global.bot.ConnectAsync();

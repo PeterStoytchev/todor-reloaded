@@ -44,6 +44,7 @@ namespace todor_reloaded
             Song s = new Song();
             s.type = SongType.Youtube;
             s.url = url;
+            s.ctx = ctx;
 
             global.player.PlaySong(s);
         }
