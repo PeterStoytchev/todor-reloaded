@@ -149,7 +149,7 @@ namespace todor_reloaded
         {
             String newName = link.Split("/").Last();
 
-            var downloadPsi = new ProcessStartInfo
+            ProcessStartInfo downloadPsi = new ProcessStartInfo
             {
                 FileName = "youtube-dl",
                 Arguments = @$"{link} --no-playlist -x --audio-format {global.botConfig.fileExtention} -o {newName}.{global.botConfig.fileExtention}",
