@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices.ComTypes;
 using System.Linq;
+using System.IO;
 
 namespace todor_reloaded
 {
@@ -32,16 +33,16 @@ namespace todor_reloaded
 
             if (connection != null)
             {
-                String newName = s.url.Split("/").Last();
+                string videoId = utils.ExtractYoutubeId(s.url);
 
                 if (connection.IsPlaying)
                 {
                     //if we are already playing something, add the song to the queue
-
+                    
                     //if the song isnt downloaded, download it
                     if (s.file == null)
                     {
-                        s.file = PlayerUtils.DownloadYTDL(s.url, newName);
+                        s.file = PlayerUtils.DownloadYTDL(s.url, videoId);
                         await s.ctx.RespondAsync("Loading " + s.url);
                     }
 
@@ -50,10 +51,20 @@ namespace todor_reloaded
                     return;
                 }
 
-                if (s.file == null)
+                string fileDir = $"{ global.botConfig.songCacheDir}\\${ videoId}.{ global.botConfig.fileExtention}";
+                
+                Debug.WriteLine($"Checking for file {fileDir}");
+                
+                if (File.Exists(fileDir))
                 {
+                    //if the song is in the cache directory, use that
+                    s.file = fileDir;
+                }
+                else if (s.file == null)
+                {
+                    //if the song isnt in the cache directory, download it from youtube
                     s.ctx.RespondAsync($"Loading {s.url}, please wait for playback to start.....");
-                    s.file = PlayerUtils.DownloadYTDL(s.url, newName);
+                    s.file = PlayerUtils.DownloadYTDL(s.url, videoId);
                 }
 
                 //create the ffmpeg process that transcodes the file to pcm
@@ -63,7 +74,6 @@ namespace todor_reloaded
                 await PlayerUtils.TransmitToDiscord(connection, ffmpeg);
 
                 Song NextSong;
-
                 if (SongQueue.TryDequeue(out NextSong))
                 {
                     PlaySong(NextSong);

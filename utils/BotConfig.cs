@@ -18,14 +18,17 @@ namespace todor_reloaded
         [JsonProperty("discordToken")]
         public string discordToken { get; private set; }
 
+        [JsonProperty("fileStorageExtention")]
+        public String fileExtention { get; private set; }
+
+        [JsonProperty("songCacheDir")]
+        public String songCacheDir { get; private set; }
+
         [JsonProperty("commandPrefixes")]
         public IEnumerable<string> prefixes { get; private set; }
         
         [JsonProperty("discordLogLevel")]
         public LogLevel discordLogLevel { get; private set; }
-
-        [JsonProperty("fileStorageExtention")]
-        public String fileExtention { get; private set; }
 
 
         public DiscordConfiguration GetDiscordConfiguration()

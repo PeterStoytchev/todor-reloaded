@@ -38,7 +38,6 @@ namespace todor_reloaded
             else
             {
                 throw new InvalidDataException("Invalid or unsuported url passed.");
-                return null;
             }
 
         }
