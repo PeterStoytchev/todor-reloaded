@@ -24,6 +24,9 @@ namespace todor_reloaded
         [JsonProperty("discordLogLevel")]
         public LogLevel discordLogLevel { get; private set; }
 
+        [JsonProperty("fileStorageExtention")]
+        public String fileExtention { get; private set; }
+
 
         public DiscordConfiguration GetDiscordConfiguration()
         {

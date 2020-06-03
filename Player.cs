@@ -9,6 +9,8 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using System.Diagnostics;
 using System.Collections.Concurrent;
+using System.Runtime.InteropServices.ComTypes;
+using System.Linq;
 
 namespace todor_reloaded
 {
@@ -28,43 +30,50 @@ namespace todor_reloaded
         {
             VoiceNextConnection connection = Voice.GetConnection(s.ctx.Guild);
 
-            if (connection.IsPlaying)
+            if (connection != null)
             {
-                //if we are already playing something, add the song to the queue
-
-                //if the song isnt downloaded, download it
-                if (s.file == null)
+                if (connection.IsPlaying)
                 {
-                    s.file = PlayerUtils.DownloadYTDL(s.url);
-                    await s.ctx.RespondAsync("Loading " + s.url);
+                    //if we are already playing something, add the song to the queue
+
+                    //if the song isnt downloaded, download it
+                    if (s.file == null)
+                    {
+                        s.file = PlayerUtils.DownloadYTDL(s.url);
+                        await s.ctx.RespondAsync("Loading " + s.url);
+                    }
+
+                    SongQueue.Enqueue(s);
+
+                    return;
                 }
 
-                SongQueue.Enqueue(s);
-                
-                return;
-            }
+                if (s.file == null)
+                {
+                    s.ctx.RespondAsync($"Loading {s.url}, please wait for playback to start.....");
+                    s.file = PlayerUtils.DownloadYTDL(s.url);
+                }
 
-            if (s.file == null)
-            {
-                s.ctx.RespondAsync($"Loading {s.url}, please wait for playback to start.....");
-                s.file = PlayerUtils.DownloadYTDL(s.url);
-            }
+                //create the ffmpeg process that transcodes the file to pcm
+                Process ffmpeg = PlayerUtils.CreateFFMPEGProcess(s.file);
 
-            //create the ffmpeg process that transcodes the file to pcm
-            Process ffmpeg = PlayerUtils.CreateFFMPEGProcess(s.file);
+                //transmit the signal to discord
+                await PlayerUtils.TransmitToDiscord(connection, ffmpeg);
 
-            //transmit the signal to discord
-            await PlayerUtils.TransmitToDiscord(connection, ffmpeg);
+                Song NextSong;
 
-            Song NextSong;
-
-            if (SongQueue.TryDequeue(out NextSong))
-            {
-                PlaySong(NextSong);
+                if (SongQueue.TryDequeue(out NextSong))
+                {
+                    PlaySong(NextSong);
+                }
+                else
+                {
+                    await s.ctx.RespondAsync("End of queue");
+                }
             }
             else
             {
-                await s.ctx.RespondAsync("End of queue");
+                await s.ctx.RespondAsync("Bot not in voice channel!");
             }
 
         }
@@ -138,12 +147,12 @@ namespace todor_reloaded
     {
         public static String DownloadYTDL(string link)
         {
-            String newName = Guid.NewGuid().ToString();
+            String newName = link.Split("/").Last();
 
             var downloadPsi = new ProcessStartInfo
             {
                 FileName = "youtube-dl",
-                Arguments = @$"{link} --no-playlist -x --audio-format opus -o {newName}.opus",
+                Arguments = @$"{link} --no-playlist -x --audio-format {global.botConfig.fileExtention} -o {newName}.{global.botConfig.fileExtention}",
                 RedirectStandardOutput = false,
                 UseShellExecute = false
             };
@@ -151,7 +160,7 @@ namespace todor_reloaded
 
             ytdl.WaitForExit();
 
-            return $"{newName}.opus";
+            return $"{newName}.{global.botConfig.fileExtention}";
         }
         public static async Task TransmitToDiscord(VoiceNextConnection discordConnection, Process transcoder)
         {

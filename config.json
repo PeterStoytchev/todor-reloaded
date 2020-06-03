@@ -1,5 +1,6 @@
 ﻿{
   "discordToken": "NTg0MzkxMzkxMjYyNjcwODU5.XtSn9A.GO4WXBZsr5dikttYv6kGklDKIsQ",
   "discordLogLevel": "Debug",
-  "commandPrefixes": [ ">", "@" ]
+  "commandPrefixes": [ ">", "@" ],
+  "fileStorageExtention": "opus"
 }
