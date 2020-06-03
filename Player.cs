@@ -51,7 +51,7 @@ namespace todor_reloaded
                     return;
                 }
 
-                string fileDir = $"{ global.botConfig.songCacheDir}\\${ videoId}.{ global.botConfig.fileExtention}";
+                string fileDir = $"{global.botConfig.songCacheDir}\\{videoId}.{global.botConfig.fileExtention}";
                 
                 Debug.WriteLine($"Checking for file {fileDir}");
                 
