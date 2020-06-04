@@ -25,14 +25,14 @@ namespace todor_reloaded
         public static string ExtractYoutubeId(string link)
         {
             //a normal youtube url contains a '='
-            if (link.Contains("="))
+            if (link.Length >= 48)
             {
-                return link.Split("=").Last();
+                return link.Substring(32, 11);
             }
             //a shortened youtube url is 28 chars long
-            else if (link.Length == 28)
+            else if (link.Length >= 28  && link.Length < 43)
             {
-                return link.Split("/").Last();
+                return link.Substring(17, 11);
             }
             //the function doesnt support any other types
             else
@@ -41,6 +41,7 @@ namespace todor_reloaded
             }
 
         }
+
 
         public static string ArrayToString(string[] arr, char seperator)
         {
