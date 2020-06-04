@@ -72,21 +72,26 @@ namespace todor_reloaded
                 //force a GC, otherwide Dshaprplus doesnt get rid of voice packets in its own queue and eventually we run out of memory
                 System.GC.Collect();
 
-                Song NextSong;
-                if (SongQueue.TryDequeue(out NextSong))
-                {
-                    PlaySong(NextSong);
-                }
-                else
-                {
-                    await s.ctx.RespondAsync("End of queue");
-                }
+                PlayNext(s.ctx);
             }
             else
             {
                 await s.ctx.RespondAsync("Bot not in voice channel!");
             }
 
+        }
+
+        public async Task PlayNext(CommandContext ctx)
+        {
+            Song NextSong;
+            if (SongQueue.TryDequeue(out NextSong))
+            {
+                PlaySong(NextSong);
+            }
+            else
+            {
+                await ctx.RespondAsync("End of queue");
+            }
         }
 
         public async Task QueueExecutor(CommandContext ctx)
@@ -150,6 +155,11 @@ namespace todor_reloaded
 
             //run garbadge collection, helps with memory usage a after lots of songs have been player, this isnt a great idea but it will stay as it is for the time being
             System.GC.Collect();
+        }
+
+        public VoiceNextConnection GetVoiceConnection(DiscordGuild guild)
+        {
+            return Voice.GetConnection(guild);
         }
 
     }

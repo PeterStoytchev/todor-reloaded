@@ -37,7 +37,7 @@ namespace todor_reloaded
             //the function doesnt support any other types
             else
             {
-                throw new InvalidDataException("Invalid or unsuported url passed.");
+                throw new InvalidDataException("Invalid or unsuported url given.");
             }
 
         }

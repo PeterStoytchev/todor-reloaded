@@ -9,6 +9,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 
 namespace todor_reloaded
 {
@@ -47,6 +48,32 @@ namespace todor_reloaded
             s.ctx = ctx;
 
             global.player.PlaySong(s);
+        }
+
+        [Command("skip"), Description("skips a song")]
+        public async Task Skip(CommandContext ctx)
+        {
+            VoiceNextConnection connection = null;
+
+            try
+            {
+                connection = global.player.GetVoiceConnection(ctx.Guild);
+            }
+            catch (Exception e)
+            {
+                await ctx.RespondAsync("Bot not in voice channel");
+                return;
+            }
+
+            if (connection == null)
+            {
+                await ctx.RespondAsync("You aren't in the same channel as the bot");
+                return;
+            }
+
+            connection.GetTransmitStream().Dispose();
+
+            global.player.PlayNext(ctx);
         }
     }
 }
