@@ -17,7 +17,8 @@ namespace todor_reloaded
         public string name { get; set; }
         public string uploader { get; set; }
         public string duration { get; set; }
-        public bool isDonwloading { get; set; }
+
+        public bool isCached = false;
 
     }
 

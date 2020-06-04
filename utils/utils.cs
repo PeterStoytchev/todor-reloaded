@@ -25,7 +25,7 @@ namespace todor_reloaded
         public static string ExtractYoutubeId(string link)
         {
             //a normal youtube url contains a '='
-            if (link.Length >= 48)
+            if (link.Length >= 43)
             {
                 return link.Substring(32, 11);
             }

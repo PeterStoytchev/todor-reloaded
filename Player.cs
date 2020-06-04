@@ -37,34 +37,37 @@ namespace todor_reloaded
 
                 s.name = videoId;
 
+
                 if (connection.IsPlaying)
                 {
+                    SongQueue.Enqueue(s);
+
                     //if we are already playing something, add the song to the queue
-                    
+
                     //if the song isnt downloaded, download it
                     if (s.file == null)
                     {
                         s.file = PlayerUtils.DownloadYTDL(s.url, videoId);
+                        s.isCached = true; 
                         await s.ctx.RespondAsync("Loading " + s.name);
                     }
 
+
+                    /*
                     //this is suppoesd to prevent a song from being stuck in the queue
                     if (connection != null && !connection.IsPlaying)
                     {
                         PlaySong(s);
                     }
-                    else
-                    {
-                        SongQueue.Enqueue(s);
-                    }
-
+                    */
                     return;
                 }
 
                 s.file = PlayerUtils.DownloadYTDL(s.url, videoId);
+                s.isCached = true;
 
                 //create the ffmpeg process that transcodes the file to pcm
-                Process ffmpeg = PlayerUtils.CreateFFMPEGProcess(s.file);
+                Process ffmpeg = PlayerUtils.CreateFFMPEGProcess(s);
 
                 //transmit the signal to discord
                 await PlayerUtils.TransmitToDiscord(connection, ffmpeg);
@@ -155,11 +158,18 @@ namespace todor_reloaded
 
             //run garbadge collection, helps with memory usage a after lots of songs have been player, this isnt a great idea but it will stay as it is for the time being
             System.GC.Collect();
+
         }
+
 
         public VoiceNextConnection GetVoiceConnection(DiscordGuild guild)
         {
             return Voice.GetConnection(guild);
+        }
+
+        public void ClearQueue()
+        {
+            SongQueue.Clear();
         }
 
     }
@@ -168,7 +178,6 @@ namespace todor_reloaded
     {
         public static string DownloadYTDL(string link, String newName)
         {
-
             BotConfig CurrentConfig = global.botConfig;
 
             string ouputDir = $"{CurrentConfig.songCacheDir }{newName}.{CurrentConfig.fileExtention}";
@@ -208,15 +217,21 @@ namespace todor_reloaded
             await discordConnection.SendSpeakingAsync(false);
         }
 
-        public static Process CreateFFMPEGProcess(string filename)
+        public static Process CreateFFMPEGProcess(Song s)
         {
-            Debug.WriteLine("FFMPEG looking for: " + filename);
+            while (!s.isCached)
+            {
+                Debug.WriteLine($"Waiting for {s.name} to be downloaded!");
+                Thread.Sleep(250);
+            }
+
+            Debug.WriteLine("FFMPEG looking for: " + s.file);
 
             var psi = new ProcessStartInfo
             {
                 FileName = "ffmpeg",
-                Arguments = $"-y -i {filename} -ac 2 -f s16le -ar 48000 pipe:1",
-                //Arguments = $"-y -i {filename} -ac 2 -f s16le -ar 48000 pipe:1 -f wav C:/Users/TheEagle/Desktop/oof/test.wav", //this will be used later for outputing the pcm to a file so we dont have to transcode every time
+                Arguments = $"-y -i {s.file} -ac 2 -f s16le -ar 48000 pipe:1",
+                //Arguments = $"-y -i {s.file} -ac 2 -f s16le -ar 48000 pipe:1 -f wav C:/Users/TheEagle/Desktop/oof/test.wav", //this will be used later for outputing the pcm to a file so we dont have to transcode every time
                 RedirectStandardOutput = true,
                 UseShellExecute = false
             };

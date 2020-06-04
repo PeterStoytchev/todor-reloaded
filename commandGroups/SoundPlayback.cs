@@ -26,6 +26,7 @@ namespace todor_reloaded
         public async Task Leave(CommandContext ctx)
         {
             await global.player.LeaveChannel(ctx);
+            global.player.ClearQueue(); //clear the queue when leaving
         }
 
         [Command("debugqueue")]
@@ -53,27 +54,12 @@ namespace todor_reloaded
         [Command("skip"), Description("skips a song")]
         public async Task Skip(CommandContext ctx)
         {
-            VoiceNextConnection connection = null;
+            await global.player.LeaveChannel(ctx);
 
-            try
-            {
-                connection = global.player.GetVoiceConnection(ctx.Guild);
-            }
-            catch (Exception e)
-            {
-                await ctx.RespondAsync("Bot not in voice channel");
-                return;
-            }
-
-            if (connection == null)
-            {
-                await ctx.RespondAsync("You aren't in the same channel as the bot");
-                return;
-            }
-
-            connection.GetTransmitStream().Dispose();
+            await global.player.JoinChannel(ctx);
 
             global.player.PlayNext(ctx);
+
         }
     }
 }
