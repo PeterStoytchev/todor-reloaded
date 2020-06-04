@@ -19,10 +19,10 @@ namespace todor_reloaded
         public string discordToken { get; private set; }
 
         [JsonProperty("fileStorageExtention")]
-        public String fileExtention { get; private set; }
+        public string fileExtention { get; private set; }
 
         [JsonProperty("songCacheDir")]
-        public String songCacheDir { get; private set; }
+        public string songCacheDir { get; private set; }
 
         [JsonProperty("commandPrefixes")]
         public IEnumerable<string> prefixes { get; private set; }
