@@ -154,7 +154,7 @@ namespace todor_reloaded
 
             VoiceTransmitStream discordStream = discordConnection.GetTransmitStream();
 
-            CopyStreamSlow(transcoder.StandardOutput.BaseStream, discordStream, 1300, 5, token);
+            CopyStreamSlow(transcoder.StandardOutput.BaseStream, discordStream, 1400, 5, token);
 
             await discordStream.FlushAsync();
 
