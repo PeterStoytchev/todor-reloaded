@@ -23,8 +23,7 @@ namespace todor_reloaded
 
         //the song queue
         private ConcurrentQueue<Song> SongQueue = new ConcurrentQueue<Song>();
-        public CancellationTokenSource cancellationTokenSource = null;
-        public VoiceNextConnection connection = null;
+        public CancellationTokenSource cancellationTokenSourceTranscoder = new CancellationTokenSource();
 
         public Player()
         {
@@ -34,7 +33,7 @@ namespace todor_reloaded
 
         public async Task PlaySong(Song s)
         {
-            connection = Voice.GetConnection(s.ctx.Guild);
+            VoiceNextConnection connection = Voice.GetConnection(s.ctx.Guild);
             
             if (connection != null)
             {
@@ -47,16 +46,13 @@ namespace todor_reloaded
                     return;
                 }
 
-                cancellationTokenSource = new CancellationTokenSource();
+                cancellationTokenSourceTranscoder = new CancellationTokenSource();
 
                 //create the ffmpeg process that transcodes the file to pcm
                 Process ffmpeg = PlayerUtils.CreateFFMPEGProcess(s);
 
                 //transmit the signal to discord
-                await PlayerUtils.TransmitToDiscord(connection, ffmpeg, cancellationTokenSource.Token);
-
-                //force a GC, otherwide Dshaprplus doesnt get rid of voice packets in its own queue and eventually we run out of memory
-                System.GC.Collect();
+                await PlayerUtils.TransmitToDiscord(connection, ffmpeg, cancellationTokenSourceTranscoder.Token);
 
                 PlayNext(s.ctx);
             }
@@ -127,16 +123,13 @@ namespace todor_reloaded
             }
 
             // disconnect
-            cancellationTokenSource.Cancel();
-
-
+            cancellationTokenSourceTranscoder.Cancel();
             connection.Dispose();
 
-            await ctx.RespondAsync("Disconnected from " + ctx.Channel.Name);
-
-            //run garbadge collection, helps with memory usage a after lots of songs have been player, this isnt a great idea but it will stay as it is for the time being
+            //do a memory collection, just in case
             System.GC.Collect();
 
+            await ctx.RespondAsync("Disconnected from " + ctx.Channel.Name);
         }
 
 
@@ -154,13 +147,14 @@ namespace todor_reloaded
 
     public static class PlayerUtils
     {
+        //TODO: expose the bufferSize and thread sleep time as parameters in the config
         public static async Task TransmitToDiscord(VoiceNextConnection discordConnection, Process transcoder, CancellationToken token)
         {
             await discordConnection.SendSpeakingAsync(true);
 
             VoiceTransmitStream discordStream = discordConnection.GetTransmitStream();
 
-            await transcoder.StandardOutput.BaseStream.CopyToAsync(discordStream, token);
+            CopyStreamSlow(transcoder.StandardOutput.BaseStream, discordStream, 1300, 5, token);
 
             await discordStream.FlushAsync();
 
@@ -173,6 +167,25 @@ namespace todor_reloaded
             await discordConnection.WaitForPlaybackFinishAsync();
 
             await discordConnection.SendSpeakingAsync(false);
+        }
+
+        public static void CopyStreamSlow(Stream src, Stream dst, int bufferSize, int sleepTime, CancellationToken token)
+        {
+            int count = 0;
+            byte[] buffer = new byte[bufferSize];
+
+            while ((count = src.Read(buffer, 0, bufferSize)) != 0)
+            {
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                dst.Write(buffer, 0, count);
+
+                Thread.Sleep(sleepTime);
+            }
+
         }
 
         public static Process CreateFFMPEGProcess(Song s)

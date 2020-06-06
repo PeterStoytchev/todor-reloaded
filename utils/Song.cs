@@ -24,15 +24,15 @@ namespace todor_reloaded
             this.url = url;
             this.type = type;
             this.ctx = ctx;
+
+            this.name = ExtractYoutubeId(url);
         }
 
         public void DownloadYTDL()
         {
-            string newName = ExtractYoutubeId(url);
-
             BotConfig CurrentConfig = global.botConfig;
 
-            path = $"{CurrentConfig.songCacheDir}{newName}.{CurrentConfig.fileExtention}";
+            path = $"{CurrentConfig.songCacheDir}{name}.{CurrentConfig.fileExtention}";
 
             Debug.WriteLine($"Downloading to {path} if not already downloaded!");
 
