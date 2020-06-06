@@ -20,9 +20,6 @@ namespace todor_reloaded
 {
     public static class utils
     {
-        
-
-
         public static string ArrayToString(string[] arr, char seperator)
         {
             StringBuilder sb = new StringBuilder();

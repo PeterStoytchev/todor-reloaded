@@ -13,6 +13,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Linq;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace todor_reloaded
 {
@@ -128,10 +129,10 @@ namespace todor_reloaded
             // disconnect
             cancellationTokenSource.Cancel();
 
+
             connection.Dispose();
 
             await ctx.RespondAsync("Disconnected from " + ctx.Channel.Name);
-
 
             //run garbadge collection, helps with memory usage a after lots of songs have been player, this isnt a great idea but it will stay as it is for the time being
             System.GC.Collect();
@@ -159,35 +160,17 @@ namespace todor_reloaded
 
             VoiceTransmitStream discordStream = discordConnection.GetTransmitStream();
 
-            transcoder.StandardOutput.BaseStream.CopyToAsync(discordStream);
+            await transcoder.StandardOutput.BaseStream.CopyToAsync(discordStream, token);
 
-            Thread.Sleep(100);
-
-            while (global.player.connection.IsPlaying)
-            {
-                if (token.IsCancellationRequested)
-                {
-                    Debug.WriteLine("CANCELING");
-
-                    transcoder.Kill(true);
-
-                    transcoder.Close();
-
-                    transcoder.Dispose();
-
-                    await discordStream.FlushAsync();
-
-                    discordStream.Close();
-
-                    await discordConnection.SendSpeakingAsync(false);
-                }
-            }
-            
             await discordStream.FlushAsync();
 
-            await transcoder.StandardOutput.BaseStream.FlushAsync();
+            discordStream.Dispose();
 
+            transcoder.StandardOutput.BaseStream.Dispose();
+            
             transcoder.Close();
+
+            await discordConnection.WaitForPlaybackFinishAsync();
 
             await discordConnection.SendSpeakingAsync(false);
         }
