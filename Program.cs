@@ -9,8 +9,6 @@ namespace todor_reloaded
 {
     class Program
     {
-        public VoiceNextExtension Voice { get; set; }
-
         public static void Main(string[] args)
         {
             var prog = new Program();

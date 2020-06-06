@@ -12,6 +12,7 @@ using System.Collections.Concurrent;
 using System.Runtime.InteropServices.ComTypes;
 using System.Linq;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace todor_reloaded
 {
@@ -21,56 +22,37 @@ namespace todor_reloaded
 
         //the song queue
         private ConcurrentQueue<Song> SongQueue = new ConcurrentQueue<Song>();
+        public CancellationTokenSource cancellationTokenSource = null;
+        public VoiceNextConnection connection = null;
 
         public Player()
         {
             Voice = global.bot.UseVoiceNext();
         }
 
+
         public async Task PlaySong(Song s)
         {
-            VoiceNextConnection connection = Voice.GetConnection(s.ctx.Guild);
-
+            connection = Voice.GetConnection(s.ctx.Guild);
+            
             if (connection != null)
             {
-                string videoId = utils.ExtractYoutubeId(s.url);
-
-                s.name = videoId;
-
-
                 if (connection.IsPlaying)
                 {
                     SongQueue.Enqueue(s);
 
-                    //if we are already playing something, add the song to the queue
+                    await s.ctx.RespondAsync($"{s.name} added to queue.");
 
-                    //if the song isnt downloaded, download it
-                    if (s.file == null)
-                    {
-                        s.file = PlayerUtils.DownloadYTDL(s.url, videoId);
-                        s.isCached = true; 
-                        await s.ctx.RespondAsync("Loading " + s.name);
-                    }
-
-
-                    /*
-                    //this is suppoesd to prevent a song from being stuck in the queue
-                    if (connection != null && !connection.IsPlaying)
-                    {
-                        PlaySong(s);
-                    }
-                    */
                     return;
                 }
 
-                s.file = PlayerUtils.DownloadYTDL(s.url, videoId);
-                s.isCached = true;
+                cancellationTokenSource = new CancellationTokenSource();
 
                 //create the ffmpeg process that transcodes the file to pcm
                 Process ffmpeg = PlayerUtils.CreateFFMPEGProcess(s);
 
                 //transmit the signal to discord
-                await PlayerUtils.TransmitToDiscord(connection, ffmpeg);
+                await PlayerUtils.TransmitToDiscord(connection, ffmpeg, cancellationTokenSource.Token);
 
                 //force a GC, otherwide Dshaprplus doesnt get rid of voice packets in its own queue and eventually we run out of memory
                 System.GC.Collect();
@@ -108,7 +90,7 @@ namespace todor_reloaded
                 Debug.WriteLine($"{tracker}) name: {s.name}");
                 Debug.WriteLine($"{tracker}) name: {s.type}");
                // Debug.WriteLine($"{tracker}) name: {s.uploader}");
-                Debug.WriteLine($"{tracker}) name: {s.file}");
+                Debug.WriteLine($"{tracker}) name: {s.path}");
                 Debug.WriteLine("====================");
             }
 
@@ -116,28 +98,20 @@ namespace todor_reloaded
 
         }
 
-        public async Task JoinChannel(CommandContext ctx)
+        public async Task<bool> JoinChannel(CommandContext ctx)
         {
-            // check for connection
-            VoiceNextConnection connection = Voice.GetConnection(ctx.Guild);
-            if (connection != null)
-            {
-                // already connected
-                await ctx.RespondAsync("Already connected in this guild.");
-                return;
-            }
-
             DiscordVoiceState CommandSenderVoiceState = ctx.Member?.VoiceState;
             
             if (CommandSenderVoiceState?.Channel == null)
             {
                 //the user isnt in a voice channel, quit
-                await ctx.RespondAsync("You are not in a voice channel.");
-                return;
+                await ctx.RespondAsync("You are not in a voice channel, I don't know where to join!");
+                return false;
             }
 
             await Voice.ConnectAsync(CommandSenderVoiceState.Channel);
             await ctx.RespondAsync("Connected to " + CommandSenderVoiceState.Channel.Name);
+            return true;
         }
 
         public async Task LeaveChannel(CommandContext ctx)
@@ -152,7 +126,10 @@ namespace todor_reloaded
             }
 
             // disconnect
-            connection.Disconnect();
+            cancellationTokenSource.Cancel();
+
+            connection.Dispose();
+
             await ctx.RespondAsync("Disconnected from " + ctx.Channel.Name);
 
 
@@ -176,61 +153,53 @@ namespace todor_reloaded
 
     public static class PlayerUtils
     {
-        public static string DownloadYTDL(string link, String newName)
-        {
-            BotConfig CurrentConfig = global.botConfig;
-
-            string ouputDir = $"{CurrentConfig.songCacheDir }{newName}.{CurrentConfig.fileExtention}";
-
-            Debug.WriteLine($"YTDL download path: {ouputDir}");
-
-            ProcessStartInfo downloadPsi = new ProcessStartInfo
-            {
-                FileName = "youtube-dl",
-                Arguments = @$"{link} --no-playlist -x --audio-format {CurrentConfig.fileExtention} -o {ouputDir}",
-                RedirectStandardOutput = false,
-                UseShellExecute = false
-            };
-            var ytdl = Process.Start(downloadPsi);
-
-            ytdl.WaitForExit();
-
-            return ouputDir;
-        }
-
-        public static async Task TransmitToDiscord(VoiceNextConnection discordConnection, Process transcoder)
+        public static async Task TransmitToDiscord(VoiceNextConnection discordConnection, Process transcoder, CancellationToken token)
         {
             await discordConnection.SendSpeakingAsync(true);
 
             VoiceTransmitStream discordStream = discordConnection.GetTransmitStream();
 
-            await transcoder.StandardOutput.BaseStream.CopyToAsync(discordStream);
+            transcoder.StandardOutput.BaseStream.CopyToAsync(discordStream);
 
+            Thread.Sleep(100);
+
+            while (global.player.connection.IsPlaying)
+            {
+                if (token.IsCancellationRequested)
+                {
+                    Debug.WriteLine("CANCELING");
+
+                    transcoder.Kill(true);
+
+                    transcoder.Close();
+
+                    transcoder.Dispose();
+
+                    await discordStream.FlushAsync();
+
+                    discordStream.Close();
+
+                    await discordConnection.SendSpeakingAsync(false);
+                }
+            }
+            
             await discordStream.FlushAsync();
 
             await transcoder.StandardOutput.BaseStream.FlushAsync();
 
             transcoder.Close();
 
-            await discordConnection.WaitForPlaybackFinishAsync();
-
             await discordConnection.SendSpeakingAsync(false);
         }
 
         public static Process CreateFFMPEGProcess(Song s)
         {
-            while (!s.isCached)
-            {
-                Debug.WriteLine($"Waiting for {s.name} to be downloaded!");
-                Thread.Sleep(250);
-            }
-
-            Debug.WriteLine("FFMPEG looking for: " + s.file);
+            Debug.WriteLine("FFMPEG looking for: " + s.path);
 
             var psi = new ProcessStartInfo
             {
                 FileName = "ffmpeg",
-                Arguments = $"-y -i {s.file} -ac 2 -f s16le -ar 48000 pipe:1",
+                Arguments = $"-y -i {s.path} -ac 2 -f s16le -ar 48000 pipe:1",
                 //Arguments = $"-y -i {s.file} -ac 2 -f s16le -ar 48000 pipe:1 -f wav C:/Users/TheEagle/Desktop/oof/test.wav", //this will be used later for outputing the pcm to a file so we dont have to transcode every time
                 RedirectStandardOutput = true,
                 UseShellExecute = false

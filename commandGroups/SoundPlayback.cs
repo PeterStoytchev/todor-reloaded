@@ -10,24 +10,84 @@ using DSharpPlus.VoiceNext;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace todor_reloaded
 {
 
     public class SoundPlayback : BaseCommandModule
     {
-        [Command("join"), Description("Joins the voice channel that you are in.")]
+        [Command("join")]
+        [Description("Joins the voice channel that you are in.")]
+        [Aliases("joint", "j")]
         public async Task Join(CommandContext ctx)
         {
+            // check for connection
+            VoiceNextConnection connection = global.player.GetVoiceConnection(ctx.Guild);
+            if (connection != null)
+            {
+                // already connected
+                await ctx.RespondAsync("Already connected in this guild.");
+                return;
+            }
+            
             await global.player.JoinChannel(ctx);
         }
 
-        [Command("leave"), Description("Leaves a voice channel.")]
+        [Command("leave")]
+        [Description("Leaves a voice channel.")]
+        [Aliases("l", "aufwiedersehen")]
         public async Task Leave(CommandContext ctx)
         {
             await global.player.LeaveChannel(ctx);
             global.player.ClearQueue(); //clear the queue when leaving
         }
+
+        [Command("play")]
+        [Description("Plays a youtube video")]
+        [Aliases("p")]
+        public async Task Play(CommandContext ctx, [Description("A link to a YouTube video")] string url)
+        {
+            // check for connection
+            VoiceNextConnection connection = global.player.GetVoiceConnection(ctx.Guild);
+            if (connection == null)
+            {
+                bool isConnected = await global.player.JoinChannel(ctx);
+
+                if (isConnected == false)
+                {
+                    return;
+                }
+            }
+
+            Song s = new Song(url, SongType.Youtube, ctx);
+             
+            s.DownloadYTDL();
+
+            global.player.PlaySong(s);
+        }
+
+        [Command("skip")]
+        [Description("Skips the song that is currently playing")]
+        public async Task Skip(CommandContext ctx)
+        {
+            VoiceNextConnection connection = global.player.GetVoiceConnection(ctx.Guild);
+
+             if (connection != null && connection.IsPlaying == true)
+            {
+                await global.player.LeaveChannel(ctx);
+
+                await global.player.JoinChannel(ctx);
+
+                global.player.PlayNext(ctx);
+            }
+            else
+            {
+                await ctx.RespondAsync("No song is playing for me to skip!");
+            }
+
+        }
+
 
         [Command("debugqueue")]
         [Description("a command that pritns the queeue to the visual studio debug console, do not use")]
@@ -35,30 +95,6 @@ namespace todor_reloaded
         public async Task Queue(CommandContext ctx)
         {
             await global.player.QueueExecutor(ctx);
-
-        }
-
-
-        [Command("play"), Description("Plays a youtube video")]
-        public async Task Play(CommandContext ctx, [Description("Youtube url")] string url)
-        {
-
-            Song s = new Song();
-            s.type = SongType.Youtube;
-            s.url = url;
-            s.ctx = ctx;
-
-            global.player.PlaySong(s);
-        }
-
-        [Command("skip"), Description("skips a song")]
-        public async Task Skip(CommandContext ctx)
-        {
-            await global.player.LeaveChannel(ctx);
-
-            await global.player.JoinChannel(ctx);
-
-            global.player.PlayNext(ctx);
 
         }
     }
