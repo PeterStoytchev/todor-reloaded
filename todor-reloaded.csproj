@@ -10,7 +10,7 @@
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties config_1json__JsonSchema="http://json.schemastore.org/cosmos-config" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties config_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
   <ItemGroup>
     <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00699" />

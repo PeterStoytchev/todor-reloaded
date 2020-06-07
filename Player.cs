@@ -154,7 +154,7 @@ namespace todor_reloaded
 
             VoiceTransmitStream discordStream = discordConnection.GetTransmitStream();
 
-            CopyStreamSlow(transcoder.StandardOutput.BaseStream, discordStream, 1400, 5, token);
+            CopyStreamSlow(transcoder.StandardOutput.BaseStream, discordStream, token);
 
             await discordStream.FlushAsync();
 
@@ -169,8 +169,11 @@ namespace todor_reloaded
             await discordConnection.SendSpeakingAsync(false);
         }
 
-        public static void CopyStreamSlow(Stream src, Stream dst, int bufferSize, int sleepTime, CancellationToken token)
+        public static void CopyStreamSlow(Stream src, Stream dst, CancellationToken token)
         {
+            int bufferSize = global.botConfig.transcoderBufferSize;
+            int threadSleepTime = global.botConfig.transcoderThreadSleepTime;
+
             int count = 0;
             byte[] buffer = new byte[bufferSize];
 
@@ -183,7 +186,7 @@ namespace todor_reloaded
 
                 dst.Write(buffer, 0, count);
 
-                Thread.Sleep(sleepTime);
+                Thread.Sleep(threadSleepTime);
             }
 
         }

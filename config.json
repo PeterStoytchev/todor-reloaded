@@ -3,5 +3,8 @@
   "discordLogLevel": "Debug",
   "commandPrefixes": [ ">", "@" ],
   "fileStorageExtention": "opus",
-  "songCacheDir": "C:/Users/TheEagle/Desktop/oof/"
+  "songCacheDir": "C:/Users/TheEagle/Desktop/oof/",
+  "transcoderThreadSleepTime": 5,
+  "transcoderBufferSize": 1400
+
 }

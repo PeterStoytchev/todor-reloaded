@@ -15,6 +15,12 @@ namespace todor_reloaded
 {
     public class BotConfig
     {
+        [JsonProperty("transcoderThreadSleepTime")]
+        public int transcoderThreadSleepTime { get; private set; }
+
+        [JsonProperty("transcoderBufferSize")]
+        public int transcoderBufferSize { get; private set; }
+
         [JsonProperty("discordToken")]
         public string discordToken { get; private set; }
 
@@ -30,6 +36,7 @@ namespace todor_reloaded
         [JsonProperty("discordLogLevel")]
         public LogLevel discordLogLevel { get; private set; }
 
+        public string configDir { get; set; }
 
         public DiscordConfiguration GetDiscordConfiguration()
         {
@@ -67,6 +74,7 @@ namespace todor_reloaded
                 json = await sr.ReadToEndAsync();
 
             var cfgjson = JsonConvert.DeserializeObject<BotConfig>(json);
+            cfgjson.configDir = path;
 
             return cfgjson;
         }

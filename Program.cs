@@ -32,7 +32,7 @@ namespace todor_reloaded
             global.commands.CommandErrored += BotEvents.Commands_CommandErrored;
 
             //command definitions
-            global.commands.RegisterCommands<GeneralPurposeCommands>();
+            global.commands.RegisterCommands<OwnerCommands>();
             global.commands.RegisterCommands<SoundPlayback>();
 
             //voice stuffs
