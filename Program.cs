@@ -2,6 +2,8 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.VoiceNext;
 using DSharpPlus.VoiceNext.Codec;
+using Google.Apis.Services;
+using Google.Apis.YouTube.v3;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -38,6 +40,9 @@ namespace todor_reloaded
 
             //voice stuffs
             global.player = new Player();
+
+            global.tubeUtils = new YouTubeUtils();
+
 
             //connect
             await global.bot.ConnectAsync();

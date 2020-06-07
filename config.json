@@ -1,5 +1,6 @@
 ﻿{
   "discordToken": "NTg0MzkxMzkxMjYyNjcwODU5.Xtn3hA.dk6EIGKNHVJj87ku_6wyf7qQmtw",
+  "youtubeApiKey": "AIzaSyA-jUwRRMKQVlfKivlgvB8mck4Frq0r7Nk",
   "discordLogLevel": "Debug",
   "commandPrefixes": [ ">", "@" ],
   "fileStorageExtention": "opus",

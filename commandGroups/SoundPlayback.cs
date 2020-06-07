@@ -46,7 +46,7 @@ namespace todor_reloaded
         [Command("play")]
         [Description("Plays a youtube video")]
         [Aliases("p")]
-        public async Task Play(CommandContext ctx, [Description("A link to a YouTube video")] string url)
+        public async Task Play(CommandContext ctx, [Description("A search query for youtube or a direct link")] params string[] search)
         {
             // check for connection
             VoiceNextConnection connection = global.player.GetVoiceConnection(ctx.Guild);
@@ -60,7 +60,9 @@ namespace todor_reloaded
                 }
             }
 
-            Song s = new Song(url, SongType.Youtube, ctx);
+            string searchQuery = utils.ArrayToString(search, ' ');
+
+            Song s = new Song(searchQuery, SongType.Youtube, ctx);
              
             s.DownloadYTDL();
 

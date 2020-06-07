@@ -1,10 +1,10 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.VoiceNext;
+using Google.Apis.YouTube.v3;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 
 namespace todor_reloaded
 {
@@ -17,6 +17,8 @@ namespace todor_reloaded
         public static BotConfig botConfig { get; set; }
 
         public static Player player { get; set; }
+
+        public static YouTubeUtils tubeUtils { get; set; }
 
     }
 }

@@ -24,6 +24,9 @@ namespace todor_reloaded
         [JsonProperty("discordToken")]
         public string discordToken { get; private set; }
 
+        [JsonProperty("youtubeApiKey")]
+        public string youtubeApiKey { get; private set; }
+
         [JsonProperty("fileStorageExtention")]
         public string fileExtention { get; private set; }
 

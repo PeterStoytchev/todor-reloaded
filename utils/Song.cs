@@ -1,4 +1,5 @@
 ﻿using DSharpPlus.CommandsNext;
+using Google.Apis.YouTube.v3.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,20 +20,32 @@ namespace todor_reloaded
         public string uploader { get; private set; }
         public string duration { get; private set; }
 
-        public Song(string url, SongType type, CommandContext ctx)
+        public string videoId { get; private set; }
+        public DateTime? publishedAt { get; private set; }
+
+        public Thumbnail thumbnail { get; private set; }
+
+        public Song(string query, SongType type, CommandContext ctx)
         {
-            this.url = url;
+            SearchResult result = global.tubeUtils.SearchForVideo(query).GetAwaiter().GetResult();
+            SearchResultSnippet snippet = result.Snippet;
+
+            this.name = snippet.Title;
+            this.uploader = snippet.ChannelTitle;
+            this.publishedAt = snippet.PublishedAt;
+            this.thumbnail = snippet.Thumbnails.Standard;
+            this.url = $"https://youtu.be/{result.Id.VideoId}";
             this.type = type;
             this.ctx = ctx;
-
-            this.name = ExtractYoutubeId(url);
+            this.videoId = result.Id.VideoId;
         }
 
+        
         public void DownloadYTDL()
         {
             BotConfig CurrentConfig = global.botConfig;
 
-            path = $"{CurrentConfig.songCacheDir}{name}.{CurrentConfig.fileExtention}";
+            path = $"{CurrentConfig.songCacheDir}{videoId}.{CurrentConfig.fileExtention}";
 
             Debug.WriteLine($"Downloading to {path} if not already downloaded!");
 
