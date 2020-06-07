@@ -24,12 +24,6 @@ namespace todor_reloaded
             System.GC.Collect();
         }
 
-        [Command("ping")]
-        [Description("ping command madafaka")]
-        public async Task PingExecutor(CommandContext ctx)
-        {
-            await ctx.RespondAsync($"Pong! The delay is: {ctx.Client.Ping}ms");
-        }
 
         [Command("reloadConfig")]
         [Description("Reloads the bot configuration from config.json")]
