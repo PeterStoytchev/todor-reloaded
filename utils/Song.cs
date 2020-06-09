@@ -38,11 +38,15 @@ namespace todor_reloaded
             this.type = type;
             this.ctx = ctx;
             this.videoId = result.Id.VideoId;
+
+            global.queueCounter++;
         }
 
         
         public void DownloadYTDL()
         {
+            ctx.RespondAsync($"Loading {name}");
+
             BotConfig CurrentConfig = global.botConfig;
 
             path = $"{CurrentConfig.songCacheDir}{videoId}.{CurrentConfig.fileExtention}";

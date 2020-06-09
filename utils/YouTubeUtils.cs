@@ -26,7 +26,11 @@ namespace todor_reloaded
         public async Task<SearchResult> SearchForVideo(string query)
         {
             var searchListRequest = youtubeService.Search.List("snippet");
-            searchListRequest.Q = HttpUtility.UrlEncode(query);
+            
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            searchListRequest.Q = query;
+
+            searchListRequest.RegionCode = "BG";
 
             searchListRequest.MaxResults = 1;
 

@@ -51,6 +51,9 @@ namespace todor_reloaded
                 //create the ffmpeg process that transcodes the file to pcm
                 Process ffmpeg = PlayerUtils.CreateFFMPEGProcess(s);
 
+                await s.ctx.RespondAsync($"Playing {s.name}");
+                global.queueCounter--;
+
                 //transmit the signal to discord
                 await PlayerUtils.TransmitToDiscord(connection, ffmpeg, cancellationTokenSourceTranscoder.Token);
 
@@ -70,7 +73,7 @@ namespace todor_reloaded
             {
                 PlaySong(NextSong);
             }
-            else
+            else if (global.queueCounter != 0)
             {
                 await ctx.RespondAsync("End of queue");
             }
