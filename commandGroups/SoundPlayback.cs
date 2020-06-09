@@ -63,7 +63,8 @@ namespace todor_reloaded
             string searchQuery = utils.ArrayToString(search, ' ');
 
             Song s = new Song(searchQuery, SongType.Youtube, ctx);
-             
+            global.queueCounter++;
+
             s.DownloadYTDL();
 
             global.player.PlaySong(s);
@@ -75,11 +76,9 @@ namespace todor_reloaded
         {
             VoiceNextConnection connection = global.player.GetVoiceConnection(ctx.Guild);
 
-             if (connection != null && connection.IsPlaying == true)
+            if (connection != null && connection.IsPlaying == true)
             {
-                await global.player.LeaveChannel(ctx);
-
-                await global.player.JoinChannel(ctx);
+                global.player.cancellationTokenSourceTranscoder.Cancel();
 
                 global.player.PlayNext(ctx);
             }

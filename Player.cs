@@ -150,7 +150,6 @@ namespace todor_reloaded
 
     public static class PlayerUtils
     {
-        //TODO: expose the bufferSize and thread sleep time as parameters in the config
         public static async Task TransmitToDiscord(VoiceNextConnection discordConnection, Process transcoder, CancellationToken token)
         {
             await discordConnection.SendSpeakingAsync(true);

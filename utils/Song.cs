@@ -39,7 +39,6 @@ namespace todor_reloaded
             this.ctx = ctx;
             this.videoId = result.Id.VideoId;
 
-            global.queueCounter++;
         }
 
         
