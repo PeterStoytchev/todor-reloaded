@@ -60,6 +60,8 @@ namespace todor_reloaded
                 await PlayerUtils.TransmitToDiscord(connection, ffmpeg, cancellationTokenSourceTranscoder.Token);
 
                 isPlaying = false;
+                //^^ potential fuck up
+
 
                 PlayNext(s.ctx);
             }
@@ -139,6 +141,33 @@ namespace todor_reloaded
             System.GC.Collect();
 
             await ctx.RespondAsync("Disconnected from " + ctx.Channel.Name);
+        }
+
+        public async Task SkipExecutor(CommandContext ctx, string skip)
+        {
+            VoiceNextConnection connection = Voice.GetConnection(ctx.Guild);
+
+            if (connection != null && isPlaying == true)
+            {
+                if (skip.ToLower() == "now")
+                {
+                    await LeaveChannel(ctx);
+
+                    await JoinChannel(ctx);
+                }
+                else
+                {
+                    cancellationTokenSourceTranscoder.Cancel();
+                }
+
+                isPlaying = false;
+
+                PlayNext(ctx);
+            }
+            else
+            {
+                await ctx.RespondAsync("No song is playing for me to skip!");
+            }
         }
 
 

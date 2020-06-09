@@ -74,30 +74,7 @@ namespace todor_reloaded
         [Description("Skips the song that is currently playing")]
         public async Task Skip(CommandContext ctx, [Description("Wheather or not to skip right now"), Optional, DefaultParameterValue("pedal")] string skip)
         {
-            VoiceNextConnection connection = global.player.GetVoiceConnection(ctx.Guild);
-
-            if (connection != null && connection.IsPlaying == true)
-            {
-                if (skip.ToLower() == "now")
-                {
-                    await global.player.LeaveChannel(ctx);
-
-                    await global.player.JoinChannel(ctx);
-                }
-                else
-                {
-                    global.player.cancellationTokenSourceTranscoder.Cancel();
-                }
-
-                global.player.isPlaying = false;
-
-                global.player.PlayNext(ctx);
-            }
-            else
-            {
-                await ctx.RespondAsync("No song is playing for me to skip!");
-            }
-
+            await global.player.SkipExecutor(ctx, skip);
         }
 
 
