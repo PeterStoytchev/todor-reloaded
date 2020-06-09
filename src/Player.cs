@@ -63,7 +63,7 @@ namespace todor_reloaded
                 //^^ potential fuck up
 
 
-                PlayNext(s.ctx);
+                await PlayNext(s.ctx);
             }
             else
             {
@@ -77,7 +77,7 @@ namespace todor_reloaded
             Song NextSong;
             if (SongQueue.TryDequeue(out NextSong))
             {
-                PlaySong(NextSong);
+                await PlaySong(NextSong);
             }
             else if (global.queueCounter != 0)
             {
@@ -162,7 +162,7 @@ namespace todor_reloaded
 
                 isPlaying = false;
 
-                PlayNext(ctx);
+                await PlayNext(ctx);
             }
             else
             {

@@ -67,7 +67,7 @@ namespace todor_reloaded
 
             s.DownloadYTDL();
 
-            global.player.PlaySong(s);
+            await global.player.PlaySong(s);
         }
 
         [Command("skip")]
