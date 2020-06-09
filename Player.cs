@@ -24,6 +24,7 @@ namespace todor_reloaded
         //the song queue
         private ConcurrentQueue<Song> SongQueue = new ConcurrentQueue<Song>();
         public CancellationTokenSource cancellationTokenSourceTranscoder = new CancellationTokenSource();
+        public bool isPlaying = false;
 
         public Player()
         {
@@ -37,7 +38,7 @@ namespace todor_reloaded
             
             if (connection != null)
             {
-                if (connection.IsPlaying)
+                if (isPlaying)
                 {
                     SongQueue.Enqueue(s);
 
@@ -53,9 +54,12 @@ namespace todor_reloaded
 
                 await s.ctx.RespondAsync($"Playing {s.name}");
                 global.queueCounter--;
+                isPlaying = true;
 
                 //transmit the signal to discord
                 await PlayerUtils.TransmitToDiscord(connection, ffmpeg, cancellationTokenSourceTranscoder.Token);
+
+                isPlaying = false;
 
                 PlayNext(s.ctx);
             }
@@ -127,6 +131,8 @@ namespace todor_reloaded
 
             // disconnect
             cancellationTokenSourceTranscoder.Cancel();
+            isPlaying = false;
+
             connection.Dispose();
 
             //do a memory collection, just in case
