@@ -13,6 +13,26 @@ namespace todor_reloaded
 {
     public class GeneralCommands : BaseCommandModule
     {
+        [Command("mute")]
+        [Description("gosheto e pulen geitak")]
+        [RequireOwner]
+        [RequireBotPermissions(Permissions.MuteMembers)]
+        public async Task MuteExecutor(CommandContext ctx, DiscordMember discordMember)
+        {
+            Debug.WriteLine(discordMember.ToString());
+
+            if (discordMember.IsMuted)
+            {
+                await discordMember.SetMuteAsync(true);
+            }
+            else
+            {
+                await discordMember.SetMuteAsync(false);
+            }
+
+        }
+
+
         [Command("move")]
         [Description("moves everyone from one discord channel to another")]
         [Aliases("m")]

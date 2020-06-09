@@ -23,11 +23,25 @@ namespace todor_reloaded
             });
         }
 
+        public async Task<Video> GetVideoDetails(string link)
+        {
+            var videoRequest = youtubeService.Videos.List("snippet");
+
+            videoRequest.Id = utils.ExtractYoutubeId(link);
+
+            videoRequest.RegionCode = "BG";
+
+            videoRequest.MaxResults = 1;
+
+            var response = await videoRequest.ExecuteAsync();
+
+            return response.Items.First();
+        }
+
         public async Task<SearchResult> SearchForVideo(string query)
         {
             var searchListRequest = youtubeService.Search.List("snippet");
             
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             searchListRequest.Q = query;
 
             searchListRequest.RegionCode = "BG";

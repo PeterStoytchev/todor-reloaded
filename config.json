@@ -1,5 +1,5 @@
 ﻿{
-  "discordToken": "NTg0MzkxMzkxMjYyNjcwODU5.Xtn3hA.dk6EIGKNHVJj87ku_6wyf7qQmtw",
+  "discordToken": "NTg0MzkxMzkxMjYyNjcwODU5.Xt_UNQ.uRuqPmSoBH-lL0HjuZenvdU0TGM",
   "youtubeApiKey": "AIzaSyA-jUwRRMKQVlfKivlgvB8mck4Frq0r7Nk",
   "discordLogLevel": "Debug",
   "commandPrefixes": [ ">", "@" ],
@@ -7,5 +7,4 @@
   "songCacheDir": "C:/Users/TheEagle/Desktop/oof/",
   "transcoderThreadSleepTime": 5,
   "transcoderBufferSize": 1400
-
 }

@@ -18,8 +18,6 @@ namespace todor_reloaded
 
         public string name { get; private set; }
         public string uploader { get; private set; }
-        public string duration { get; private set; }
-
         public string videoId { get; private set; }
         public DateTime? publishedAt { get; private set; }
 
@@ -27,17 +25,34 @@ namespace todor_reloaded
 
         public Song(string query, SongType type, CommandContext ctx)
         {
-            SearchResult result = global.tubeUtils.SearchForVideo(query).GetAwaiter().GetResult();
-            SearchResultSnippet snippet = result.Snippet;
+            if (query.StartsWith("https://"))
+            {
+                SearchResult result = global.tubeUtils.SearchForVideo(query).GetAwaiter().GetResult();
+                SearchResultSnippet snippet = result.Snippet;
 
-            this.name = snippet.Title;
-            this.uploader = snippet.ChannelTitle;
-            this.publishedAt = snippet.PublishedAt;
-            this.thumbnail = snippet.Thumbnails.Standard;
-            this.url = $"https://youtu.be/{result.Id.VideoId}";
-            this.type = type;
-            this.ctx = ctx;
-            this.videoId = result.Id.VideoId;
+                this.name = snippet.Title;
+                this.uploader = snippet.ChannelTitle;
+                this.publishedAt = snippet.PublishedAt;
+                this.thumbnail = snippet.Thumbnails.Standard;
+                this.url = $"https://youtu.be/{result.Id.VideoId}";
+                this.type = type;
+                this.ctx = ctx;
+                this.videoId = result.Id.VideoId;
+            }
+            else
+            {
+                Video result = global.tubeUtils.GetVideoDetails(query).GetAwaiter().GetResult();
+                VideoSnippet snippet = result.Snippet;
+
+                this.name = snippet.Title;
+                this.uploader = snippet.ChannelTitle;
+                this.publishedAt = snippet.PublishedAt;
+                this.thumbnail = snippet.Thumbnails.Standard;
+                this.url = $"https://youtu.be/{result.Id}";
+                this.type = type;
+                this.ctx = ctx;
+                this.videoId = result.Id;
+            }
 
         }
 
@@ -64,26 +79,7 @@ namespace todor_reloaded
             ytdl.WaitForExit();
         }
 
-        //a temporary function for extracting youtube urls, will be used until support for YouTube Data API V3 arrives
-        private static string ExtractYoutubeId(string link)
-        {
-            //a normal youtube url contains a '='
-            if (link.Length >= 43)
-            {
-                return link.Substring(32, 11);
-            }
-            //a shortened youtube url is 28 chars long
-            else if (link.Length >= 28 && link.Length < 43)
-            {
-                return link.Substring(17, 11);
-            }
-            //the function doesnt support any other types
-            else
-            {
-                throw new InvalidDataException("Invalid or unsuported url given.");
-            }
-
-        }
+        
 
     }
 
