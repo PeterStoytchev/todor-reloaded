@@ -15,11 +15,40 @@ using DSharpPlus.VoiceNext;
 using System.Runtime.InteropServices;
 using System.Data;
 using System.Linq;
+using Google.Apis.Http;
 
 namespace todor_reloaded
 {
     public static class utils
     {
+        public static string Cachify(string src)
+        {
+            if (!src.StartsWith("https"))
+            {
+                src = src.ToLower();
+
+                StringBuilder sb = new StringBuilder();
+
+                foreach (char c in src)
+                {
+                    int code = (int)c;
+
+                    //check if it is a symbol
+                    if ((code > 47 && code < 58) || (code > 64 && code < 91) || code > 96)
+                    {
+                        sb.Append(c);
+                    }
+                }
+
+                return sb.ToString();
+
+            }
+            else
+            {
+                return src;
+            }
+        }
+
 
         //a temporary function for extracting youtube urls, will be used until support for YouTube Data API V3 arrives
         public static string ExtractYoutubeId(string link)

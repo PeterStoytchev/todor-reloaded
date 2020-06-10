@@ -32,9 +32,9 @@ namespace todor_reloaded
         }
 
 
-        public async Task PlaySong(Song s)
+        public async Task PlaySong(CommandContext ctx, Song s)
         {
-            VoiceNextConnection connection = Voice.GetConnection(s.ctx.Guild);
+            VoiceNextConnection connection = Voice.GetConnection(ctx.Guild);
             
             if (connection != null)
             {
@@ -42,7 +42,7 @@ namespace todor_reloaded
                 {
                     SongQueue.Enqueue(s);
 
-                    await s.ctx.RespondAsync($"{s.name} added to queue.");
+                    await ctx.RespondAsync($"{s.name} added to queue.");
 
                     return;
                 }
@@ -52,7 +52,7 @@ namespace todor_reloaded
                 //create the ffmpeg process that transcodes the file to pcm
                 Process ffmpeg = PlayerUtils.CreateFFMPEGProcess(s);
 
-                await s.ctx.RespondAsync($"Playing {s.name}");
+                await ctx.RespondAsync($"Playing {s.name}");
                 global.queueCounter--;
                 isPlaying = true;
 
@@ -63,11 +63,11 @@ namespace todor_reloaded
                 //^^ potential fuck up
 
 
-                await PlayNext(s.ctx);
+                await PlayNext(ctx);
             }
             else
             {
-                await s.ctx.RespondAsync("Bot not in voice channel!");
+                await ctx.RespondAsync("Bot not in voice channel!");
             }
 
         }
@@ -77,7 +77,7 @@ namespace todor_reloaded
             Song NextSong;
             if (SongQueue.TryDequeue(out NextSong))
             {
-                await PlaySong(NextSong);
+                await PlaySong(ctx, NextSong);
             }
             else if (global.queueCounter != 0)
             {
@@ -98,6 +98,8 @@ namespace todor_reloaded
                // Debug.WriteLine($"{tracker}) name: {s.uploader}");
                 Debug.WriteLine($"{tracker}) name: {s.path}");
                 Debug.WriteLine("====================");
+
+                tracker++;
             }
 
             await ctx.RespondAsync("Queue printed to Visual Studio debug console!");

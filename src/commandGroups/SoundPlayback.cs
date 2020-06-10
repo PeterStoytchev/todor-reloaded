@@ -41,6 +41,7 @@ namespace todor_reloaded
         {
             await global.player.LeaveChannel(ctx);
             global.player.ClearQueue(); //clear the queue when leaving
+            global.songCache.StoreDictionary();
         }
 
         [Command("play")]
@@ -61,13 +62,27 @@ namespace todor_reloaded
             }
 
             string searchQuery = utils.ArrayToString(search, ' ');
+            string searchQueryCache = utils.Cachify(searchQuery);
 
-            Song s = new Song(searchQuery, SongType.Youtube, ctx);
+            Song s;
+
+            if (global.songCache.Contains(searchQueryCache))
+            {
+                s = global.songCache.Get(searchQueryCache);
+                Debug.WriteLine("Cache hit!");
+            }
+            else
+            {
+                s = new Song(searchQuery, SongType.Youtube, ctx);
+            }
+
             global.queueCounter++;
 
-            s.DownloadYTDL();
+            s.DownloadYTDL(ctx);
 
-            await global.player.PlaySong(s);
+            global.songCache.Add(searchQueryCache, s);
+
+            await global.player.PlaySong(ctx, s);
         }
 
         [Command("skip")]

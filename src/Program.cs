@@ -4,6 +4,7 @@ using DSharpPlus.VoiceNext;
 using DSharpPlus.VoiceNext.Codec;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -24,6 +25,8 @@ namespace todor_reloaded
             global.botConfig = await BotConfig.CreateConfig(args[0]);
             global.bot = new DiscordClient(global.botConfig.GetDiscordConfiguration());
 
+            global.songCache = new PersistentDictionary<string, Song>(global.botConfig.songCacheDir + "kvPairs.kolba");
+
             //bot events
             global.bot.Ready += BotEvents.Bot_Ready;
             global.bot.ClientErrored += BotEvents.Bot_ClientErrored;
@@ -40,7 +43,6 @@ namespace todor_reloaded
 
             //voice stuffs
             global.player = new Player();
-
             global.tubeUtils = new YouTubeUtils();
 
 

@@ -19,6 +19,8 @@ namespace todor_reloaded
         public static Player player { get; set; }
 
         public static YouTubeUtils tubeUtils { get; set; }
+
+        public static PersistentDictionary<string, Song> songCache { get; set; }
         
         public static int queueCounter { get; set; }
 
