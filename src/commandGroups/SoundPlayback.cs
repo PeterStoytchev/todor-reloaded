@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Google.Apis.YouTube.v3.Data;
 
 namespace todor_reloaded
 {
@@ -30,7 +31,7 @@ namespace todor_reloaded
                 await ctx.RespondAsync("Already connected in this guild.");
                 return;
             }
-            
+
             await global.player.JoinChannel(ctx);
         }
 
@@ -73,7 +74,7 @@ namespace todor_reloaded
             }
             else
             {
-                s = new Song(searchQuery, SongType.Youtube, ctx);
+                s = new Song(searchQuery, SongType.Youtube);
             }
 
             global.queueCounter++;
@@ -85,11 +86,32 @@ namespace todor_reloaded
             await global.player.PlaySong(ctx, s);
         }
 
+        [Command("playlist")]
+        [Description("it plays a youtube playlist from a link")]
+        [Aliases("pl")]
+        public async Task YouTubePlaylist(CommandContext ctx, [Description("A link to a YouTube playlist.")] string playlistLink)
+        {
+            PlaylistItemListResponse playlist = await global.tubeUtils.GetPlaylistVideos(playlistLink);
+
+            foreach (PlaylistItem item in playlist.Items)
+            {
+                Song s = new Song(item);
+
+                s.DownloadYTDL(ctx);
+
+                await global.player.PlaySong(ctx, s);
+            }
+
+            await ctx.RespondAsync($"Playlist added to queue!");
+            
+        }
+
+
         [Command("skip")]
         [Description("Skips the song that is currently playing")]
-        public async Task Skip(CommandContext ctx, [Description("Wheather or not to skip right now"), Optional, DefaultParameterValue("pedal")] string skip)
+        public async Task Skip(CommandContext ctx)
         {
-            await global.player.SkipExecutor(ctx, skip);
+            await global.player.SkipExecutor(ctx);
         }
 
 

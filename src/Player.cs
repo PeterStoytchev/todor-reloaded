@@ -145,22 +145,15 @@ namespace todor_reloaded
             await ctx.RespondAsync("Disconnected from " + ctx.Channel.Name);
         }
 
-        public async Task SkipExecutor(CommandContext ctx, string skip)
+        public async Task SkipExecutor(CommandContext ctx)
         {
             VoiceNextConnection connection = Voice.GetConnection(ctx.Guild);
 
             if (connection != null && isPlaying == true)
             {
-                if (skip.ToLower() == "now")
-                {
-                    await LeaveChannel(ctx);
+                await LeaveChannel(ctx);
 
-                    await JoinChannel(ctx);
-                }
-                else
-                {
-                    cancellationTokenSourceTranscoder.Cancel();
-                }
+                await JoinChannel(ctx);
 
                 isPlaying = false;
 

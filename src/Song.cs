@@ -23,7 +23,18 @@ namespace todor_reloaded
 
         public string thumbnail { get; private set; }
 
-        public Song(string query, SongType type, CommandContext ctx)
+        public Song(PlaylistItem item)
+        {
+            this.name = item.Snippet.Title;
+            this.uploader = item.Snippet.ChannelTitle;
+            this.publishedAt = item.Snippet.PublishedAt;
+            this.thumbnail = item.Snippet.Thumbnails.Standard.Url;
+            this.url = $"https://youtu.be/{item.Id}";
+            this.type = SongType.Spotify;
+            this.videoId = item.Id;
+        }
+
+        public Song(string query, SongType type)
         {
             if (query.StartsWith("https://"))
             {
