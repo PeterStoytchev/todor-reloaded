@@ -5,6 +5,8 @@ using Google.Apis.YouTube.v3;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using SpotifyAPI.Web;
+
 
 namespace todor_reloaded
 {
@@ -21,7 +23,8 @@ namespace todor_reloaded
         public static YouTubeUtils tubeUtils { get; set; }
 
         public static PersistentDictionary<string, Song> songCache { get; set; }
-        
+
+        public static SpotifyClient spotify { get; set; }
         public static int queueCounter { get; set; }
 
 

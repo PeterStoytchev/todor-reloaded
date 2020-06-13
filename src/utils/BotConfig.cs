@@ -27,6 +27,9 @@ namespace todor_reloaded
         [JsonProperty("youtubeApiKey")]
         public string youtubeApiKey { get; private set; }
 
+        [JsonProperty("spotifyApiToken")]
+        public string spotifyApiToken { get; private set; }
+
         [JsonProperty("fileStorageExtention")]
         public string fileExtention { get; private set; }
 

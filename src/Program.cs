@@ -4,6 +4,7 @@ using DSharpPlus.VoiceNext;
 using DSharpPlus.VoiceNext.Codec;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
+using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ namespace todor_reloaded
             //voice stuffs
             global.player = new Player();
             global.tubeUtils = new YouTubeUtils();
-
+            global.spotify = new SpotifyClient(global.botConfig.spotifyApiToken);
 
             //connect
             await global.bot.ConnectAsync();

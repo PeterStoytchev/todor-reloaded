@@ -19,7 +19,7 @@ namespace todor_reloaded
         public string name { get; private set; }
         public string uploader { get; private set; }
         public string videoId { get; private set; }
-        public DateTime? publishedAt { get; private set; }
+        public string publishedAt { get; private set; }
 
         public string thumbnail { get; private set; }
 
@@ -28,10 +28,10 @@ namespace todor_reloaded
             this.name = item.Snippet.Title;
             this.uploader = item.Snippet.ChannelTitle;
             this.publishedAt = item.Snippet.PublishedAt;
-            this.thumbnail = item.Snippet.Thumbnails.Standard.Url;
-            this.url = $"https://youtu.be/{item.Id}";
-            this.type = SongType.Spotify;
-            this.videoId = item.Id;
+            this.thumbnail = GetValidThunbnail(item.Snippet.Thumbnails);
+            this.type = SongType.Youtube;
+            this.videoId = item.Snippet.ResourceId.VideoId;
+            this.url = $"https://youtu.be/{this.videoId}";
         }
 
         public Song(string query, SongType type)
@@ -44,10 +44,10 @@ namespace todor_reloaded
                 this.name = snippet.Title;
                 this.uploader = snippet.ChannelTitle;
                 this.publishedAt = snippet.PublishedAt;
-                this.thumbnail = snippet.Thumbnails.Standard.Url;
-                this.url = $"https://youtu.be/{result.Id}";
+                this.thumbnail = GetValidThunbnail(snippet.Thumbnails);
                 this.type = type;
                 this.videoId = result.Id;
+                this.url = $"https://youtu.be/{this.videoId}";
             }
             else
             {
@@ -57,12 +57,34 @@ namespace todor_reloaded
                 this.name = snippet.Title;
                 this.uploader = snippet.ChannelTitle;
                 this.publishedAt = snippet.PublishedAt;
-                this.thumbnail = snippet.Thumbnails.Medium.Url;
-                this.url = $"https://youtu.be/{result.Id.VideoId}";
+                this.thumbnail = GetValidThunbnail(snippet.Thumbnails);
                 this.type = type;
                 this.videoId = result.Id.VideoId;
+                this.url = $"https://youtu.be/{this.videoId}";
             }
 
+        }
+
+        private string GetValidThunbnail(ThumbnailDetails thumbnails)
+        {
+            if (thumbnails.Standard != null)
+            {
+                return thumbnails.Standard.Url;
+            }
+            else if (thumbnails.Medium != null)
+            {
+                return thumbnails.Medium.Url;
+            }
+            else if (thumbnails.High != null)
+            {
+                return thumbnails.High.Url;
+            }
+            else if (thumbnails.Maxres != null)
+            {
+                return thumbnails.Maxres.Url;
+            }
+
+            return null;
         }
 
         public void PrintDebug()

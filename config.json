@@ -1,6 +1,7 @@
 ﻿{
-  "discordToken": "NTg0MzkxMzkxMjYyNjcwODU5.Xt_UNQ.uRuqPmSoBH-lL0HjuZenvdU0TGM",
+  "discordToken": "NjU5MDQyMjcyMTA0Njc3Mzc2.XuVA9Q.aazo6KSCqPYlOszRqrfOi5gewpg",
   "youtubeApiKey": "AIzaSyA-jUwRRMKQVlfKivlgvB8mck4Frq0r7Nk",
+  "spotifyApiToken": "c45926918d944a868c2b9287103fac55",
   "discordLogLevel": "Debug",
   "commandPrefixes": [ ">", "@" ],
   "fileStorageExtention": "opus",

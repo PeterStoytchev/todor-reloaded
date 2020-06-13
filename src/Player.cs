@@ -14,6 +14,7 @@ using System.Linq;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Google.Apis.YouTube.v3.Data;
 
 namespace todor_reloaded
 {
@@ -85,6 +86,37 @@ namespace todor_reloaded
             }
         }
 
+        public async Task YouTubePlaylistExecutor(CommandContext ctx, string playlistLink, int maxVideos)
+        {
+            if (Voice.GetConnection(ctx.Guild) != null)
+            {
+                PlaylistItemListResponse playlist = await global.tubeUtils.GetPlaylistVideos(playlistLink, maxVideos);
+
+                Song s = new Song(playlist.Items[0]);
+
+                s.DownloadYTDL(ctx);
+
+                PlaySong(ctx, s);
+
+                playlist.Items.RemoveAt(0);
+
+                Parallel.ForEach<PlaylistItem>(playlist.Items, item =>
+                {
+                    Song s = new Song(item);
+
+                    s.DownloadYTDL(ctx);
+
+                    SongQueue.Enqueue(s);
+                });
+
+                await ctx.RespondAsync($"Playlist added to queue!");
+            }
+            else
+            {
+                await ctx.RespondAsync("Bot not connected to voice channel. Use the join command to connect the bot!");
+            }
+        }
+
         public async Task QueueExecutor(CommandContext ctx)
         {
             Debug.WriteLine($"Song queue for guild {ctx.Guild.Name}");
@@ -94,9 +126,9 @@ namespace todor_reloaded
             {
                 Debug.WriteLine("====================");
                 Debug.WriteLine($"{tracker}) name: {s.name}");
-                Debug.WriteLine($"{tracker}) name: {s.type}");
-               // Debug.WriteLine($"{tracker}) name: {s.uploader}");
-                Debug.WriteLine($"{tracker}) name: {s.path}");
+                Debug.WriteLine($"{tracker}) type: {s.type}");
+                Debug.WriteLine($"{tracker}) name: {s.uploader}");
+                Debug.WriteLine($"{tracker}) path: {s.path}");
                 Debug.WriteLine("====================");
 
                 tracker++;
@@ -122,7 +154,7 @@ namespace todor_reloaded
             return true;
         }
 
-        public async Task LeaveChannel(CommandContext ctx)
+        public async Task LeaveChannel(CommandContext ctx, bool shouldClearQueue)
         {
             VoiceNextConnection connection = Voice.GetConnection(ctx.Guild);
            
@@ -137,6 +169,11 @@ namespace todor_reloaded
             cancellationTokenSourceTranscoder.Cancel();
             isPlaying = false;
 
+            if (shouldClearQueue)
+            {
+                SongQueue.Clear();
+            }
+            
             connection.Dispose();
 
             //do a memory collection, just in case
@@ -151,7 +188,7 @@ namespace todor_reloaded
 
             if (connection != null && isPlaying == true)
             {
-                await LeaveChannel(ctx);
+                await LeaveChannel(ctx, false);
 
                 await JoinChannel(ctx);
 
@@ -170,12 +207,6 @@ namespace todor_reloaded
         {
             return Voice.GetConnection(guild);
         }
-
-        public void ClearQueue()
-        {
-            SongQueue.Clear();
-        }
-
     }
 
     public static class PlayerUtils

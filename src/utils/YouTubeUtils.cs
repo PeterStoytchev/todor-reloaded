@@ -23,13 +23,13 @@ namespace todor_reloaded
             });
         }
 
-        public async Task<PlaylistItemListResponse> GetPlaylistVideos(string link)
+        public async Task<PlaylistItemListResponse> GetPlaylistVideos(string link, int maxVideos)
         {
             var request = youtubeService.PlaylistItems.List("snippet");
 
-            request.Id = link.Split('=').Last();
+            request.PlaylistId = link;
 
-            request.MaxResults = 1;
+            request.MaxResults = maxVideos;
 
             var response = await request.ExecuteAsync();
 

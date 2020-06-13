@@ -40,8 +40,7 @@ namespace todor_reloaded
         [Aliases("l", "aufwiedersehen")]
         public async Task Leave(CommandContext ctx)
         {
-            await global.player.LeaveChannel(ctx);
-            global.player.ClearQueue(); //clear the queue when leaving
+            await global.player.LeaveChannel(ctx, true);
             global.songCache.StoreDictionary();
         }
 
@@ -89,23 +88,10 @@ namespace todor_reloaded
         [Command("playlist")]
         [Description("it plays a youtube playlist from a link")]
         [Aliases("pl")]
-        public async Task YouTubePlaylist(CommandContext ctx, [Description("A link to a YouTube playlist.")] string playlistLink)
+        public async Task YouTubePlaylist(CommandContext ctx, [Description("A link to a YouTube playlist.")] string playlistLink, [Description("How many videos to load at maximum, default 6"), Optional, DefaultParameterValue(6)] int maxVideos)
         {
-            PlaylistItemListResponse playlist = await global.tubeUtils.GetPlaylistVideos(playlistLink);
-
-            foreach (PlaylistItem item in playlist.Items)
-            {
-                Song s = new Song(item);
-
-                s.DownloadYTDL(ctx);
-
-                await global.player.PlaySong(ctx, s);
-            }
-
-            await ctx.RespondAsync($"Playlist added to queue!");
-            
+            await global.player.YouTubePlaylistExecutor(ctx, playlistLink, maxVideos);
         }
-
 
         [Command("skip")]
         [Description("Skips the song that is currently playing")]
