@@ -4,13 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-
+using SpotifyAPI.Web;
 
 namespace todor_reloaded.src
 {
     public class SpotifyCommands : BaseCommandModule
     {
-        /*
         [Command("spotifyPlaylist")]
         [Description("plays a playlist from spotify")]
         [Aliases("spot", "spl", "spotifypl")]
@@ -18,6 +17,5 @@ namespace todor_reloaded.src
         {
 
         }
-        */
     }
 }

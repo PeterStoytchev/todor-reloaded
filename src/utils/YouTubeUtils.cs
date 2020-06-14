@@ -59,6 +59,8 @@ namespace todor_reloaded
 
             searchListRequest.RegionCode = "BG";
 
+            searchListRequest.Type = "video";
+
             searchListRequest.MaxResults = 1;
 
             // Call the search.list method to retrieve results matching the specified query term.
