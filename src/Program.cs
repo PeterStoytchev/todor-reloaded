@@ -41,6 +41,7 @@ namespace todor_reloaded
             global.commands.RegisterCommands<GeneralCommands>();
             global.commands.RegisterCommands<OwnerCommands>();
             global.commands.RegisterCommands<SoundPlayback>();
+            global.commands.RegisterCommands<SpotifyCommands>();
 
             //voice stuffs
             global.player = new Player();

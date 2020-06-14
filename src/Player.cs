@@ -15,6 +15,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Google.Apis.YouTube.v3.Data;
+using SpotifyAPI.Web;
 
 namespace todor_reloaded
 {
@@ -84,6 +85,46 @@ namespace todor_reloaded
             {
                 await ctx.RespondAsync("End of queue");
             }
+        }
+
+
+        public async Task SpotifyPlaylistExecutor(CommandContext ctx, string uri)
+        {
+            FullAlbum album = await global.spotify.Albums.Get(uri.Split(":").Last());
+
+            Song s = new Song($"{album.Tracks.Items[0].Name} - {album.Tracks.Items[0].Artists[0].Name}", SongType.Spotify);
+
+            s.DownloadYTDL(ctx);
+
+            PlaySong(ctx, s);
+
+            album.Tracks.Items.RemoveAt(0);
+
+            Parallel.ForEach<SimpleTrack>(album.Tracks.Items, track =>
+            {
+                string searchQuery = $"{track.Name} - {track.Artists[0].Name}";
+                string searchQueryCache = utils.Cachify(searchQuery);
+
+                Song s;
+
+                if (global.songCache.Contains(searchQueryCache))
+                {
+                    s = global.songCache.Get(searchQueryCache);
+                    Debug.WriteLine("Cache hit!");
+                }
+                else
+                {
+                    s = new Song(searchQuery, SongType.Spotify);
+                }
+
+                global.songCache.Add(searchQueryCache, s);
+
+                s.DownloadYTDL(ctx);
+
+                SongQueue.Enqueue(s);
+            });
+
+            await ctx.RespondAsync("Playlist added to queue!");
         }
 
         public async Task YouTubePlaylistExecutor(CommandContext ctx, string playlistLink, int maxVideos)
