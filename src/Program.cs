@@ -45,8 +45,8 @@ namespace todor_reloaded
 
             //voice stuffs
             global.player = new Player();
-            global.tubeUtils = new YouTubeUtils();
-            global.spotify = new SpotifyClient(global.botConfig.spotifyApiToken);
+            global.youtubeClient = new YouTubeClient(global.botConfig.GetYoutubeService());
+            global.spotify = new SpotifyClient(global.botConfig.GetClientConfig());
 
             //connect
             await global.bot.ConnectAsync();

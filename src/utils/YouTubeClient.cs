@@ -10,16 +10,21 @@ using System.Web;
 
 namespace todor_reloaded
 {
-    public class YouTubeUtils
+    public class YouTubeClient
     {
         private YouTubeService youtubeService { get; }
 
-        public YouTubeUtils()
+        public YouTubeClient(YouTubeService service)
+        {
+            this.youtubeService = service;
+        }
+
+        public YouTubeClient(string apiKey, string appName)
         {
             youtubeService = new YouTubeService(new BaseClientService.Initializer()
             {
-                ApiKey = global.botConfig.youtubeApiKey,
-                ApplicationName = "todor-bot-youtube"
+                ApiKey = apiKey,
+                ApplicationName = appName
             });
         }
 

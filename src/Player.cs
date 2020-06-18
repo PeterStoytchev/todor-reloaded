@@ -131,7 +131,7 @@ namespace todor_reloaded
         {
             if (Voice.GetConnection(ctx.Guild) != null)
             {
-                PlaylistItemListResponse playlist = await global.tubeUtils.GetPlaylistVideos(playlistLink, maxVideos);
+                PlaylistItemListResponse playlist = await global.youtubeClient.GetPlaylistVideos(playlistLink, maxVideos);
 
                 Song s = new Song(playlist.Items[0]);
 

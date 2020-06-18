@@ -9,7 +9,10 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.VoiceNext;
 using DSharpPlus.VoiceNext.Codec;
+using Google.Apis.Services;
+using Google.Apis.YouTube.v3;
 using Newtonsoft.Json;
+using SpotifyAPI.Web;
 
 namespace todor_reloaded
 {
@@ -27,8 +30,11 @@ namespace todor_reloaded
         [JsonProperty("youtubeApiKey")]
         public string youtubeApiKey { get; private set; }
 
-        [JsonProperty("spotifyApiToken")]
-        public string spotifyApiToken { get; private set; }
+        [JsonProperty("spotifyClientId")]
+        public string spotifyClientId { get; private set; }
+
+        [JsonProperty("spotifyClientSecret")]
+        public string spotifyClientSecret { get; private set; }
 
         [JsonProperty("fileStorageExtention")]
         public string fileExtention { get; private set; }
@@ -43,6 +49,21 @@ namespace todor_reloaded
         public LogLevel discordLogLevel { get; private set; }
 
         public string configDir { get; set; }
+
+
+        public SpotifyClientConfig GetClientConfig()
+        {
+            return SpotifyClientConfig.CreateDefault().WithAuthenticator(new ClientCredentialsAuthenticator(spotifyClientId, spotifyClientSecret));
+        }
+
+        public YouTubeService GetYoutubeService()
+        {
+            return new YouTubeService(new BaseClientService.Initializer()
+            {
+                ApiKey = youtubeApiKey,
+                ApplicationName = "todor-bot-youtube"
+            });
+        }
 
         public DiscordConfiguration GetDiscordConfiguration()
         {

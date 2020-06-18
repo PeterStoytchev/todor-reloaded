@@ -38,7 +38,7 @@ namespace todor_reloaded
         {
             if (query.StartsWith("https://"))
             {
-                Video result = global.tubeUtils.GetVideoDetails(query).GetAwaiter().GetResult();
+                Video result = global.youtubeClient.GetVideoDetails(query).GetAwaiter().GetResult();
                 VideoSnippet snippet = result.Snippet;
 
                 this.name = snippet.Title;
@@ -51,7 +51,7 @@ namespace todor_reloaded
             }
             else
             {
-                SearchResult result = global.tubeUtils.SearchForVideo(query).GetAwaiter().GetResult();
+                SearchResult result = global.youtubeClient.SearchForVideo(query).GetAwaiter().GetResult();
                 SearchResultSnippet snippet = result.Snippet;
 
                 this.name = snippet.Title;

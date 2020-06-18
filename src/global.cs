@@ -20,7 +20,7 @@ namespace todor_reloaded
 
         public static Player player { get; set; }
 
-        public static YouTubeUtils tubeUtils { get; set; }
+        public static YouTubeClient youtubeClient { get; set; }
 
         public static PersistentDictionary<string, Song> songCache { get; set; }
 
