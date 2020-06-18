@@ -36,10 +36,13 @@ namespace todor_reloaded
 
         public async Task PlaySong(CommandContext ctx, Song s)
         {
-            VoiceNextConnection connection = Voice.GetConnection(ctx.Guild);
+            VoiceNextConnection connection = await GetVoiceConnection(ctx);
             
             if (connection != null)
             {
+                s.DownloadYTDL(true);
+                global.songCache.Add(searchQueryCache, s);
+
                 if (isPlaying)
                 {
                     SongQueue.Enqueue(s);
@@ -67,11 +70,6 @@ namespace todor_reloaded
 
                 await PlayNext(ctx);
             }
-            else
-            {
-                await ctx.RespondAsync("Bot not in voice channel!");
-            }
-
         }
 
         public async Task PlayNext(CommandContext ctx)
@@ -90,52 +88,55 @@ namespace todor_reloaded
 
         public async Task SpotifyPlaylistExecutor(CommandContext ctx, string uri)
         {
-            FullAlbum album = await global.spotify.Albums.Get(uri.Split(":").Last());
-
-            Song s = new Song($"{album.Tracks.Items[0].Name} - {album.Tracks.Items[0].Artists[0].Name}", SongType.Spotify);
-
-            s.DownloadYTDL(ctx);
-
-            PlaySong(ctx, s);
-
-            album.Tracks.Items.RemoveAt(0);
-
-            Parallel.ForEach<SimpleTrack>(album.Tracks.Items, track =>
+            if (await global.player.GetVoiceConnection(ctx) != null)
             {
-                string searchQuery = $"{track.Name} - {track.Artists[0].Name}";
-                string searchQueryCache = utils.Cachify(searchQuery);
+                FullAlbum album = await global.spotify.Albums.Get(uri.Split(":").Last());
 
-                Song s;
+                Song s = new Song($"{album.Tracks.Items[0].Name} - {album.Tracks.Items[0].Artists[0].Name}", SongType.Spotify);
 
-                if (global.songCache.Contains(searchQueryCache))
+                s.DownloadYTDL(ctx, true);
+
+                PlaySong(ctx, s);
+
+                album.Tracks.Items.RemoveAt(0);
+
+                Parallel.ForEach<SimpleTrack>(album.Tracks.Items, track =>
                 {
-                    s = global.songCache.Get(searchQueryCache);
-                    Debug.WriteLine("Cache hit!");
-                }
-                else
-                {
-                    s = new Song(searchQuery, SongType.Spotify);
-                }
+                    string searchQuery = $"{track.Name} - {track.Artists[0].Name}";
+                    string searchQueryCache = utils.Cachify(searchQuery);
 
-                global.songCache.Add(searchQueryCache, s);
+                    Song s;
 
-                s.DownloadYTDL(ctx);
+                    if (global.songCache.Contains(searchQueryCache))
+                    {
+                        s = global.songCache.Get(searchQueryCache);
+                        Debug.WriteLine("Cache hit!");
+                    }
+                    else
+                    {
+                        s = new Song(searchQuery, SongType.Spotify);
+                    }
 
-                SongQueue.Enqueue(s);
-            });
+                    global.songCache.Add(searchQueryCache, s);
 
-            await ctx.RespondAsync("Playlist added to queue!");
+                    s.DownloadYTDL(ctx, false);
+
+                    SongQueue.Enqueue(s);
+                });
+
+                await ctx.RespondAsync("Playlist added to queue!");
+            }
         }
 
         public async Task YouTubePlaylistExecutor(CommandContext ctx, string playlistLink, int maxVideos)
         {
-            if (Voice.GetConnection(ctx.Guild) != null)
+            if (await global.player.GetVoiceConnection(ctx) != null)
             {
                 PlaylistItemListResponse playlist = await global.youtubeClient.GetPlaylistVideos(playlistLink, maxVideos);
 
                 Song s = new Song(playlist.Items[0]);
 
-                s.DownloadYTDL(ctx);
+                s.DownloadYTDL(ctx, true);
 
                 PlaySong(ctx, s);
 
@@ -145,16 +146,12 @@ namespace todor_reloaded
                 {
                     Song s = new Song(item);
 
-                    s.DownloadYTDL(ctx);
+                    s.DownloadYTDL(ctx, false);
 
                     SongQueue.Enqueue(s);
                 });
 
                 await ctx.RespondAsync($"Playlist added to queue!");
-            }
-            else
-            {
-                await ctx.RespondAsync("Bot not connected to voice channel. Use the join command to connect the bot!");
             }
         }
 
@@ -186,7 +183,7 @@ namespace todor_reloaded
             if (CommandSenderVoiceState?.Channel == null)
             {
                 //the user isnt in a voice channel, quit
-                await ctx.RespondAsync("You are not in a voice channel, I don't know where to join!");
+                await ctx.RespondAsync(CommonMessages.VoiceChannelCouldNotConnect);
                 return false;
             }
 
@@ -202,7 +199,7 @@ namespace todor_reloaded
             if (connection == null)
             {
                 // not connected
-                await ctx.RespondAsync("Not connected in this guild.");
+                await ctx.RespondAsync(CommonMessages.NotConnectedGuild);
                 return;
             }
 
@@ -239,14 +236,28 @@ namespace todor_reloaded
             }
             else
             {
-                await ctx.RespondAsync("No song is playing for me to skip!");
+                await ctx.RespondAsync(CommonMessages.NoPlayingToSkip);
             }
         }
 
 
-        public VoiceNextConnection GetVoiceConnection(DiscordGuild guild)
+        public async Task<VoiceNextConnection> GetVoiceConnection(CommandContext ctx)
         {
-            return Voice.GetConnection(guild);
+            VoiceNextConnection connection = Voice.GetConnection(ctx.Guild);
+
+            if (connection == null)
+            {
+                bool isConnected = await JoinChannel(ctx);
+
+                connection = Voice.GetConnection(ctx.Guild);
+
+                if (isConnected == false)
+                {
+                    return null;
+                }
+            }
+
+            return connection;
         }
     }
 

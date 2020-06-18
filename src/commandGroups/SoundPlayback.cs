@@ -23,16 +23,14 @@ namespace todor_reloaded
         [Aliases("joint", "j")]
         public async Task Join(CommandContext ctx)
         {
-            // check for connection
-            VoiceNextConnection connection = global.player.GetVoiceConnection(ctx.Guild);
-            if (connection != null)
+            //connect if not connected
+            VoiceNextConnection conn = await global.player.GetVoiceConnection(ctx);
+
+            if (conn != null)
             {
-                // already connected
-                await ctx.RespondAsync("Already connected in this guild.");
-                return;
+                await ctx.RespondAsync($"Connected to {ctx.Member.VoiceState.Channel.Name}");
             }
 
-            await global.player.JoinChannel(ctx);
         }
 
         [Command("leave")]
@@ -49,18 +47,6 @@ namespace todor_reloaded
         [Aliases("p")]
         public async Task Play(CommandContext ctx, [Description("A search query for youtube or a direct link")] params string[] search)
         {
-            // check for connection
-            VoiceNextConnection connection = global.player.GetVoiceConnection(ctx.Guild);
-            if (connection == null)
-            {
-                bool isConnected = await global.player.JoinChannel(ctx);
-
-                if (isConnected == false)
-                {
-                    return;
-                }
-            }
-
             string searchQuery = utils.ArrayToString(search, ' ');
             string searchQueryCache = utils.Cachify(searchQuery);
 
@@ -78,9 +64,6 @@ namespace todor_reloaded
 
             global.queueCounter++;
 
-            s.DownloadYTDL(ctx);
-
-            global.songCache.Add(searchQueryCache, s);
 
             await global.player.PlaySong(ctx, s);
         }

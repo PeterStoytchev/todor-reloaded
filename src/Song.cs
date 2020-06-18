@@ -115,9 +115,12 @@ namespace todor_reloaded
             return props;
         }
 
-        public void DownloadYTDL(CommandContext ctx)
+        public void DownloadYTDL(CommandContext ctx, bool shouldPrint)
         {
-            ctx.RespondAsync($"Loading {name}");
+            if (shouldPrint)
+            {
+                ctx.RespondAsync($"Loading {name}");
+            }
 
             BotConfig CurrentConfig = global.botConfig;
 
