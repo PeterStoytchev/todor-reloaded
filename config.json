@@ -1,7 +1,8 @@
 ﻿{
   "discordToken": "NDc0NjE1Nzg5Njg1ODMzNzMx.XuYkRg._OxglNQllLJ5FNdq9d7VD34_aTE",
   "youtubeApiKey": "AIzaSyA-jUwRRMKQVlfKivlgvB8mck4Frq0r7Nk",
-  "spotifyApiToken": "BQD0VxeEL5zEGDhF4HpuSUALDOrHlSNxF1djhftdRSRuWce_C9qPXx9Bs8tiD9eBoYHmmDUyP_RJ1A7rhNZ7jxLcPTmKE6tsCH9_z4wp4PX2QLheyHB4N4CjE4UJuEObwBkweV7gmEmnzPuAYIf9TRYhRs1z-6U75UIIgbsgH0paqb9b_VJDkrnKuVzbS7LbcOJ28dLgicfWaVxhOAQqwdZn5hf4ENDkNZlBtxsubSfwUWtfn066OlkBAX3b475IBrZ80HOwbGSPiWJH",
+  "spotifyClientId": "c45926918d944a868c2b9287103fac55",
+  "spotifyClientSecret": "618d051d525546cb8cfd337684e5b188",
   "discordLogLevel": "Debug",
   "commandPrefixes": [ ">", "@" ],
   "fileStorageExtention": "opus",
