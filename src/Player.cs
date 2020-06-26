@@ -16,6 +16,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Google.Apis.YouTube.v3.Data;
 using SpotifyAPI.Web;
+using System.Security.Cryptography;
 
 namespace todor_reloaded
 {
@@ -40,8 +41,7 @@ namespace todor_reloaded
             
             if (connection != null)
             {
-                s.DownloadYTDL(true);
-                global.songCache.Add(searchQueryCache, s);
+                
 
                 if (isPlaying)
                 {
@@ -132,6 +132,8 @@ namespace todor_reloaded
         {
             if (await global.player.GetVoiceConnection(ctx) != null)
             {
+                playlistLink = playlistLink.Split("=").Last().Substring(0, 34);
+
                 PlaylistItemListResponse playlist = await global.youtubeClient.GetPlaylistVideos(playlistLink, maxVideos);
 
                 Song s = new Song(playlist.Items[0]);
@@ -155,24 +157,26 @@ namespace todor_reloaded
             }
         }
 
-        public async Task QueueExecutor(CommandContext ctx)
+        public async Task QueueExecutor(CommandContext ctx, string outputLocation)
         {
-            Debug.WriteLine($"Song queue for guild {ctx.Guild.Name}");
+            PrintDest dest = utils.ParseDest(outputLocation);
+
+            await utils.OutputToConsole($"Song queue for guild {ctx.Guild.Name}", ctx, outputLocation, dest);
 
             int tracker = 1;
             foreach (Song s in SongQueue)
             {
-                Debug.WriteLine("====================");
-                Debug.WriteLine($"{tracker}) name: {s.name}");
-                Debug.WriteLine($"{tracker}) type: {s.type}");
-                Debug.WriteLine($"{tracker}) name: {s.uploader}");
-                Debug.WriteLine($"{tracker}) path: {s.path}");
-                Debug.WriteLine("====================");
+                await utils.OutputToConsole("====================", ctx, outputLocation, dest);
+                await utils.OutputToConsole($"{tracker}) name: {s.name}", ctx, outputLocation, dest);
+                await utils.OutputToConsole($"{tracker}) type: {s.type}", ctx, outputLocation, dest);
+                await utils.OutputToConsole($"{tracker}) name: {s.uploader}", ctx, outputLocation, dest);
+                await utils.OutputToConsole($"{tracker}) path: {s.path}", ctx, outputLocation, dest);
+                await utils.OutputToConsole("====================", ctx, outputLocation, dest);
 
                 tracker++;
             }
 
-            await ctx.RespondAsync("Queue printed to Visual Studio debug console!");
+            await ctx.RespondAsync($"Queue printed to {outputLocation} console!");
 
         }
 

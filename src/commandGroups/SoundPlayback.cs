@@ -64,6 +64,9 @@ namespace todor_reloaded
 
             global.queueCounter++;
 
+            s.DownloadYTDL(ctx, true);
+            
+            global.songCache.Add(searchQueryCache, s);
 
             await global.player.PlaySong(ctx, s);
         }
@@ -71,7 +74,7 @@ namespace todor_reloaded
         [Command("playlist")]
         [Description("it plays a youtube playlist from a link")]
         [Aliases("pl")]
-        public async Task YouTubePlaylist(CommandContext ctx, [Description("A link to a YouTube playlist.")] string playlistLink, [Description("How many videos to load at maximum, default 6"), Optional, DefaultParameterValue(6)] int maxVideos)
+        public async Task YouTubePlaylist(CommandContext ctx, [Description("A link to a YouTube playlist.")] string playlistLink, [Description("How many videos to load at maximum, default 15"), Optional, DefaultParameterValue(15)] int maxVideos)
         {
             await global.player.YouTubePlaylistExecutor(ctx, playlistLink, maxVideos);
         }
@@ -87,9 +90,9 @@ namespace todor_reloaded
         [Command("debugqueue")]
         [Description("a command that pritns the queeue to the visual studio debug console, do not use")]
         [RequireOwner]
-        public async Task Queue(CommandContext ctx)
+        public async Task Queue(CommandContext ctx, [Optional, DefaultParameterValue("")] string printDest)
         {
-            await global.player.QueueExecutor(ctx);
+            await global.player.QueueExecutor(ctx, printDest);
 
         }
     }

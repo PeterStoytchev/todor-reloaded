@@ -21,6 +21,49 @@ namespace todor_reloaded
 {
     public static class utils
     {
+        public static async Task OutputToConsole(string str, CommandContext ctx, string printDest = "", PrintDest dest = PrintDest.Empty)
+        {
+            if (dest == PrintDest.Empty)
+            {
+                dest = ParseDest(printDest);
+            }
+
+            switch (dest)
+            {
+                case PrintDest.VSDebug:
+                    Debug.WriteLine(str);
+                    break;
+
+                case PrintDest.ConsoleOut:
+                    LogMessage(str, ctx.Client);
+                    break;
+
+                case PrintDest.DiscordChn:
+                    await ctx.Channel.SendMessageAsync(str);
+                    break;
+            }
+        }
+
+        public static PrintDest ParseDest(string str)
+        {
+            //for later: load these from config.json
+            string[] vsdebug = { "debug", "vsdebug", "debugconsole" };
+            string[] dischannel = { "discord", "discordchannel" };
+
+            str = str.ToLower();
+
+            if (vsdebug.Contains(str))
+            {
+                return PrintDest.VSDebug;
+            }
+            else if (dischannel.Contains(str))
+            {
+                return PrintDest.DiscordChn;
+            }
+
+            return PrintDest.ConsoleOut;
+        }
+
         public static string Cachify(string src)
         {
             if (!src.StartsWith("https"))
@@ -33,7 +76,7 @@ namespace todor_reloaded
                 {
                     int code = (int)c;
 
-                    //check if it is a symbol
+                    //check if it is not a symbol and add it
                     if ((code > 47 && code < 58) || (code > 64 && code < 91) || code > 96)
                     {
                         sb.Append(c);
@@ -103,4 +146,14 @@ namespace todor_reloaded
             client.DebugLogger.LogMessage(logLevel, client.CurrentUser.Username, msg, DateTime.Now);
         }
     }
+
+    public enum PrintDest
+    {
+        VSDebug,
+        ConsoleOut,
+        DiscordChn,
+        Empty
+    }
+
+
 }

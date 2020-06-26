@@ -14,18 +14,14 @@ namespace todor_reloaded
     {
         private Dictionary<KeyType, ValueType> pairs;
 
-        private FileStream fileStream;
-
-        private BinaryFormatter bf = new BinaryFormatter();
+        private string filePath;
 
         private bool isUptodate;
 
 
         public PersistentDictionary(string path)
         {
-            fileStream = new FileStream(path, FileMode.OpenOrCreate);
-
-            pairs = new Dictionary<KeyType, ValueType>();
+            filePath = path;
 
             LoadDictionary();
         }
@@ -38,7 +34,6 @@ namespace todor_reloaded
             }
 
             pairs.Clear();
-            fileStream.Close();
         }
 
         public ValueType Get(KeyType key)
@@ -106,21 +101,39 @@ namespace todor_reloaded
 
         public void StoreDictionary()
         {
+            FileStream fileStream = new FileStream(filePath, FileMode.OpenOrCreate);
+            BinaryFormatter bf = new BinaryFormatter();
+            
             fileStream.Seek(0, SeekOrigin.Begin);
+
             bf.Serialize(fileStream, pairs);
 
             isUptodate = true;
+
+            fileStream.Close();
+
         }
 
 
         private void LoadDictionary()
         {
+            FileStream fileStream = new FileStream(filePath, FileMode.OpenOrCreate);
+
             fileStream.Seek(0, SeekOrigin.Begin);
 
+            BinaryFormatter bf = new BinaryFormatter();
+
+            //load the dictionaty from file or create a new one
             if (fileStream.Length != 0)
             {
                 pairs = bf.Deserialize(fileStream) as Dictionary<KeyType, ValueType>;
             }
+            else
+            {
+                pairs = new Dictionary<KeyType, ValueType>();
+            }
+
+            fileStream.Close();
 
         }
 

@@ -10,6 +10,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using System.Runtime.InteropServices.ComTypes;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace todor_reloaded
 {
@@ -20,20 +21,29 @@ namespace todor_reloaded
         [Command("printCache")]
         [Description("Prints the contents of the song cache k/v to the console.")]
         [Aliases("pc")]
-        public async Task PrintCache(CommandContext ctx)
+        public async Task PrintCache(CommandContext ctx, string destStr)
         {
             var pairs = global.songCache.GetPairs();
 
             int index = 1;
+
+            PrintDest dest = utils.ParseDest(destStr);
+
             foreach (var pair in pairs)
             {
                 string[] details = pair.Value.GetDebug();
 
                 for (int i = 0; i < details.Length - 1; i++)
                 {
-                    await ctx.RespondAsync($"{index}) {details[i]}");
+                    string toPrint = $"{index}) {details[i]}";
+
+                    await utils.OutputToConsole(toPrint, ctx, destStr, dest);
                 }
+
+                index++;
             }
+
+            await ctx.RespondAsync($"Cache printed to {destStr} console");
         }
 
         [Command("gc")]

@@ -17,6 +17,8 @@ namespace todor_reloaded
         public string path { get; private set; }
 
         public string name { get; private set; }
+        public string cacheName { get; private set; }
+
         public string uploader { get; private set; }
         public string videoId { get; private set; }
         public string publishedAt { get; private set; }
@@ -26,6 +28,9 @@ namespace todor_reloaded
         public Song(PlaylistItem item)
         {
             this.name = item.Snippet.Title;
+
+            this.cacheName = utils.Cachify(this.name);
+
             this.uploader = item.Snippet.ChannelTitle;
             this.publishedAt = item.Snippet.PublishedAt;
             this.thumbnail = GetValidThunbnail(item.Snippet.Thumbnails);
@@ -42,6 +47,8 @@ namespace todor_reloaded
                 VideoSnippet snippet = result.Snippet;
 
                 this.name = snippet.Title;
+                this.cacheName = utils.Cachify(this.name);
+
                 this.uploader = snippet.ChannelTitle;
                 this.publishedAt = snippet.PublishedAt;
                 this.thumbnail = GetValidThunbnail(snippet.Thumbnails);
@@ -55,6 +62,8 @@ namespace todor_reloaded
                 SearchResultSnippet snippet = result.Snippet;
 
                 this.name = snippet.Title;
+                this.cacheName = utils.Cachify(query);
+
                 this.uploader = snippet.ChannelTitle;
                 this.publishedAt = snippet.PublishedAt;
                 this.thumbnail = GetValidThunbnail(snippet.Thumbnails);
