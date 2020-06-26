@@ -38,7 +38,10 @@ namespace todor_reloaded
 
         [JsonProperty("fileStorageExtention")]
         public string fileExtention { get; private set; }
-
+        
+        [JsonProperty("ytdlPath")]
+        public string ytdlPath { get; private set; }
+        
         [JsonProperty("songCacheDir")]
         public string songCacheDir { get; private set; }
 

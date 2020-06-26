@@ -135,14 +135,15 @@ namespace todor_reloaded
 
             path = $"{CurrentConfig.songCacheDir}{videoId}.{CurrentConfig.fileExtention}";
 
-            Debug.WriteLine($"Downloading to {path} if not already downloaded!");
+            utils.LogMessage($"Downloading to {path} if not already downloaded!", ctx.Client);
 
             ProcessStartInfo downloadPsi = new ProcessStartInfo
             {
-                FileName = "youtube-dl",
+                FileName = $"{CurrentConfig.ytdlPath}",
                 Arguments = @$"{url} --no-playlist -x --audio-format {CurrentConfig.fileExtention} -o {path}",
                 RedirectStandardOutput = false,
-                UseShellExecute = false
+                UseShellExecute = false,
+
             };
             var ytdl = Process.Start(downloadPsi);
 
