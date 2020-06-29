@@ -6,8 +6,9 @@
   "discordLogLevel": "Debug",
   "commandPrefixes": [ ">", "@" ],
   "fileStorageExtention": "opus",
-  "songCacheDir": "C:/Users/TheEagle/Desktop/oof/",
-  "ytdlPath": "youtube-dl",
-  "transcoderThreadSleepTime": 5,
-  "transcoderBufferSize": 1400
+  "songCacheDir": "C:/Users/Seph/Desktop/oof/",
+  "ffmpegPath": "C:/Program Files/FFMPEG/ffmpeg.exe",
+  "ytdlPath": "C:/Program Files/FFMPEG/youtube-dl.exe",
+  "transcoderThreadSleepTime": 1,
+  "transcoderBufferSize": 4200
 }

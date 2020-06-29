@@ -288,35 +288,36 @@ namespace todor_reloaded
             await discordConnection.SendSpeakingAsync(false);
         }
 
-        public static void CopyStreamSlow(Stream src, Stream dst, CancellationToken token)
+
+        public static void CopyStreamSlow(Stream input, Stream output, CancellationToken token)
         {
             int bufferSize = global.botConfig.transcoderBufferSize;
             int threadSleepTime = global.botConfig.transcoderThreadSleepTime;
 
-            int count = 0;
             byte[] buffer = new byte[bufferSize];
+            int read;
 
-            while ((count = src.Read(buffer, 0, bufferSize)) != 0)
+            while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
             {
                 if (token.IsCancellationRequested)
                 {
                     break;
                 }
 
-                dst.Write(buffer, 0, count);
+                output.Write(buffer, 0, read);
 
                 Thread.Sleep(threadSleepTime);
             }
-
         }
 
         public static Process CreateFFMPEGProcess(Song s)
         {
             Debug.WriteLine("FFMPEG looking for: " + s.path);
 
+
             var psi = new ProcessStartInfo
             {
-                FileName = "ffmpeg",
+                FileName = $"{global.botConfig.ffmpegPath}",
                 Arguments = $"-y -i {s.path} -ac 2 -f s16le -ar 48000 pipe:1",
                 //Arguments = $"-y -i {s.file} -ac 2 -f s16le -ar 48000 pipe:1 -f wav C:/Users/TheEagle/Desktop/oof/test.wav", //this will be used later for outputing the pcm to a file so we dont have to transcode every time
                 RedirectStandardOutput = true,

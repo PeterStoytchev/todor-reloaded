@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -41,6 +42,9 @@ namespace todor_reloaded
         
         [JsonProperty("ytdlPath")]
         public string ytdlPath { get; private set; }
+
+        [JsonProperty("ffmpegPath")]
+        public string ffmpegPath { get; private set; }
         
         [JsonProperty("songCacheDir")]
         public string songCacheDir { get; private set; }

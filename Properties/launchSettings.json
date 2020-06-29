@@ -2,7 +2,7 @@
   "profiles": {
     "todor-reloaded": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\TheEagle\\Desktop\\todor-reloaded\\config.json"
+      "commandLineArgs": "C:\\Users\\Seph\\Desktop\\todor-reloaded\\config.json"
     }
   }
 }
