@@ -27,6 +27,7 @@ namespace todor_reloaded
             {
                 ComputeService.Scope.CloudPlatform,
                 ComputeService.Scope.Compute,
+                YouTubeService.Scope.Youtube
             });
 
             BaseClientService.Initializer baseClient = new BaseClientService.Initializer()

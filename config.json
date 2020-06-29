@@ -1,10 +1,10 @@
 ﻿{
   "discordToken": "NDc0NjE1Nzg5Njg1ODMzNzMx.XuYkRg._OxglNQllLJ5FNdq9d7VD34_aTE",
-  "youtubeServiceKey": "C:/Users/Seph/Desktop/todor-reloaded/hosting-256321-88ccb997e756.json",
+  "youtubeServiceKey": "C:/Users/Seph/Desktop/todor-reloaded/hosting-key.json",
   "spotifyClientId": "c45926918d944a868c2b9287103fac55",
   "spotifyClientSecret": "618d051d525546cb8cfd337684e5b188",
   "discordLogLevel": "Debug",
-  "commandPrefixes": [ ">", "@" ],
+  "commandPrefixes": [ ">", "@" ],>p i 
   "fileStorageExtention": "opus",
   "songCacheDir": "C:/Users/Seph/Desktop/oof/",
   "ffmpegPath": "C:/Program Files/FFMPEG/ffmpeg.exe",
