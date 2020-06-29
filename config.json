@@ -4,7 +4,7 @@
   "spotifyClientId": "c45926918d944a868c2b9287103fac55",
   "spotifyClientSecret": "618d051d525546cb8cfd337684e5b188",
   "discordLogLevel": "Debug",
-  "commandPrefixes": [ ">", "@" ],>p i 
+  "commandPrefixes": [ ">", "@" ],
   "fileStorageExtention": "opus",
   "songCacheDir": "C:/Users/Seph/Desktop/oof/",
   "ffmpegPath": "C:/Program Files/FFMPEG/ffmpeg.exe",

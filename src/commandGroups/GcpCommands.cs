@@ -24,7 +24,7 @@ namespace todor_reloaded
             DateTime expectedTime;
             if (!firstTime)
             {
-                expectedTime = lastActionTimeStamp.AddMinutes(5);
+                expectedTime = lastActionTimeStamp.AddMinutes(1.5);
             }
             else
             {
@@ -55,7 +55,7 @@ namespace todor_reloaded
             {
                 Operation op = await global.googleClient.StartInstance(zone, instanceId);
 
-                await ctx.RespondAsync("Starting ark server, please wait for at least 5 minutes for the server to load!");
+                await ctx.RespondAsync("Starting ark server, please wait for at least 1.5 minutes for the server to load!");
             }
         }
 
