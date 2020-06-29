@@ -16,9 +16,11 @@
     <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00707" />
     <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00707" />
     <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00707" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.46.0" />
+    <PackageReference Include="Google.Apis.Compute.v1" Version="1.46.0.1972" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.46.0.1995" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="SpotifyAPI.Web" Version="6.0.0-beta.4" />
+    <PackageReference Include="SpotifyAPI.Web" Version="6.0.0-beta.6" />
   </ItemGroup>
 
 </Project>

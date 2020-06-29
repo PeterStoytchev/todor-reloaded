@@ -28,8 +28,8 @@ namespace todor_reloaded
         [JsonProperty("discordToken")]
         public string discordToken { get; private set; }
 
-        [JsonProperty("youtubeApiKey")]
-        public string youtubeApiKey { get; private set; }
+        [JsonProperty("youtubeServiceKey")]
+        public string youtubeServiceKey { get; private set; }
 
         [JsonProperty("spotifyClientId")]
         public string spotifyClientId { get; private set; }
@@ -63,14 +63,7 @@ namespace todor_reloaded
             return SpotifyClientConfig.CreateDefault().WithAuthenticator(new ClientCredentialsAuthenticator(spotifyClientId, spotifyClientSecret));
         }
 
-        public YouTubeService GetYoutubeService()
-        {
-            return new YouTubeService(new BaseClientService.Initializer()
-            {
-                ApiKey = youtubeApiKey,
-                ApplicationName = "todor-bot-youtube"
-            });
-        }
+        
 
         public DiscordConfiguration GetDiscordConfiguration()
         {

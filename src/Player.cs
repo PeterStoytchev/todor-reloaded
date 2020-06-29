@@ -134,7 +134,7 @@ namespace todor_reloaded
             {
                 playlistLink = playlistLink.Split("=").Last().Substring(0, 34);
 
-                PlaylistItemListResponse playlist = await global.youtubeClient.GetPlaylistVideos(playlistLink, maxVideos);
+                PlaylistItemListResponse playlist = await global.googleClient.GetPlaylistVideos(playlistLink, maxVideos);
 
                 Song s = new Song(playlist.Items[0]);
 

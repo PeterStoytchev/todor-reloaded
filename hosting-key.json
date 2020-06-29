@@ -1,0 +1,12 @@
+{
+    "type": "service_account",
+    "project_id": "hosting-256321",
+    "private_key_id": "88ccb997e756cc8927512a482db63acf045c1c03",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDEv35HTuSC3SPe\nbFFAKCZyAeQllV0PdhPjT5CeqWkKmXrstEAEW9n9wElhXUiTl6I40cstGTEz75V2\nyMLm7rHKkQlqIJQxZFOByxUROhegNQZLO1sRzDSwxEpw/z+5mKmx3aKs9+YsO9bI\noGFNaR2YE033OWHzxi98EaFBxF8gv/JJIPiOdGuuB9L2v6DBL43y04P+zf509ycn\n8zJdNB2XNA+fO9wJkjAqYiyOzVzwk9/1TtkpiGDssTna2oVohvhljdOq7TyvCuuw\nDHjuLycNa0qYNu89V8S52jEzvblNyBb+/R42cr5/L+r4wJBP0vKXCBBiStSqBt0U\nclZRP3+HAgMBAAECggEAYOwo7D38Kk+AZQkdOarNzaoK10zubDhx8a/3gYHZYkRb\nnxHo23zYNb4tKA7JOxQe8TjAi3X2nCwxiDO8eAEsiqrKZYKpHm/bB3yg4zyn+N9G\nO3eBFJJxfockWOgVX3vKVPnnMqhotm/ADlObu4PF9W3FIb4d9/Yw3EDfHMP9TOcE\nXt+UgD3v880J93+rndSDhrI/XiVBsnWAgczbPPp3zq3eHP6h/i03Qc2R0k3N/+FY\ncejGXq/j/RM59mT55WRZyRffjdmbrMkqWvc2uTaK+4fzR1/TEsouA9IkD7f+mpVL\nGThFYJY388jlEAxhevsukE3e25CYlUYFpcvBtcTdQQKBgQDxm82YONzoOyJHVjvr\nTjvlQPvaioMzM2c1ZgcgeW6dWrf+xkNMUtXGw94vtAlawcwvuU8keRHAphasQPjJ\nqVsaUlsdshBEN4HrmkgTnOb8qZ/MZ8kCx1sB0PaHaGJnlKpOHG2W88zp/zr5xhOG\n9Kr+5IY31mX9ww7ZS07cRMsc5wKBgQDQd6DZ7sq6UHOWEtvoBs1NPlZDCxB5gadk\nTYw2GLno7TuqQBo6yKOMt77ZuHE9QE0dDh4i9aMg2de4VeVQrm40CKurGmc1C1UF\nqpC9A1eH+s1x74reyy+/ssUi1mLTZ01EsrxTGh2xuLdtYWJmqogll9BAE7BYhlo6\njCSA6UyUYQKBgQDm00c0qv7CD9zL8qMER5YJjHARdkuqWu27omIksF7xjn5CtgAN\npwX+A5r+UC6vun7tCUmHOvOu7f6zSs9lOpuDJjNOx5Oq2K0S/i7mLfywXw4AJxdv\nxC46Kf2dmCiLdQjP33EDyqB23hTmFEsLoCzNoF5qcja2nehNyRjqb/7s+QKBgGGt\nG6XhOAXSOkY/8d+miD1ADwT8wyxbboYVu7OBJGKZ/VHJFUEjz1XYpki3Hf/YCAms\nGrzAoT18NJI/VOHXyPUCdwUFqwP0mlK8V3LohPPGtMpEtamsRGQqrCmlj8qD5XVh\n1dGONAmYhgFvFr8J+h67Ii1TzFW+Jbq2/UeViHchAoGBANR2jQahDq5WlIOm2vBx\ndt+xYxiSmRyIk2flpIViGif+HpXcLEnSL71L9HTeBaPWh6PXSF+NGe3y5fSTNDrq\nGgZSzzJlwfr+G6jtWQrhaaIlKh2/D4rdOZj+HdFQ4KN4ul0XgbVcMbpFMheqsjFB\nraR7sU8Vz3pnYd/OCfqG9mCj\n-----END PRIVATE KEY-----\n",
+    "client_email": "todor-cloud@hosting-256321.iam.gserviceaccount.com",
+    "client_id": "106966633942777912846",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/todor-cloud%40hosting-256321.iam.gserviceaccount.com"
+}

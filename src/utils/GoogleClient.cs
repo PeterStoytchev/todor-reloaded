@@ -1,8 +1,12 @@
-﻿using Google.Apis.Services;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Compute.v1;
+using Google.Apis.Compute.v1.Data;
+using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,22 +14,50 @@ using System.Web;
 
 namespace todor_reloaded
 {
-    public class YouTubeClient
+    public class GoogleClient
     {
         private YouTubeService youtubeService { get; }
+        private ComputeService computeService { get; }
 
-        public YouTubeClient(YouTubeService service)
+        public GoogleClient(string serviceKeyFilePath)
         {
-            this.youtubeService = service;
+            var creds = GoogleCredential.FromFile(serviceKeyFilePath);
+
+            creds = creds.CreateScoped(new[]
+            {
+                ComputeService.Scope.CloudPlatform,
+                ComputeService.Scope.Compute,
+            });
+
+            BaseClientService.Initializer baseClient = new BaseClientService.Initializer()
+            { 
+                HttpClientInitializer = creds,
+                ApplicationName = "todor-bot"
+            };
+
+            computeService = new ComputeService(baseClient);
+            youtubeService = new YouTubeService(baseClient);
         }
 
-        public YouTubeClient(string apiKey, string appName)
+        public async Task<Operation> StartInstance(string zone, string instanceId)
         {
-            youtubeService = new YouTubeService(new BaseClientService.Initializer()
-            {
-                ApiKey = apiKey,
-                ApplicationName = appName
-            });
+            var request = computeService.Instances.Start("hosting-256321", zone, instanceId);
+
+            return await request.ExecuteAsync();
+        }
+
+        public async Task<Operation> StopInstance(string zone, string instanceId)
+        {
+            var request = computeService.Instances.Stop("hosting-256321", zone, instanceId);
+
+            return await request.ExecuteAsync();
+        }
+
+        public async Task<Instance> GetInstance(string zone, string instanceId)
+        {
+            var request = computeService.Instances.Get("hosting-256321", zone, instanceId);
+
+            return await request.ExecuteAsync();
         }
 
         public async Task<PlaylistItemListResponse> GetPlaylistVideos(string link, int maxVideos)

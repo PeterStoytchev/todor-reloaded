@@ -11,6 +11,8 @@ using DSharpPlus.Entities;
 using System.Runtime.InteropServices.ComTypes;
 using System.IO;
 using System.Security.Cryptography;
+using Google.Apis.Compute.v1.Data;
+using System.Runtime.InteropServices;
 
 namespace todor_reloaded
 {
