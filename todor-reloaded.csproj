@@ -13,6 +13,10 @@
   <ProjectExtensions><VisualStudio><UserProperties config_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
   <ItemGroup>
+    <Compile Remove="src\commandGroups\GcpCommands.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00707" />
     <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00707" />
     <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00707" />
