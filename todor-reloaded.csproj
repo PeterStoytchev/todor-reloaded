@@ -17,9 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00707" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00707" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00707" />
+    <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00711" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00711" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00711" />
     <PackageReference Include="Google.Apis.Auth" Version="1.46.0" />
     <PackageReference Include="Google.Apis.Compute.v1" Version="1.46.0.1972" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.46.0.1995" />

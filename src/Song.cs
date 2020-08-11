@@ -17,7 +17,7 @@ namespace todor_reloaded
         public string path { get; private set; }
 
         public string name { get; private set; }
-        public string cacheName { get; private set; }
+        public string[] cacheName { get; private set; }
 
         public string uploader { get; private set; }
         public string videoId { get; private set; }

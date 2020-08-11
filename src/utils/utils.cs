@@ -64,32 +64,49 @@ namespace todor_reloaded
             return PrintDest.ConsoleOut;
         }
 
-        public static string Cachify(string src)
+        public static bool CheckCache(ref string[] toCheck)
         {
+            //global.songCache.get
+
+            foreach (KeyValuePair<string[], Song> pair in global.songCache)
+            {
+                
+            }
+        }
+
+        public static string[] Cachify(string src)
+        {
+            string[] toReturn;
+
             if (!src.StartsWith("https"))
             {
-                src = src.ToLower();
+                toReturn = src.ToLower().Split(" ");
 
-                StringBuilder sb = new StringBuilder();
-
-                foreach (char c in src)
+                Parallel.For(0, toReturn.Length, i =>
                 {
-                    int code = (int)c;
+                    StringBuilder sb = new StringBuilder();
 
-                    //check if it is not a symbol and add it
-                    if ((code > 47 && code < 58) || (code > 64 && code < 91) || code > 96)
+                    foreach (char c in toReturn[i])
                     {
-                        sb.Append(c);
+                        int code = (int)c;
+
+                        //check if it is not a symbol and add it
+                        if ((code > 47 && code < 58) || (code > 64 && code < 91) || code > 96)
+                        {
+                            sb.Append(c);
+                        }
                     }
-                }
 
-                return sb.ToString();
-
+                    toReturn[i] = sb.ToString();
+                });
             }
             else
             {
-                return src;
+                toReturn = new string[1];
+                toReturn[0] = src;
             }
+
+            return toReturn;
         }
 
 

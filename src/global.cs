@@ -22,12 +22,9 @@ namespace todor_reloaded
 
         public static GoogleClient googleClient { get; set; }
 
-        public static PersistentDictionary<string, Song> songCache { get; set; }
+        public static PersistentDictionary<string[], Song> songCache { get; set; }
 
         public static SpotifyClient spotify { get; set; }
         public static int queueCounter { get; set; }
-
-
-
     }
 }

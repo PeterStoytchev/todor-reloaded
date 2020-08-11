@@ -67,7 +67,6 @@ namespace todor_reloaded
                 isPlaying = false;
                 //^^ potential fuck up
 
-
                 await PlayNext(ctx);
             }
         }
@@ -103,7 +102,7 @@ namespace todor_reloaded
                 Parallel.ForEach<SimpleTrack>(album.Tracks.Items, track =>
                 {
                     string searchQuery = $"{track.Name} - {track.Artists[0].Name}";
-                    string searchQueryCache = utils.Cachify(searchQuery);
+                    string[] searchQueryCache = utils.Cachify(searchQuery);
 
                     Song s;
 
