@@ -64,13 +64,12 @@ namespace todor_reloaded
             return PrintDest.ConsoleOut;
         }
 
-        public static bool CheckCache(ref string[] toCheck)
+        //public static void CheckCache(ref string[] toCheck)
+        public static void CheckCache()
         {
-            //global.songCache.get
-
             foreach (KeyValuePair<string[], Song> pair in global.songCache)
             {
-                
+                Debug.WriteLine($"Key: {pair.Key}, Value: {pair.Value}");
             }
         }
 

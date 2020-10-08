@@ -50,6 +50,10 @@ namespace todor_reloaded
             }
         }
 
+        public Dictionary<KeyType, ValueType>.Enumerator GetEnumerator()
+        {
+            return pairs.GetEnumerator();
+        }
 
         public void Add(KeyType key, ValueType value)
         {
