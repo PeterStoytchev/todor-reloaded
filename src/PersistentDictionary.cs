@@ -23,6 +23,14 @@ namespace todor_reloaded
         {
             filePath = path;
 
+            if (!Directory.Exists(path))
+            {
+                string dirPath = path.Substring(0, path.LastIndexOf("/"));
+                Directory.CreateDirectory(dirPath);
+                FileStream fs = File.Create(path);
+                fs.Close();
+            }
+
             LoadDictionary();
         }
 
