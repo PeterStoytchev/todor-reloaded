@@ -31,6 +31,9 @@ namespace todor_reloaded
         [JsonProperty("youtubeServiceKey")]
         public string youtubeServiceKey { get; private set; }
 
+        [JsonProperty("countryCode")]
+        public string countryCode { get; private set; }
+
         [JsonProperty("spotifyClientId")]
         public string spotifyClientId { get; private set; }
 

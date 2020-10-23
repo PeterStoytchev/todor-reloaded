@@ -1,6 +1,7 @@
 ﻿{
   "discordToken": "NjU5MDQyMjcyMTA0Njc3Mzc2.XgIi8g.Yi6H0-6YliyWXznvpzkb3xLAnU8",
   "youtubeServiceKey": "C:/Users/Seph/Desktop/todor-reloaded/hosting-key.json",
+  "countryCode": "BG",
   "spotifyClientId": "c45926918d944a868c2b9287103fac55",
   "spotifyClientSecret": "618d051d525546cb8cfd337684e5b188",
   "discordLogLevel": "Debug",

@@ -17,9 +17,11 @@ namespace todor_reloaded
     public class GoogleClient
     {
         private YouTubeService youtubeService { get; }
+        private string countryCode;
 
-        public GoogleClient(string serviceKeyFilePath)
+        public GoogleClient(string serviceKeyFilePath, string countryCode)
         {
+            this.countryCode = countryCode;
             var creds = GoogleCredential.FromFile(serviceKeyFilePath);
 
             creds = creds.CreateScoped(new[]
@@ -55,7 +57,7 @@ namespace todor_reloaded
 
             videoRequest.Id = utils.ExtractYoutubeId(link);
 
-            videoRequest.RegionCode = "BG";
+            videoRequest.RegionCode = countryCode;
 
             videoRequest.MaxResults = 1;
 
@@ -70,7 +72,7 @@ namespace todor_reloaded
             
             searchListRequest.Q = query;
 
-            searchListRequest.RegionCode = "BG";
+            searchListRequest.RegionCode = countryCode;
 
             searchListRequest.Type = "video";
 
