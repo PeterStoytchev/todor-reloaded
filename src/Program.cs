@@ -26,7 +26,7 @@ namespace todor_reloaded
             global.botConfig = await BotConfig.CreateConfig(args[0]);
             global.bot = new DiscordClient(global.botConfig.GetDiscordConfiguration());
 
-            global.songCache = new PersistentDictionary<string, Song>(global.botConfig.songCacheDir + "kvPairs.kolba");
+            global.songCache = new PersistentDictionary<string[], Song>(global.botConfig.songCacheDir + "kvPairs.kolba");
 
             //bot events
             global.bot.Ready += BotEvents.Bot_Ready;
@@ -42,7 +42,6 @@ namespace todor_reloaded
             global.commands.RegisterCommands<OwnerCommands>();
             global.commands.RegisterCommands<SoundPlayback>();
             global.commands.RegisterCommands<SpotifyCommands>();
-            //global.commands.RegisterCommands<GcpCommands>();
 
             //voice stuffs
             global.player = new Player();

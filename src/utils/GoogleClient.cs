@@ -17,7 +17,6 @@ namespace todor_reloaded
     public class GoogleClient
     {
         private YouTubeService youtubeService { get; }
-        //private ComputeService computeService { get; }
 
         public GoogleClient(string serviceKeyFilePath)
         {
@@ -25,8 +24,6 @@ namespace todor_reloaded
 
             creds = creds.CreateScoped(new[]
             {
-                //ComputeService.Scope.CloudPlatform,
-                //ComputeService.Scope.Compute,
                 YouTubeService.Scope.Youtube
             });
 
@@ -36,33 +33,9 @@ namespace todor_reloaded
                 ApplicationName = "todor-bot"
             };
 
-            //computeService = new ComputeService(baseClient);
             youtubeService = new YouTubeService(baseClient);
         }
         
-        /*
-        public async Task<Operation> StartInstance(string zone, string instanceId)
-        {
-            var request = computeService.Instances.Start("hosting-256321", zone, instanceId);
-
-            return await request.ExecuteAsync();
-        }
-
-        public async Task<Operation> StopInstance(string zone, string instanceId)
-        {
-            var request = computeService.Instances.Stop("hosting-256321", zone, instanceId);
-
-            return await request.ExecuteAsync();
-        }
-
-        public async Task<Instance> GetInstance(string zone, string instanceId)
-        {
-            var request = computeService.Instances.Get("hosting-256321", zone, instanceId);
-
-            return await request.ExecuteAsync();
-        }
-        */
-
         public async Task<PlaylistItemListResponse> GetPlaylistVideos(string link, int maxVideos)
         {
             var request = youtubeService.PlaylistItems.List("snippet");

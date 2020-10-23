@@ -48,10 +48,9 @@ namespace todor_reloaded
         public async Task Play(CommandContext ctx, [Description("A search query for youtube or a direct link")] params string[] search)
         {
             string searchQuery = utils.ArrayToString(search, ' ');
-            string searchQueryCache = utils.Cachify(searchQuery);
+            string[] searchQueryCache = utils.Cachify(searchQuery);
 
             Song s;
-
             if (global.songCache.Contains(searchQueryCache))
             {
                 s = global.songCache.Get(searchQueryCache);
