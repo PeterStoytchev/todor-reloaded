@@ -133,14 +133,14 @@ namespace todor_reloaded
 
             BotConfig CurrentConfig = global.botConfig;
 
-            path = $"{CurrentConfig.songCacheDir}{videoId}.{CurrentConfig.fileExtention}";
+            path = $"{CurrentConfig.songCacheDir}{videoId}.opus";
 
             utils.LogMessage($"Downloading to {path} if not already downloaded!", ctx.Client);
 
             ProcessStartInfo downloadPsi = new ProcessStartInfo
             {
                 FileName = $"{CurrentConfig.ytdlPath}",
-                Arguments = @$"{url} --no-playlist -x --audio-format {CurrentConfig.fileExtention} -o {path}",
+                Arguments = @$"{url} --no-playlist -x --audio-format opus -o {path}",
                 RedirectStandardOutput = false,
                 UseShellExecute = false,
 

@@ -6,7 +6,6 @@
   "spotifyClientSecret": "618d051d525546cb8cfd337684e5b188",
   "discordLogLevel": "Debug",
   "commandPrefixes": [ ">", "@" ],
-  "fileStorageExtention": "opus",
   "songCacheDir": "C:/Users/Seph/Desktop/oof/",
   "ffmpegPath": "C:/Program Files/FFMPEG/ffmpeg.exe",
   "ytdlPath": "C:/Program Files/FFMPEG/youtube-dl.exe",

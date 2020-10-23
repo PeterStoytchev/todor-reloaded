@@ -318,7 +318,6 @@ namespace todor_reloaded
             {
                 FileName = $"{global.botConfig.ffmpegPath}",
                 Arguments = $"-y -i {s.path} -ac 2 -f s16le -ar 48000 pipe:1",
-                //Arguments = $"-y -i {s.file} -ac 2 -f s16le -ar 48000 pipe:1 -f wav C:/Users/TheEagle/Desktop/oof/test.wav", //this will be used later for outputing the pcm to a file so we dont have to transcode every time
                 RedirectStandardOutput = true,
                 UseShellExecute = false
             };
