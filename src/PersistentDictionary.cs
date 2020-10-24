@@ -10,22 +10,22 @@ using System.Text;
 
 namespace todor_reloaded
 {
-    public class PersistentDictionary<KeyType, ValueType>
-    {
-        private Dictionary<KeyType, ValueType> pairs;
+    public class PersistentDictionary
+    { 
+        private List<string[]> keys;
+        private List<Song> values;
 
         private string filePath;
 
         private bool isUptodate;
 
-
         public PersistentDictionary(string path)
         {
             filePath = path;
+            string dirPath = path.Substring(0, path.LastIndexOf("/"));
 
-            if (!Directory.Exists(path))
+            if (Directory.Exists(dirPath) == false)
             {
-                string dirPath = path.Substring(0, path.LastIndexOf("/"));
                 Directory.CreateDirectory(dirPath);
                 FileStream fs = File.Create(path);
                 fs.Close();
@@ -41,47 +41,52 @@ namespace todor_reloaded
                 StoreDictionary();
             }
 
-            pairs.Clear();
+            values.Clear();
+            keys.Clear();
         }
 
-        public ValueType Get(KeyType key)
+        public Song Get(string[] key)
         {
-            ValueType val;
-
-            if (pairs.TryGetValue(key, out val))
+            for (int j = 0; j < keys.Count; j++)
             {
-                return val;
+                if (Compare(keys[j], key)) { return values[j]; }
             }
-            else
+
+            return null;
+        }
+
+        public int GetIndex(string[] key)
+        {
+            for (int j = 0; j < keys.Count; j++)
             {
-                throw new Exception($"Value for {key} not found in the dictionary!");
+                if (Compare(keys[j], key)) { return j; }
             }
+
+            return -1;
         }
 
-        public Dictionary<KeyType, ValueType>.Enumerator GetEnumerator()
+        public void Add(string[] key, Song value)
         {
-            return pairs.GetEnumerator();
-        }
-
-        public void Add(KeyType key, ValueType value)
-        {
-            if (pairs.ContainsKey(key))
+            if (keys.Contains(key))
             {
                 Update(key, value);
             }
             else
             {
-                pairs.Add(key, value);
+                keys.Add(key);
+                values.Add(value);
             }
 
             isUptodate = false;
         }
 
-        public void Update(KeyType key, ValueType value)
+        public void Update(string[] key, Song value)
         {
-            if (pairs.Remove(key))
+            int valueIndex = GetIndex(key);
+
+            if (valueIndex != -1)
             {
-                pairs.Add(key, value);
+                values[valueIndex] = value;
 
                 isUptodate = false;
             }
@@ -91,24 +96,32 @@ namespace todor_reloaded
             }
         }
 
-        public void Remove(KeyType key)
+        public void Remove(string[] key)
         {
-            if (!pairs.Remove(key))
+            int index = GetIndex(key);
+            if (index != -1)
+            {
+                keys.RemoveAt(index);
+                values.RemoveAt(index);
+
+                isUptodate = false;
+            }
+            else
             {
                 throw new Exception($"Value for {key} not found in the dictionary!");
             }
-
-            isUptodate = false;
         }
-
-        public bool Contains(KeyType key)
+        
+        public Dictionary<string[], Song> GetPairs()
         {
-            return pairs.ContainsKey(key);
-        }
+            Dictionary<string[], Song> pairs = new Dictionary<string[], Song>(values.Count);
 
-        public KeyValuePair<KeyType, ValueType>[] GetPairs()
-        {
-            return pairs.ToArray();
+            for (int i = 0; i < values.Count; i++)
+            {
+                pairs.Add(keys[i], values[i]);
+            }
+
+            return pairs;
         }
 
         public void StoreDictionary()
@@ -118,12 +131,20 @@ namespace todor_reloaded
             
             fileStream.Seek(0, SeekOrigin.Begin);
 
+            Dictionary<string[], Song> pairs = new Dictionary<string[], Song>(values.Count);
+
+            for (int i = 0; i < values.Count; i++)
+            {
+                pairs.Add(keys[i], values[i]);
+            }
+
             bf.Serialize(fileStream, pairs);
 
             isUptodate = true;
 
             fileStream.Close();
 
+            pairs.Clear();
         }
 
 
@@ -135,18 +156,47 @@ namespace todor_reloaded
 
             BinaryFormatter bf = new BinaryFormatter();
 
+            Dictionary<string[], Song> pairs = new Dictionary<string[], Song>();
+
             //load the dictionaty from file or create a new one
             if (fileStream.Length != 0)
             {
-                pairs = bf.Deserialize(fileStream) as Dictionary<KeyType, ValueType>;
+                pairs = bf.Deserialize(fileStream) as Dictionary<string[], Song>;
             }
             else
             {
-                pairs = new Dictionary<KeyType, ValueType>();
+                pairs = new Dictionary<string[], Song>();
+            }
+
+            keys = new List<string[]>(pairs.Count);
+            values = new List<Song>(pairs.Count);
+
+            int index = 0;
+            foreach (KeyValuePair<string[], Song> pair in pairs)
+            {
+                keys.Add(pair.Key);
+                values.Add(pair.Value);
+                index++;
             }
 
             fileStream.Close();
 
+            pairs.Clear();
+        }
+
+        private bool Compare(string[] arr1, string[] arr2)
+        {
+            if (arr1.Length != arr2.Length) { return false; }
+
+            int count = 0;
+            for (int i = 0; i < arr2.Length; i++)
+            {
+                if (arr1[i] == arr2[i]) { count++; }
+            }
+
+            if (count == arr2.Length) { return true; }
+
+            return false;
         }
 
     }

@@ -41,8 +41,6 @@ namespace todor_reloaded
             
             if (connection != null)
             {
-                
-
                 if (isPlaying)
                 {
                     SongQueue.Enqueue(s);
@@ -104,19 +102,17 @@ namespace todor_reloaded
                     string searchQuery = $"{track.Name} - {track.Artists[0].Name}";
                     string[] searchQueryCache = utils.Cachify(searchQuery);
 
-                    Song s;
-
-                    if (global.songCache.Contains(searchQueryCache))
+                    Song s = global.songCache.Get(searchQueryCache);
+                    if (s != null)
                     {
-                        s = global.songCache.Get(searchQueryCache);
                         Debug.WriteLine("Cache hit!");
                     }
                     else
                     {
-                        s = new Song(searchQuery, SongType.Spotify);
-                    }
+                        s = new Song(utils.ArrayToString(searchQueryCache, ' '), SongType.Youtube);
+                        global.songCache.Add(searchQueryCache, s);
 
-                    global.songCache.Add(searchQueryCache, s);
+                    }
 
                     s.DownloadYTDL(ctx, false);
 

@@ -15,7 +15,6 @@ using Google.Apis.YouTube.v3.Data;
 
 namespace todor_reloaded
 {
-
     public class SoundPlayback : BaseCommandModule
     {
         [Command("join")]
@@ -47,25 +46,26 @@ namespace todor_reloaded
         [Aliases("p")]
         public async Task Play(CommandContext ctx, [Description("A search query for youtube or a direct link")] params string[] search)
         {
-            string searchQuery = utils.ArrayToString(search, ' ');
-            string[] searchQueryCache = utils.Cachify(searchQuery);
-
-            Song s;
-            if (global.songCache.Contains(searchQueryCache))
+            for (int i = 0; i < search.Length; i++)
             {
-                s = global.songCache.Get(searchQueryCache);
+                search[i] = search[i].ToLower();
+            }
+
+            Song s = global.songCache.Get(search);
+            if (s != null)
+            {
                 Debug.WriteLine("Cache hit!");
             }
             else
             {
-                s = new Song(searchQuery, SongType.Youtube);
+                s = new Song(utils.ArrayToString(search, ' '), SongType.Youtube);
             }
 
             global.queueCounter++;
 
             s.DownloadYTDL(ctx, true);
             
-            global.songCache.Add(searchQueryCache, s);
+            global.songCache.Add(search, s);
 
             await global.player.PlaySong(ctx, s);
         }

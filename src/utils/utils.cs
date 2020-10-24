@@ -64,15 +64,6 @@ namespace todor_reloaded
             return PrintDest.ConsoleOut;
         }
 
-        //public static void CheckCache(ref string[] toCheck)
-        public static void CheckCache()
-        {
-            foreach (KeyValuePair<string[], Song> pair in global.songCache)
-            {
-                Debug.WriteLine($"Key: {pair.Key}, Value: {pair.Value}");
-            }
-        }
-
         public static string[] Cachify(string src)
         {
             string[] toReturn;
@@ -81,7 +72,7 @@ namespace todor_reloaded
             {
                 toReturn = src.ToLower().Split(" ");
 
-                Parallel.For(0, toReturn.Length, i =>
+                for (int i = 0; i < toReturn.Length; i++)
                 {
                     StringBuilder sb = new StringBuilder();
 
@@ -97,7 +88,7 @@ namespace todor_reloaded
                     }
 
                     toReturn[i] = sb.ToString();
-                });
+                }
             }
             else
             {
