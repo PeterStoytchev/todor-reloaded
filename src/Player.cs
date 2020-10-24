@@ -76,7 +76,7 @@ namespace todor_reloaded
             {
                 await PlaySong(ctx, NextSong);
             }
-            else if (global.queueCounter != 0)
+            else if (global.queueCounter == 0)
             {
                 await ctx.RespondAsync("End of queue");
             }
@@ -164,7 +164,7 @@ namespace todor_reloaded
                 await utils.OutputToConsole("====================", ctx, outputLocation, dest);
                 await utils.OutputToConsole($"{tracker}) name: {s.name}", ctx, outputLocation, dest);
                 await utils.OutputToConsole($"{tracker}) type: {s.type}", ctx, outputLocation, dest);
-                await utils.OutputToConsole($"{tracker}) name: {s.uploader}", ctx, outputLocation, dest);
+                await utils.OutputToConsole($"{tracker}) uploader: {s.uploader}", ctx, outputLocation, dest);
                 await utils.OutputToConsole($"{tracker}) path: {s.path}", ctx, outputLocation, dest);
                 await utils.OutputToConsole("====================", ctx, outputLocation, dest);
 
