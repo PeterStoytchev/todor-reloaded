@@ -177,17 +177,17 @@ namespace todor_reloaded
 
         public async Task<bool> JoinChannel(CommandContext ctx)
         {
-            DiscordVoiceState CommandSenderVoiceState = ctx.Member?.VoiceState;
+            DiscordVoiceState commandSenderVoiceState = ctx.Member?.VoiceState;
             
-            if (CommandSenderVoiceState?.Channel == null)
+            if (commandSenderVoiceState?.Channel == null)
             {
                 //the user isnt in a voice channel, quit
                 await ctx.RespondAsync(CommonMessages.VoiceChannelCouldNotConnect);
                 return false;
             }
 
-            await Voice.ConnectAsync(CommandSenderVoiceState.Channel);
-            await ctx.RespondAsync("Connected to " + CommandSenderVoiceState.Channel.Name);
+            await Voice.ConnectAsync(commandSenderVoiceState.Channel);
+            await ctx.RespondAsync("Connected to " + commandSenderVoiceState.Channel.Name);
             return true;
         }
 
