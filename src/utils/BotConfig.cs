@@ -34,6 +34,9 @@ namespace todor_reloaded
         [JsonProperty("countryCode")]
         public string countryCode { get; private set; }
 
+        [JsonProperty("spotifyEnabled")]
+        public bool spotifyEnabled { get; private set; }
+
         [JsonProperty("spotifyClientId")]
         public string spotifyClientId { get; private set; }
 
@@ -64,7 +67,6 @@ namespace todor_reloaded
         }
 
         
-
         public DiscordConfiguration GetDiscordConfiguration()
         {
             DiscordConfiguration configuration = new DiscordConfiguration

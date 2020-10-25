@@ -41,12 +41,16 @@ namespace todor_reloaded
             global.commands.RegisterCommands<GeneralCommands>();
             global.commands.RegisterCommands<OwnerCommands>();
             global.commands.RegisterCommands<SoundPlayback>();
-            global.commands.RegisterCommands<SpotifyCommands>();
+
+            if (global.botConfig.spotifyEnabled)
+            {
+                global.spotify = new SpotifyClient(global.botConfig.GetClientConfig());
+                global.commands.RegisterCommands<SpotifyCommands>();
+            }
 
             //voice stuffs
             global.player = new Player();
             global.googleClient = new GoogleClient(global.botConfig.youtubeServiceKey, global.botConfig.countryCode);
-            global.spotify = new SpotifyClient(global.botConfig.GetClientConfig());
 
             //connect
             await global.bot.ConnectAsync();
