@@ -5,6 +5,7 @@
 
 hosting-key.json
 config.json
+config-release.json
 
 # User-specific files
 *.rsuser

@@ -46,12 +46,17 @@ namespace todor_reloaded
         [Aliases("p")]
         public async Task Play(CommandContext ctx, [Description("A search query for youtube or a direct link")] params string[] search)
         {
-            for (int i = 0; i < search.Length; i++)
+            Song s;
+            if (!search[0].StartsWith("http"))
             {
-                search[i] = search[i].ToLower();
+                for (int i = 0; i < search.Length; i++)
+                {
+                    search[i] = search[i].ToLower();
+                }
             }
 
-            Song s = global.songCache.Get(search);
+            s = global.songCache.Get(search);
+
             if (s != null)
             {
                 Debug.WriteLine("Cache hit!");
@@ -60,6 +65,7 @@ namespace todor_reloaded
             {
                 s = new Song(utils.ArrayToString(search, ' '), SongType.Youtube);
             }
+
 
             global.queueCounter++;
 
