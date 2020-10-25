@@ -97,27 +97,28 @@ namespace todor_reloaded
 
                 album.Tracks.Items.RemoveAt(0);
 
-                Parallel.ForEach<SimpleTrack>(album.Tracks.Items, track =>
+                for (int i = 0; i < album.Tracks.Items.Count; i++)
                 {
+                    SimpleTrack track = album.Tracks.Items[i];
                     string searchQuery = $"{track.Name} - {track.Artists[0].Name}";
                     string[] searchQueryCache = utils.Cachify(searchQuery);
 
-                    Song s = global.songCache.Get(searchQueryCache);
-                    if (s != null)
+                    Song s1 = global.songCache.Get(searchQueryCache);
+                    if (s1 != null)
                     {
                         Debug.WriteLine("Cache hit!");
                     }
                     else
                     {
-                        s = new Song(utils.ArrayToString(searchQueryCache, ' '), SongType.Youtube);
-                        global.songCache.Add(searchQueryCache, s);
+                        s1 = new Song(utils.ArrayToString(searchQueryCache, ' '), SongType.Youtube);
+                        global.songCache.Add(searchQueryCache, s1);
 
                     }
 
-                    s.DownloadYTDL(ctx, false);
+                    s1.DownloadYTDL(ctx, false);
 
-                    SongQueue.Enqueue(s);
-                });
+                    SongQueue.Enqueue(s1);
+                }
 
                 await ctx.RespondAsync("Playlist added to queue!");
             }
@@ -139,14 +140,14 @@ namespace todor_reloaded
 
                 playlist.Items.RemoveAt(0);
 
-                Parallel.ForEach<PlaylistItem>(playlist.Items, item =>
+                foreach (var item in playlist.Items)
                 {
-                    Song s = new Song(item);
+                    Song s1 = new Song(item);
 
-                    s.DownloadYTDL(ctx, false);
+                    s1.DownloadYTDL(ctx, false);
 
-                    SongQueue.Enqueue(s);
-                });
+                    SongQueue.Enqueue(s1);
+                }
 
                 await ctx.RespondAsync($"Playlist added to queue!");
             }
