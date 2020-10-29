@@ -153,7 +153,7 @@ namespace todor_reloaded
             }
         }
 
-        public async Task QueueExecutor(CommandContext ctx, string outputLocation)
+        public async Task DebugQueueExecutor(CommandContext ctx, string outputLocation)
         {
             PrintDest dest = utils.ParseDest(outputLocation);
 
@@ -173,6 +173,43 @@ namespace todor_reloaded
             }
 
             await ctx.RespondAsync($"Queue printed to {outputLocation} console!");
+
+        }
+
+        public async Task QueueExecutor(CommandContext ctx)
+        {
+            await ctx.Channel.SendMessageAsync($"Song queue for guild {ctx.Guild.Name}");
+
+            DiscordEmbedBuilder EmbedBuilder = new DiscordEmbedBuilder
+            {
+                Title = "Current queue",
+                Color = DiscordColor.Gold,
+            };
+
+            foreach (Song s in SongQueue)
+            { 
+                try
+                {
+                    EmbedBuilder.AddField("Title", s.name, true);
+                    EmbedBuilder.AddField("Uploaded by", s.uploader, true);
+                    EmbedBuilder.AddField("==========", "==========");
+                }
+                catch (Exception e)
+                {
+                    await ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
+
+                    EmbedBuilder = new DiscordEmbedBuilder
+                    {
+                        Title = "Current queue",
+                        Color = DiscordColor.Gold,
+                    };
+                }
+            }
+
+            if (EmbedBuilder.Fields.Count != 0)
+            {
+                await ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
+            }
 
         }
 
@@ -215,7 +252,7 @@ namespace todor_reloaded
             connection.Dispose();
 
             //do a memory collection, just in case
-            System.GC.Collect();
+            GC.Collect();
 
             await ctx.RespondAsync("Disconnected from " + ctx.Channel.Name);
         }

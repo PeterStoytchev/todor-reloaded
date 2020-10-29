@@ -18,7 +18,7 @@ namespace todor_reloaded
         [Command("time")]
         [Description("tells the time")]
         [Aliases("t")]
-        public async Task MoveExecutor(CommandContext ctx)
+        public async Task TimeExecutor(CommandContext ctx)
         {
             await ctx.RespondAsync($"The current time is: {DateTime.Now}");
         }

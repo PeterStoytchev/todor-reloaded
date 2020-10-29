@@ -70,7 +70,7 @@ namespace todor_reloaded
             global.queueCounter++;
 
             s.DownloadYTDL(ctx, true);
-            
+
             global.songCache.Add(search, s);
 
             await global.player.PlaySong(ctx, s);
@@ -92,12 +92,21 @@ namespace todor_reloaded
         }
 
 
+        [Command("queue")]
+        [Description("Prints the current queue")]
+        [Aliases("q")]
+        public async Task QueueExecutor(CommandContext ctx)
+        {
+            await global.player.QueueExecutor(ctx);
+        }
+
+
         [Command("debugqueue")]
         [Description("a command that pritns the queeue to the visual studio debug console, do not use")]
         [RequireOwner]
         public async Task Queue(CommandContext ctx, [Optional, DefaultParameterValue("")] string printDest)
         {
-            await global.player.QueueExecutor(ctx, printDest);
+            await global.player.DebugQueueExecutor(ctx, printDest);
 
         }
     }

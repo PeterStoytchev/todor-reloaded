@@ -48,14 +48,6 @@ namespace todor_reloaded
             await ctx.RespondAsync($"Cache printed to {destStr} console");
         }
 
-        [Command("gc")]
-        [Description("do not run")]
-        public async Task GCExecutor(CommandContext ctx)
-        {
-            System.GC.Collect();
-        }
-
-
         [Command("reloadConfig")]
         [Description("Reloads the bot configuration from config.json")]
         public async Task ReloadConfigExecutor(CommandContext ctx)
