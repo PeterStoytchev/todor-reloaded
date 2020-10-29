@@ -15,6 +15,14 @@ namespace todor_reloaded
 {
     public class GeneralCommands : BaseCommandModule
     {
+        [Command("time")]
+        [Description("tells the time")]
+        [Aliases("t")]
+        public async Task MoveExecutor(CommandContext ctx)
+        {
+            await ctx.RespondAsync($"The current time is: {DateTime.Now}");
+        }
+
         [Command("move")]
         [Description("moves everyone from one discord channel to another")]
         [Aliases("m")]

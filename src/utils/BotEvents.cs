@@ -20,6 +20,8 @@ namespace todor_reloaded
         public static Task Bot_ClientErrored(ClientErrorEventArgs e)
         {
             utils.LogMessage($"Woops: {e.Exception.GetType()}: {e.Exception.Message}", e.Client, LogLevel.Error);
+            utils.LogMessage($"ExceptionMessage: {e.Exception.Message}", e.Client, LogLevel.Error);
+
             return Task.CompletedTask;
         }
 
