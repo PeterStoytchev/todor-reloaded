@@ -57,6 +57,5 @@ namespace todor_reloaded
             await Task.Delay(-1);
 
         }
-        
     }
 }

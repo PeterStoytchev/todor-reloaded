@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 using System.Data;
 using System.Linq;
 using Google.Apis.Http;
+using Microsoft.Extensions.Logging;
 
 namespace todor_reloaded
 {
@@ -35,7 +36,7 @@ namespace todor_reloaded
                     break;
 
                 case PrintDest.ConsoleOut:
-                    LogMessage(str, ctx.Client);
+                    LogMessage(str);
                     break;
 
                 case PrintDest.DiscordChn:
@@ -148,9 +149,11 @@ namespace todor_reloaded
             return EmbedBuilder;
         }
 
-        public static void LogMessage(string msg, BaseDiscordClient client, LogLevel logLevel = LogLevel.Info)
+        public static void LogMessage(string msg)
         {
-            client.DebugLogger.LogMessage(logLevel, client.CurrentUser.Username, msg, DateTime.Now);
+            //client.DebugLogger.LogMessage(logLevel, client.CurrentUser.Username, msg, DateTime.Now);
+            //client.Logger.LogDebug(msg);
+            Console.WriteLine(msg);
         }
     }
 

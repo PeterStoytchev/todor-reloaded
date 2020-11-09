@@ -135,7 +135,7 @@ namespace todor_reloaded
 
             path = $"{CurrentConfig.songCacheDir}{videoId}.opus";
 
-            utils.LogMessage($"Downloading to {path} if not already downloaded!", ctx.Client);
+            utils.LogMessage($"Downloading to {path} if not already downloaded!");
 
             ProcessStartInfo downloadPsi = new ProcessStartInfo
             {
