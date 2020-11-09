@@ -4,7 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 hosting-key.json
-config.json
+config-linux.json
 config-release.json
 
 # User-specific files
