@@ -20,15 +20,36 @@ namespace todor_reloaded
         {
             this.m_Name = name;
         }
-        public void ProcessNotificaitons()
+        public void ProcessNotificaitons(DiscordClient client)
         {
             foreach (Notification notification in m_Notifications)
             {
                 int cmp = notification.m_ActivationTime.CompareTo(DateTime.Now);
                 
-                if (cmp < 0 || cmp == 0)
+                if (cmp < 0 || cmp == 0) //check if we are after or at the notification time; should we send the notificaiton
                 {
+                    var enumerator = client.Guilds.Values.GetEnumerator();
+                    DiscordGuild guild = enumerator.Current; //lets not support multiple guilds for now
 
+                    foreach (ulong userId in m_Subscribers)
+                    {
+                        DiscordMember member;
+
+                        if (guild.Members.TryGetValue(userId, out member)) //try and get the member
+                        {
+                            notification.Send(client, member); //send the notification
+                        }
+                        else
+                        {
+                            client.Logger.LogWarning($"Couldnt find user with id: {userId}");
+                        }
+                        
+                    }
+
+                    //reschedule the notificaiton and replace it in the list
+                    Notification newNotification = notification.Reschedule();
+                    m_Notifications.Remove(notification);
+                    m_Notifications.Add(newNotification);
                 }
 
             }

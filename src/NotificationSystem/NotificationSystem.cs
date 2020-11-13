@@ -12,9 +12,11 @@ namespace todor_reloaded
     class NotificationSystem
     {
         private List<NotificationGroup> m_NotificationGroups { get; set; }
+        private string dataPath;
 
         public NotificationSystem(string dataPath)
         {
+            this.dataPath = dataPath;
             if (File.Exists(dataPath))
             {
                 string jsonSource = File.ReadAllText(dataPath);
@@ -23,18 +25,23 @@ namespace todor_reloaded
         }
         public async Task ProcessEvents()
         {
-            foreach (NotificationGroup group in m_NotificationGroups)
+            while (true)
             {
-                foreach (Notification notification in group)
+                //could run the loop bellow in parralel wit tasks but given the scale at which the bot runs, it will not be necessary, at least for now
+                foreach (NotificationGroup group in m_NotificationGroups)
                 {
-
+                    group.ProcessNotificaitons(global.bot);
                 }
+
+                await Task.Delay(1000); //wait for a second, before processing again
             }
         }
 
         ~NotificationSystem()
         {
+            string output = JsonSerializer.Serialize(this);
 
+            File.WriteAllText(dataPath, output);
         }
     }
 }
