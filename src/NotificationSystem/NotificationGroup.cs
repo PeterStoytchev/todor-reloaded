@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -8,33 +9,116 @@ using DSharpPlus.Entities;
 
 namespace todor_reloaded
 {
-    [Serializable]
     class NotificationGroup
     {
-        private string m_Name { get; }
-        private List<DiscordMember> m_Subscribers;
-        private Dictionary<DateTime, Notification> m_Notifications;
+        public string m_Name { get; set; }
+
+        public List<ulong> m_Subscribers { get; set; }
+        public List<Notification> m_Notifications { get; set; }
 
         public NotificationGroup(string name)
         {
             this.m_Name = name;
         }
-
-        public void AddNotification(CommandContext ctx, Notification notification, DateTime activationTime)
+        public void ProcessNotificaitons()
         {
-            m_Notifications.Add(activationTime, notification);
+            foreach (Notification notification in m_Notifications)
+            {
+                int cmp = notification.m_ActivationTime.CompareTo(DateTime.Now);
+                
+                if (cmp < 0 || cmp == 0)
+                {
 
-            ctx.RespondAsync($"Added a notification with id {notification}");
+                }
+
+            }
         }
 
-        public void AddSubscriber(DiscordMember subscriber) 
-        { 
-            m_Subscribers.Add(subscriber);  
+        public Notification GetNotificaiton(string name)
+        {
+            foreach (Notification notification in m_Notifications)
+            {
+                if (notification.m_Name.ToLower() == name.ToLower())
+                {
+                    return notification;
+                }
+            }
+
+            return null;
         }
 
-        public void RemoveSubscriber(DiscordMember subscriber)
+        public bool AddNotification(CommandContext ctx, Notification notification)
         {
-            m_Subscribers.Remove(subscriber);
+            if (!m_Notifications.Contains(notification))
+            {
+                m_Notifications.Add(notification);
+
+                ctx.RespondAsync($"Added a notification called {notification.m_Name} to notification group {m_Name}");
+                ctx.Client.Logger.Log(LogLevel.Information, $"Added a notification called {notification.m_Name} to notification group {m_Name}");
+
+                return true;
+            }
+
+            ctx.RespondAsync($"Failed to add notification with name {notification.m_Name} to notification group {m_Name}, because said group, already has a notification with such a name!");
+            ctx.Client.Logger.Log(LogLevel.Warning, $"Couldn't add notification {notification.m_Name} to notification group {m_Name}");
+
+            return false;
+
+        }
+
+        public bool RemoveNotification(CommandContext ctx, string notificationName)
+        {
+            Notification notification = GetNotificaiton(notificationName);
+
+            if (notification != null)
+            {
+                m_Notifications.Remove(notification);
+
+                ctx.RespondAsync($"Removed notification {notificationName} from notification group {m_Name}");
+                ctx.Client.Logger.Log(LogLevel.Information, $"Removed notification {notificationName} from notification group {m_Name}");
+
+                return true;
+            }
+            else
+            {
+                ctx.RespondAsync($"Failed to find notification with name: {notificationName}!");
+                ctx.Client.Logger.Log(LogLevel.Warning, $"Failed to find notification with name: {notificationName}!");
+                return false;
+            }
+        }
+
+        public bool AddSubscriber(DiscordMember subscriber) 
+        {
+            if (!m_Subscribers.Contains(subscriber.Id))
+            {
+                m_Subscribers.Add(subscriber.Id);
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool RemoveSubscriber(DiscordMember subscriber)
+        {
+            if (m_Subscribers.Contains(subscriber.Id))
+            {
+                m_Subscribers.Remove(subscriber.Id);
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool isUserASubscriber(ulong userId)
+        {
+            if (m_Subscribers.Contains(userId))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
     }
