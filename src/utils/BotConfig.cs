@@ -55,18 +55,13 @@ namespace todor_reloaded
         [JsonProperty("commandPrefixes")]
         public IEnumerable<string> prefixes { get; private set; }
         
-        //[JsonProperty("discordLogLevel")]
-       // public LogLevel discordLogLevel { get; private set; }
-
         public string configDir { get; set; }
-
 
         public SpotifyClientConfig GetClientConfig()
         {
             return SpotifyClientConfig.CreateDefault().WithAuthenticator(new ClientCredentialsAuthenticator(spotifyClientId, spotifyClientSecret));
         }
 
-        
         public DiscordConfiguration GetDiscordConfiguration()
         {
             DiscordConfiguration configuration = new DiscordConfiguration
@@ -110,5 +105,4 @@ namespace todor_reloaded
             return cfgjson;
         }
     }
-
 }

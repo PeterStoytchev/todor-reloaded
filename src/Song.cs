@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Microsoft.Extensions.Logging;
+
 
 namespace todor_reloaded
 {
@@ -135,7 +137,7 @@ namespace todor_reloaded
 
             path = $"{CurrentConfig.songCacheDir}{videoId}.opus";
 
-            utils.LogMessage($"Downloading to {path} if not already downloaded!");
+            ctx.Client.Logger.Log(LogLevel.Information, $"Downloading to {path} if not already downloaded!");
 
             ProcessStartInfo downloadPsi = new ProcessStartInfo
             {
@@ -149,9 +151,6 @@ namespace todor_reloaded
 
             ytdl.WaitForExit();
         }
-
-        
-
     }
 
     public enum SongType

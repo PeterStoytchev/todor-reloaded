@@ -36,7 +36,7 @@ namespace todor_reloaded
                     break;
 
                 case PrintDest.ConsoleOut:
-                    LogMessage(str);
+                    ctx.Client.Logger.LogInformation(str);
                     break;
 
                 case PrintDest.DiscordChn:
@@ -147,13 +147,6 @@ namespace todor_reloaded
             EmbedBuilder.AddField("Song link:", source);
 
             return EmbedBuilder;
-        }
-
-        public static void LogMessage(string msg)
-        {
-            //client.DebugLogger.LogMessage(logLevel, client.CurrentUser.Username, msg, DateTime.Now);
-            //client.Logger.LogDebug(msg);
-            Console.WriteLine(msg);
         }
     }
 
