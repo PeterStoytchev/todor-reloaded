@@ -28,8 +28,8 @@ namespace todor_reloaded
         [JsonProperty("discordToken")]
         public string discordToken { get; private set; }
 
-        [JsonProperty("youtubeServiceKey")]
-        public string youtubeServiceKey { get; private set; }
+        [JsonProperty("googleServiceKey")]
+        public string googleServiceKey { get; private set; }
 
         [JsonProperty("countryCode")]
         public string countryCode { get; private set; }

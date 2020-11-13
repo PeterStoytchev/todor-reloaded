@@ -1,6 +1,6 @@
 ﻿{
   "discordToken": "<Discord bot token goes here>",
-  "youtubeServiceKey": "<the .json key for a google service account with permissions for the youtube api>",
+  "googleServiceKey": "<the .json key for a google service account with permissions for the youtube api>",
   "countryCode": "<your countryCode's code (eg. US)>",
   "spotifyEnabled": true,
   "spotifyClientId": "<Spotify client id, get it from spotify developer portal, doesnt matter if spotify is disabled>",

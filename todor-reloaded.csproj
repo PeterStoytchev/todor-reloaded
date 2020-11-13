@@ -10,7 +10,7 @@
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties config_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
   <ItemGroup>
     <Compile Remove="src\commandGroups\GcpCommands.cs" />
