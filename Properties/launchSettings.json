@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "todor-reloaded": {
-      "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\Seph\\Desktop\\todor-reloaded\\config-release.json"
-    }
-  }
-}
