@@ -25,6 +25,9 @@ namespace todor_reloaded
         public static PersistentDictionary songCache { get; set; }
 
         public static SpotifyClient spotify { get; set; }
+
+        public static NotificationSystem notificationSystem { get; set; }
+
         public static int queueCounter { get; set; }
     }
 }

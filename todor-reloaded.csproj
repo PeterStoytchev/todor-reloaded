@@ -13,7 +13,7 @@
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
   <ItemGroup>
-    <Compile Remove="src\commandGroups\GcpCommands.cs" />
+    <Compile Remove="src\CommandGroups\GcpCommands.cs" />
   </ItemGroup>
 
   <ItemGroup>

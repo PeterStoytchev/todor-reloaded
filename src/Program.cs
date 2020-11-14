@@ -54,6 +54,10 @@ namespace todor_reloaded
 
             //connect
             await global.bot.ConnectAsync();
+
+            global.notificationSystem = new NotificationSystem(global.botConfig.notificationDataPath); //this has to be created, after the bot is connected
+            global.notificationSystem.ProcessEvents();
+
             await Task.Delay(-1);
 
         }

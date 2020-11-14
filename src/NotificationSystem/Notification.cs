@@ -8,8 +8,7 @@ using DSharpPlus.Entities;
 
 namespace todor_reloaded
 {
-    [Serializable]
-    class Notification
+    public class Notification
     {
         public string m_Message { get; set; }
         public string m_Name { get; set; }

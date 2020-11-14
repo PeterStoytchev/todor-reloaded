@@ -44,6 +44,42 @@ namespace todor_reloaded
                     break;
             }
         }
+        
+        public static TimeSpan CreateTimeSpan(string stringRep)
+        {
+            //monthly:2 <-- stringRep string
+
+            string[] components = stringRep.Split(':');
+            int time = int.Parse(components[1]);
+
+            if (time < 1) { time = 1; }
+
+            switch (components[0].ToLower())
+            {
+                case "months":
+                    return new TimeSpan(time * 30, 0, 0, 0);
+
+                case "weeks":
+                    return new TimeSpan(time * 7, 0, 0, 0);
+
+                case "days":
+                    return new TimeSpan(time, 0, 0, 0);
+
+                case "hours":
+                    return new TimeSpan(time, 0, 0);
+
+                case "minutes":
+                    return new TimeSpan(0, time, 0);
+
+                case "seconds":
+                    return new TimeSpan(0, 0, time);
+
+                case "NULL":
+                    return new TimeSpan();
+                default:
+                    throw new Exception("Invalid repetition parrern provided!");
+            }
+        }
 
         public static PrintDest ParseDest(string str)
         {

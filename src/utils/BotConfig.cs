@@ -19,6 +19,9 @@ namespace todor_reloaded
 {
     public class BotConfig
     {
+        [JsonProperty("notificationDataPath")]
+        public string notificationDataPath { get; private set; }
+
         [JsonProperty("transcoderThreadSleepTime")]
         public int transcoderThreadSleepTime { get; private set; }
 
@@ -70,11 +73,6 @@ namespace todor_reloaded
                 TokenType = TokenType.Bot,
 
                 AutoReconnect = true,
-                /*
-                LogLevel = discordLogLevel,
-
-                UseInternalLogHandler = true
-                */
             };
 
             return configuration;
