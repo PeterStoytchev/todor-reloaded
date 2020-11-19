@@ -8,6 +8,8 @@ using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace todor_reloaded
 {
@@ -41,6 +43,7 @@ namespace todor_reloaded
             global.commands.RegisterCommands<GeneralCommands>();
             global.commands.RegisterCommands<OwnerCommands>();
             global.commands.RegisterCommands<SoundPlayback>();
+            global.commands.RegisterCommands<NotificaitonCommands>();
 
             if (global.botConfig.spotifyEnabled)
             {
@@ -55,8 +58,7 @@ namespace todor_reloaded
             //connect
             await global.bot.ConnectAsync();
 
-            global.notificationSystem = new NotificationSystem(global.botConfig.notificationDataPath); //this has to be created, after the bot is connected
-            global.notificationSystem.ProcessEvents();
+            global.notificationSystem = new NotificationSystem(); //this has to be created, after the bot is connected
 
             await Task.Delay(-1);
 

@@ -20,26 +20,5 @@ namespace todor_reloaded
         {
             await global.notificationSystem.SubscribeUserToGroup(ctx, groupName);
         }
-
-        [Command("addNotification")]
-        [Description("It adds a notification to a notifications channel.")]
-        [Aliases("addNot")]
-        public async Task AddNotificationExecutor(CommandContext ctx, string notificationName, string notificationMesasge, DateTime triggerTime, string pattern, string groupName)
-        {
-            Notification notification = new Notification(notificationName, notificationMesasge, triggerTime, utils.CreateTimeSpan(pattern));
-
-            await global.notificationSystem.AddNotificationToGroup(ctx, notification, groupName);
-        }
-
-
-        [Command("createNotificationChannel")]
-        [Description("It creates a notification channel.")]
-        [Aliases("cnc")]
-        public async Task CreateNotifciationChannelExecutor(CommandContext ctx, string channelName)
-        {
-            NotificationGroup notificationGroup = new NotificationGroup(ctx.Member.Id, channelName);
-
-            await global.notificationSystem.CreateNotificationGroup(ctx, notificationGroup);
-        }
     }
 }
