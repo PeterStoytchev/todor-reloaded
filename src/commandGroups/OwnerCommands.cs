@@ -69,11 +69,12 @@ namespace todor_reloaded
         public async Task debugChannels(CommandContext ctx)
         {
             Debug.WriteLine("Printing notificaiton groups");
-
+            /*
             foreach (NotificationGroup notificationGroup in global.notificationSystem.GetGroups())
             {
                 Debug.WriteLine(notificationGroup.m_Name);
             }
+            */
         }
     }
 

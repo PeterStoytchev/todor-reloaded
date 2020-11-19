@@ -55,11 +55,11 @@ namespace todor_reloaded
             global.player = new Player();
             global.googleClient = new GoogleClient(global.botConfig.googleServiceKey, global.botConfig.countryCode);
 
+            global.notificationSystem = new NotificationSystem(@"C:\Users\Seph\Desktop\todor-reloaded\notifications.db");
+
+
             //connect
             await global.bot.ConnectAsync();
-
-            global.notificationSystem = new NotificationSystem(); //this has to be created, after the bot is connected
-
             await Task.Delay(-1);
 
         }

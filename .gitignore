@@ -5,6 +5,8 @@
 
 Properties/
 
+*.db
+
 hosting-key.json
 config-linux.json
 config-release.json
