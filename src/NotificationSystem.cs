@@ -41,12 +41,83 @@ namespace todor_reloaded
             'notificationMessage' TEXT NOT NULL,
             'notificationGroupId' INTEGER NOT NULL, 
             'notificationActivationDate' INTEGER NOT NULL, 
-            'notificaionRescheduleSpan' INTEGER, 
+            'notificaionRescheduleSpan' INTEGER NOT NULL, 
             PRIMARY KEY('id' AUTOINCREMENT));";
 
             SqliteCommand command = new SqliteCommand(sqlstring, m_DbConnection);
-            command.ExecuteScalar();
+            command.ExecuteNonQuery();
         }
+
+        public Task<bool> CreateNotificationGroup(CommandContext ctx, string groupName)
+        {
+            string sqlstring = $"INSERT INTO groupStorage(groupName, users) VALUES('{groupName}', '');";
+
+            SqliteCommand command = new SqliteCommand(sqlstring, m_DbConnection);
+            
+            try
+            {
+                command.ExecuteNonQuery();
+
+                ctx.RespondAsync($"Created notificaitions channel {groupName}.");
+                ctx.Client.Logger.Log(LogLevel.Information, $"User {ctx.Member.DisplayName} created message channel {groupName}!");
+
+                return Task.FromResult(true);
+            }
+            catch (SqliteException e)
+            {
+                ctx.RespondAsync($"Notificaitions channel {groupName} already exists!");
+                ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to create message channel {groupName}, but it already exists!");
+
+                return Task.FromResult(false);
+            }
+        }
+
+        public Task<bool> SubscribeUserToGroup(CommandContext ctx, string groupName)
+        {
+            string sqlstring = $"SELECT * FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;";
+
+            SqliteCommand command = new SqliteCommand(sqlstring, m_DbConnection);
+            SqliteDataReader rdr = command.ExecuteReader();
+
+            while (rdr.Read())
+            {
+                int index = rdr.GetInt16(0);
+                string userIds = rdr.GetString(2);
+                List<string> split = new List<string>(userIds.Split(','));
+
+                string userid = Convert.ToString(ctx.Member.Id);
+
+                if (!split.Contains(userid))
+                {
+                    userIds = $"{userIds}{userid},";
+
+                    string sqlupdate = $"UPDATE groupStorage SET users='{userIds}' WHERE id='{index}';";
+
+                    SqliteCommand command2 = new SqliteCommand(sqlupdate, m_DbConnection);
+                    command2.ExecuteNonQuery();
+
+
+                    ctx.RespondAsync($"You have been added to notifications channel: {groupName}");
+                    ctx.Client.Logger.Log(LogLevel.Information, $"User {ctx.Member.DisplayName} has been added to notificaitions channel {groupName}");
+
+                    return Task.FromResult(true);
+                }
+                else
+                {
+                    ctx.RespondAsync($"You are already subscribed to notifications channel {groupName}");
+                    ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to subscribe to notificaitions channel {groupName}, but was already present in it.");
+
+                    return Task.FromResult(false);
+                }
+            }
+
+
+            ctx.RespondAsync($"Couldn't find a notificaton channel with name {groupName}");
+            ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to subscribe to notificaitions channel {groupName}, but such channel doesn't exist!");
+
+            return Task.FromResult(false);
+        }
+
 
         ~NotificationSystem()
         {
@@ -54,23 +125,7 @@ namespace todor_reloaded
         }
 
         /*
-        public Task<bool> SubscribeUserToGroup(CommandContext ctx, string groupName)
-        {
-            foreach (NotificationGroup group in m_NotificationGroups)
-            {
-                if (group.m_Name == groupName)
-                {
-                    group.AddSubscriber(ctx);
-                    return Task.FromResult(true);
-                }
-            }
-
-            ctx.RespondAsync($"Couldn't find a notificaton channel with name {groupName}");
-            ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to subscribe to notificaitions channel {groupName}, but such channel doesn't exist!");
-
-
-            return Task.FromResult(false);
-        }
+        
 
         public Task<bool> AddNotificationToGroup(CommandContext ctx, Notification notification, string groupName)
         {
@@ -90,24 +145,7 @@ namespace todor_reloaded
             return Task.FromResult(false);
         }
 
-        public Task<bool> CreateNotificationGroup(CommandContext ctx, NotificationGroup group)
-        {
-            if (!m_NotificationGroups.Contains(group))
-            {
-
-                m_NotificationGroups.Add(group);
-
-                ctx.RespondAsync($"Created notificaitions channel {group.m_Name}.");
-                ctx.Client.Logger.Log(LogLevel.Information, $"User {ctx.Member.DisplayName} created message channel {group.m_Name}!");
-                
-                return Task.FromResult(true);
-            }
-
-            ctx.RespondAsync($"Notificaitions channel {group.m_Name} already exists!");
-            ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to create message channel {group.m_Name}, but it already exists!");
-
-            return Task.FromResult(false);
-        }
+        
         */
     }
 }

@@ -18,9 +18,15 @@ namespace todor_reloaded
         [Aliases("sub")]
         public async Task SubscribeExecutor(CommandContext ctx, string groupName)
         {
-            await ctx.Channel.SendMessageAsync("Not implemented!");
+            await global.notificationSystem.SubscribeUserToGroup(ctx, groupName);
+        }
 
-            //await global.notificationSystem.SubscribeUserToGroup(ctx, groupName);
+        [Command("createchannel")]
+        [Description("It creates a notifications channel.")]
+        [Aliases("cc")]
+        public async Task CreateChannelExecutor(CommandContext ctx, string groupName)
+        {
+            await global.notificationSystem.CreateNotificationGroup(ctx, groupName);
         }
     }
 }
