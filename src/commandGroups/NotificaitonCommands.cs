@@ -28,5 +28,15 @@ namespace todor_reloaded
         {
             await global.notificationSystem.CreateNotificationGroup(ctx, groupName);
         }
+
+        [Command("createNotification")]
+        [Description("Creates and adds a notification to a notificaitons channel!")]
+        [Aliases("cn")]
+        public async Task CreateNotificaionExecutor(CommandContext ctx, string groupName, string name, string message, string rescheduleTimespan, int hour, int minute, int day, int mounth, int year)
+        {
+            await global.notificationSystem.AddNotificationToGroup(ctx, groupName, name, message, rescheduleTimespan, hour, minute, day, mounth, year);
+        }
+
+
     }
 }

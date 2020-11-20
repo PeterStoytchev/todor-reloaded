@@ -37,7 +37,8 @@ namespace todor_reloaded
 	        PRIMARY KEY('id'));
 
             CREATE TABLE IF NOT EXISTS 'data'
-            ('id'	INTEGER NOT NULL, 'notificationName'  TEXT NOT NULL UNIQUE, 
+            ('id'	INTEGER NOT NULL, 
+            'notificationName'  TEXT NOT NULL UNIQUE, 
             'notificationMessage' TEXT NOT NULL,
             'notificationGroupId' INTEGER NOT NULL, 
             'notificationActivationDate' INTEGER NOT NULL, 
@@ -74,7 +75,7 @@ namespace todor_reloaded
 
         public Task<bool> SubscribeUserToGroup(CommandContext ctx, string groupName)
         {
-            string sqlstring = $"SELECT * FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;";
+            string sqlstring = $"SELECT id,users FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;";
 
             SqliteCommand command = new SqliteCommand(sqlstring, m_DbConnection);
             SqliteDataReader rdr = command.ExecuteReader();
@@ -82,7 +83,7 @@ namespace todor_reloaded
             while (rdr.Read())
             {
                 int index = rdr.GetInt16(0);
-                string userIds = rdr.GetString(2);
+                string userIds = rdr.GetString(1);
                 List<string> split = new List<string>(userIds.Split(','));
 
                 string userid = Convert.ToString(ctx.Member.Id);
@@ -119,33 +120,56 @@ namespace todor_reloaded
         }
 
 
-        ~NotificationSystem()
+        public Task<bool> AddNotificationToGroup(CommandContext ctx, string groupName, string name, string message, string timespan, int hour, int minute, int day, int mounth, int year)
         {
-            m_DbConnection.Close();
-        }
+            string checkValidGroupNameSQL = $"SELECT id FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;";
 
-        /*
-        
-
-        public Task<bool> AddNotificationToGroup(CommandContext ctx, Notification notification, string groupName)
-        {
-            foreach (NotificationGroup group in m_NotificationGroups)
+            SqliteCommand command = new SqliteCommand(checkValidGroupNameSQL, m_DbConnection);
+            SqliteDataReader rdr = command.ExecuteReader();
+            
+            while (rdr.Read())
             {
-                if (group.m_Name == groupName)
+                int channelId = rdr.GetInt16(0);
+
+                DateTime dt = new DateTime(year, mounth, day, hour, minute, 0, 0);
+                TimeSpan ts = utils.CreateTimeSpan(timespan);
+
+                string insertSQL = $"INSERT INTO data(notificationName, notificationMessage, notificationGroupId, notificationActivationDate, notificaionRescheduleSpan) VALUES('{name}', '{message}', '{channelId}', '{dt.Ticks}', '{ts.Ticks}');";
+
+                SqliteCommand insertCommand = new SqliteCommand(insertSQL, m_DbConnection);
+                
+                try
                 {
-                    group.AddNotification(ctx, notification);
+                    insertCommand.ExecuteNonQuery();
+
+                    ctx.RespondAsync($"Notificaion with name {name} has been added to channel {groupName}!");
+                    ctx.Client.Logger.Log(LogLevel.Information, $"User {ctx.Member.DisplayName} added a notification with name {name} to notificaitions channel {groupName}!");
+    
                     return Task.FromResult(true);
+
                 }
+                catch (Exception e)
+                {
+                    ctx.RespondAsync($"Notificaion with name {name} already exists!");
+                    ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to add a notification to notificaitions channel {groupName}, but such notificiaon already exists!");
+
+                    return Task.FromResult(false);
+                }
+
             }
+
 
             ctx.RespondAsync($"Couldn't find a notificaton channel with name {groupName}");
             ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to add a notification to notificaitions channel {groupName}, but such channel doesn't exist!");
 
-
             return Task.FromResult(false);
         }
-
         
-        */
+
+
+        ~NotificationSystem()
+        {
+            m_DbConnection.Close();
+        }
     }
 }
