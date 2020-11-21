@@ -49,7 +49,8 @@ namespace todor_reloaded
             'notificaionRescheduleSpan' INTEGER NOT NULL, 
             PRIMARY KEY('id' AUTOINCREMENT));";
 
-            RunVoidSQL(sqlstring, null);
+            SqliteCommand cmd = new SqliteCommand(sqlstring, m_DbConnection);
+            cmd.ExecuteNonQuery();
 
             //initialize the worker that periodically runs through the db and sends notifications
             m_ProcessingWorker = new BackgroundWorker()
@@ -102,7 +103,10 @@ namespace todor_reloaded
                         }
 
                         //update the activation time, based on the reshedule timespan
-                        RunVoidSQL($"UPDATE data SET notificationActivationDate='{triggerTime.Add(rescheduleTimeSpan).Ticks}' WHERE id='{notificationId}';", null);
+
+
+                        SqliteCommand cmd = new SqliteCommand($"UPDATE data SET notificationActivationDate='{triggerTime.Add(rescheduleTimeSpan).Ticks}' WHERE id='{notificationId}';", m_DbConnection);
+                        cmd.ExecuteNonQuery();
                     });
                 }
             });
@@ -218,12 +222,6 @@ namespace todor_reloaded
             ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to add a notification to notificaitions channel {groupName}, but such channel doesn't exist!");
 
             return Task.FromResult(false);
-        }
-        
-        private void RunVoidSQL(string sql, Action<SqliteException> exceptionHandler)
-        {
-            SqliteCommand cmd = new SqliteCommand(sql, m_DbConnection);
-            cmd.ExecuteNonQuery();
         }
 
         private void RunReaderSQL(string sql, Action<SqliteDataReader> handler)
