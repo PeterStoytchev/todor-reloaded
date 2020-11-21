@@ -49,20 +49,18 @@ namespace todor_reloaded
             'notificaionRescheduleSpan' INTEGER NOT NULL, 
             PRIMARY KEY('id' AUTOINCREMENT));";
 
-            SqliteCommand command = new SqliteCommand(sqlstring, m_DbConnection);
-            command.ExecuteNonQuery();
+            RunVoidSQL(sqlstring, null);
 
+            //initialize the worker that periodically runs through the db and sends notifications
             m_ProcessingWorker = new BackgroundWorker()
             {
                 WorkerSupportsCancellation = true,
                 WorkerReportsProgress = true
             };
-            
             m_ProcessingWorker.DoWork += ProcessNotifications;
 
             m_ProcessingTimer = new System.Timers.Timer(1000 * 10);
             m_ProcessingTimer.Elapsed += M_ProcessingTimer_Elapsed;
-
             m_ProcessingTimer.Start();
 
         }
@@ -74,13 +72,7 @@ namespace todor_reloaded
 
         public void ProcessNotifications(object sender, DoWorkEventArgs e)
         {
-
-            string GetNotificaionsSQL = $"SELECT * FROM data;"; //inefficient af
-
-            SqliteCommand command = new SqliteCommand(GetNotificaionsSQL, m_DbConnection);
-            SqliteDataReader rdr = command.ExecuteReader();
-
-            while (rdr.Read())
+            RunReaderSQL("SELECT * FROM data;", (rdr) =>
             {
                 short notificationId = rdr.GetInt16(0);
                 string notificationMsg = rdr.GetString(2);
@@ -93,32 +85,29 @@ namespace todor_reloaded
                 if (cmp < 0 || cmp == 0) //check if the time for the notification has passed or is now
                 {
                     //get the users from the db
-                    string getGroupParticipents = $"SELECT users FROM groupStorage WHERE id='{groupId}' LIMIT 1;";
-                    SqliteCommand command2 = new SqliteCommand(getGroupParticipents, m_DbConnection);
-                    SqliteDataReader rdr2 = command2.ExecuteReader();
-                    rdr2.Read();
-
-                    string usersStr = rdr2.GetString(0); //get the comma seperated string that contains the users
-                    string[] users = usersStr.Substring(0, usersStr.Length - 1).Split(','); //remove the last char and split the string by comma
-
-                    DiscordGuild guild = global.bot.GetGuildAsync(global.botConfig.discordGuildId).GetAwaiter().GetResult();
-
-                    //get the member from discord by the id and send him the message
-                    foreach (string str in users)
+                    RunReaderSQL($"SELECT users FROM groupStorage WHERE id='{groupId}' LIMIT 1;", (rdr2) =>
                     {
-                        ulong id = Convert.ToUInt64(str);
-                        DiscordMember member = guild.GetMemberAsync(id).GetAwaiter().GetResult();
+                        string usersStr = rdr2.GetString(0); //get the comma seperated string that contains the users
+                        string[] users = usersStr.Substring(0, usersStr.Length - 1).Split(','); //remove the last char and split the string by comma
 
-                        member.SendMessageAsync(notificationMsg).GetAwaiter().GetResult();
-                    }
+                        DiscordGuild guild = global.bot.GetGuildAsync(global.botConfig.discordGuildId).GetAwaiter().GetResult();
 
-                    //update the activation time, based on the reshedule timespan
-                    string sqlupdate = $"UPDATE data SET notificationActivationDate='{triggerTime.Add(rescheduleTimeSpan).Ticks}' WHERE id='{notificationId}';";
-                    SqliteCommand cmd = new SqliteCommand(sqlupdate, m_DbConnection);
-                    cmd.ExecuteNonQuery();
+                        //get the member from discord by the id and send him the message
+                        foreach (string str in users)
+                        {
+                            ulong id = Convert.ToUInt64(str);
+                            DiscordMember member = guild.GetMemberAsync(id).GetAwaiter().GetResult();
+
+                            member.SendMessageAsync(notificationMsg).GetAwaiter().GetResult();
+                        }
+
+                        //update the activation time, based on the reshedule timespan
+                        RunVoidSQL($"UPDATE data SET notificationActivationDate='{triggerTime.Add(rescheduleTimeSpan).Ticks}' WHERE id='{notificationId}';", null);
+                    });
                 }
+            });
 
-            }
+            
         }
 
         public Task<bool> CreateNotificationGroup(CommandContext ctx, string groupName)
@@ -126,7 +115,7 @@ namespace todor_reloaded
             string sqlstring = $"INSERT INTO groupStorage(groupName, users) VALUES('{groupName}', '');";
 
             SqliteCommand command = new SqliteCommand(sqlstring, m_DbConnection);
-            
+
             try
             {
                 command.ExecuteNonQuery();
@@ -149,10 +138,7 @@ namespace todor_reloaded
         {
             string sqlstring = $"SELECT id,users FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;";
 
-            SqliteCommand command = new SqliteCommand(sqlstring, m_DbConnection);
-            SqliteDataReader rdr = command.ExecuteReader();
-
-            while (rdr.Read())
+            RunReaderSQL($"SELECT id,users FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;", (rdr) =>
             {
                 int index = rdr.GetInt16(0);
                 string userIds = rdr.GetString(1);
@@ -173,23 +159,19 @@ namespace todor_reloaded
 
                     ctx.RespondAsync($"You have been added to notifications channel: {groupName}");
                     ctx.Client.Logger.Log(LogLevel.Information, $"User {ctx.Member.DisplayName} has been added to notificaitions channel {groupName}");
-
-                    return Task.FromResult(true);
                 }
                 else
                 {
                     ctx.RespondAsync($"You are already subscribed to notifications channel {groupName}");
                     ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to subscribe to notificaitions channel {groupName}, but was already present in it.");
-
-                    return Task.FromResult(false);
                 }
-            }
+            });
 
 
             ctx.RespondAsync($"Couldn't find a notificaton channel with name {groupName}");
             ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to subscribe to notificaitions channel {groupName}, but such channel doesn't exist!");
 
-            return Task.FromResult(false);
+            return Task.FromResult(true);
         }
 
 
@@ -199,6 +181,7 @@ namespace todor_reloaded
 
             SqliteCommand command = new SqliteCommand(checkValidGroupNameSQL, m_DbConnection);
             SqliteDataReader rdr = command.ExecuteReader();
+
             
             while (rdr.Read())
             {
@@ -231,15 +214,29 @@ namespace todor_reloaded
 
             }
 
-
             ctx.RespondAsync($"Couldn't find a notificaton channel with name {groupName}");
             ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to add a notification to notificaitions channel {groupName}, but such channel doesn't exist!");
 
             return Task.FromResult(false);
         }
         
+        private void RunVoidSQL(string sql, Action<SqliteException> exceptionHandler)
+        {
+            SqliteCommand cmd = new SqliteCommand(sql, m_DbConnection);
+            cmd.ExecuteNonQuery();
+        }
 
+        private void RunReaderSQL(string sql, Action<SqliteDataReader> handler)
+        {
+            SqliteCommand command = new SqliteCommand(sql, m_DbConnection);
+            SqliteDataReader rdr = command.ExecuteReader();
 
+            while (rdr.Read())
+            {
+                handler(rdr);
+            }
+        }
+        
         ~NotificationSystem()
         {
             m_DbConnection.Close();
