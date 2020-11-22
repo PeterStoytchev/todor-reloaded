@@ -60,7 +60,7 @@ namespace todor_reloaded
             };
             m_ProcessingWorker.DoWork += ProcessNotifications;
 
-            m_ProcessingTimer = new System.Timers.Timer(1000 * 10);
+            m_ProcessingTimer = new System.Timers.Timer(1000 * 10); //TODO: expose the refersh time in the config
             m_ProcessingTimer.Elapsed += M_ProcessingTimer_Elapsed;
             m_ProcessingTimer.Start();
 
@@ -73,7 +73,12 @@ namespace todor_reloaded
 
         public void ProcessNotifications(object sender, DoWorkEventArgs e)
         {
-            RunReaderSQL("SELECT * FROM data;", (rdr) =>
+            utils.DebugLog($"[{DateTime.Now}] Starting notificaitons processing...");
+
+            SqliteCommand command = new SqliteCommand("SELECT * FROM data;", m_DbConnection);
+            SqliteDataReader rdr = command.ExecuteReader();
+
+            while (rdr.Read())
             {
                 short notificationId = rdr.GetInt16(0);
                 string notificationMsg = rdr.GetString(2);
@@ -86,7 +91,10 @@ namespace todor_reloaded
                 if (cmp < 0 || cmp == 0) //check if the time for the notification has passed or is now
                 {
                     //get the users from the db
-                    RunReaderSQL($"SELECT users FROM groupStorage WHERE id='{groupId}' LIMIT 1;", (rdr2) =>
+                    SqliteCommand command2 = new SqliteCommand($"SELECT users FROM groupStorage WHERE id='{groupId}' LIMIT 1;", m_DbConnection);
+                    SqliteDataReader rdr2 = command2.ExecuteReader();
+
+                    while (rdr2.Read())
                     {
                         string usersStr = rdr2.GetString(0); //get the comma seperated string that contains the users
                         string[] users = usersStr.Substring(0, usersStr.Length - 1).Split(','); //remove the last char and split the string by comma
@@ -99,25 +107,26 @@ namespace todor_reloaded
                             ulong id = Convert.ToUInt64(str);
                             DiscordMember member = guild.GetMemberAsync(id).GetAwaiter().GetResult();
 
+                            utils.DebugLog($"[{DateTime.Now}] Sending notification scheduled for {triggerTime.ToString()} to user {member.Username}");
+
                             member.SendMessageAsync(notificationMsg).GetAwaiter().GetResult();
                         }
 
+                        DateTime newTime = DateTime.Now.Add(rescheduleTimeSpan);
+
                         //update the activation time, based on the reshedule timespan
+                        SqliteCommand command3 = new SqliteCommand($"UPDATE data SET notificationActivationDate='{newTime.Ticks}' WHERE id='{notificationId}';", m_DbConnection);
+                        command3.ExecuteNonQuery();
 
-
-                        SqliteCommand cmd = new SqliteCommand($"UPDATE data SET notificationActivationDate='{triggerTime.Add(rescheduleTimeSpan).Ticks}' WHERE id='{notificationId}';", m_DbConnection);
-                        cmd.ExecuteNonQuery();
-                    });
+                        utils.DebugLog($"Notification's trigger time updated to {newTime}");
+                    }
                 }
-            });
-
-            
+            }
         }
 
         public Task<bool> CreateNotificationGroup(CommandContext ctx, string groupName)
         {
             string sqlstring = $"INSERT INTO groupStorage(groupName, users) VALUES('{groupName}', '');";
-
             SqliteCommand command = new SqliteCommand(sqlstring, m_DbConnection);
 
             try
@@ -138,18 +147,21 @@ namespace todor_reloaded
             }
         }
 
+      
         public Task<bool> SubscribeUserToGroup(CommandContext ctx, string groupName)
         {
             string sqlstring = $"SELECT id,users FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;";
 
-            RunReaderSQL($"SELECT id,users FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;", (rdr) =>
+            SqliteCommand command = new SqliteCommand($"SELECT id,users FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;", m_DbConnection);
+            SqliteDataReader rdr = command.ExecuteReader();
+
+            while (rdr.Read())
             {
                 int index = rdr.GetInt16(0);
                 string userIds = rdr.GetString(1);
                 List<string> split = new List<string>(userIds.Split(','));
 
                 string userid = Convert.ToString(ctx.Member.Id);
-                Debug.WriteLine($"userid: {userid}");
 
                 if (!split.Contains(userid))
                 {
@@ -160,24 +172,25 @@ namespace todor_reloaded
                     SqliteCommand command2 = new SqliteCommand(sqlupdate, m_DbConnection);
                     command2.ExecuteNonQuery();
 
-
                     ctx.RespondAsync($"You have been added to notifications channel: {groupName}");
                     ctx.Client.Logger.Log(LogLevel.Information, $"User {ctx.Member.DisplayName} has been added to notificaitions channel {groupName}");
+
+                    return Task.FromResult(true);
                 }
                 else
                 {
                     ctx.RespondAsync($"You are already subscribed to notifications channel {groupName}");
                     ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to subscribe to notificaitions channel {groupName}, but was already present in it.");
-                }
-            });
 
+                    return Task.FromResult(false);
+                }
+            }
 
             ctx.RespondAsync($"Couldn't find a notificaton channel with name {groupName}");
             ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to subscribe to notificaitions channel {groupName}, but such channel doesn't exist!");
 
-            return Task.FromResult(true);
+            return Task.FromResult(false);
         }
-
 
         public Task<bool> AddNotificationToGroup(CommandContext ctx, string groupName, string name, string message, string timespan, int hour, int minute, int day, int mounth, int year)
         {
@@ -224,17 +237,6 @@ namespace todor_reloaded
             return Task.FromResult(false);
         }
 
-        private void RunReaderSQL(string sql, Action<SqliteDataReader> handler)
-        {
-            SqliteCommand command = new SqliteCommand(sql, m_DbConnection);
-            SqliteDataReader rdr = command.ExecuteReader();
-
-            while (rdr.Read())
-            {
-                handler(rdr);
-            }
-        }
-        
         ~NotificationSystem()
         {
             m_DbConnection.Close();

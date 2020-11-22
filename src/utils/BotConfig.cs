@@ -19,6 +19,9 @@ namespace todor_reloaded
 {
     public class BotConfig
     {
+        [JsonProperty("DebugMode")]
+        public bool DebugMode { get; private set; }
+
         [JsonProperty("notificationDataPath")]
         public string notificationDataPath { get; private set; }
 

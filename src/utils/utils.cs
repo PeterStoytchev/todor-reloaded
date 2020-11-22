@@ -22,6 +22,15 @@ namespace todor_reloaded
 {
     public static class utils
     {
+        public static void DebugLog(string message, LogLevel logLevel = LogLevel.Information)
+        {
+            if (global.botConfig.DebugMode)
+            {
+                global.bot.Logger.Log(logLevel, message);
+            }
+        }
+
+        //TODO: GET RID OF THIS
         public static async Task OutputToConsole(string str, CommandContext ctx, string printDest = "", PrintDest dest = PrintDest.Empty)
         {
             if (dest == PrintDest.Empty)

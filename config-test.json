@@ -1,0 +1,18 @@
+{
+  "DebugMode":  true,
+  "discordToken": "NjU5MDQyMjcyMTA0Njc3Mzc2.XgIi8g.QJ9ve4UbBN4SN51QtZd4nIwIG_0",
+  "googleServiceKey": "C:/Users/Seph/Desktop/todor-reloaded/hosting-key.json",
+  "discordGuildId": 414808720187588613,
+  "countryCode": "BG",
+  "spotifyEnabled": true,
+  "spotifyClientId": "c45926918d944a868c2b9287103fac55",
+  "spotifyClientSecret": "618d051d525546cb8cfd337684e5b188",
+  "discordLogLevel": "Debug",
+  "commandPrefixes": [ ">", "!" ],
+  "songCacheDir": "C:/Users/Seph/Desktop/oof/",
+  "ffmpegPath": "C:/Program Files/FFMPEG/ffmpeg.exe",
+  "ytdlPath": "C:/Program Files/FFMPEG/youtube-dl.exe",
+  "notificationDataPath": "C:/Users/Seph/Desktop/todor-reloaded/notification-data.json",
+  "transcoderThreadSleepTime": 1,
+  "transcoderBufferSize": 4200
+}
