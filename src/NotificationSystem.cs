@@ -126,8 +126,7 @@ namespace todor_reloaded
 
         public Task<bool> CreateNotificationGroup(CommandContext ctx, string groupName)
         {
-            string sqlstring = $"INSERT INTO groupStorage(groupName, users) VALUES('{groupName}', '');";
-            SqliteCommand command = new SqliteCommand(sqlstring, m_DbConnection);
+            SqliteCommand command = new SqliteCommand($"INSERT INTO groupStorage(groupName, users) VALUES('{groupName}', '');", m_DbConnection);
 
             try
             {
@@ -146,12 +145,36 @@ namespace todor_reloaded
                 return Task.FromResult(false);
             }
         }
-
       
+        public Task<bool> DestroyNotificationGroup(CommandContext ctx, string groupName)
+        {
+            SqliteCommand getDetailsCmd = new SqliteCommand($"SELECT id FROM groupStorage WHERE groupName='{groupName}' LIMIT 1;", m_DbConnection);
+            SqliteDataReader detailsReader = getDetailsCmd.ExecuteReader();
+            
+            while (detailsReader.Read())
+            {
+                short groupId = detailsReader.GetInt16(0);
+
+                SqliteCommand removeTable = new SqliteCommand($"DELETE FROM groupStorage WHERE id={groupId} LIMIT 1;", m_DbConnection);
+                removeTable.ExecuteNonQuery();
+
+                SqliteCommand removeNotifications = new SqliteCommand($"DELETE FROM data WHERE notificationGroupId={groupId};", m_DbConnection);
+                removeNotifications.ExecuteNonQuery();
+
+                ctx.RespondAsync($"Notificaitions channel {groupName} removed!");
+                ctx.Client.Logger.Log(LogLevel.Information, $"User {ctx.Member.DisplayName} removed message channel {groupName}!");
+
+                return Task.FromResult(true);
+            }
+
+            ctx.RespondAsync($"Notificaitions channel {groupName} doesn't exist!");
+            ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to remove message channel {groupName}, but it doesn't exist!");
+
+            return Task.FromResult(false);
+        }
+
         public Task<bool> SubscribeUserToGroup(CommandContext ctx, string groupName)
         {
-            string sqlstring = $"SELECT id,users FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;";
-
             SqliteCommand command = new SqliteCommand($"SELECT id,users FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;", m_DbConnection);
             SqliteDataReader rdr = command.ExecuteReader();
 
@@ -191,6 +214,50 @@ namespace todor_reloaded
 
             return Task.FromResult(false);
         }
+
+        public Task<bool> UnsubscribeUserToGroup(CommandContext ctx, string groupName)
+        {
+            SqliteCommand command = new SqliteCommand($"SELECT id,users FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;", m_DbConnection);
+            SqliteDataReader rdr = command.ExecuteReader();
+
+            while (rdr.Read())
+            {
+                int index = rdr.GetInt16(0);
+                string userIds = rdr.GetString(1);
+                List<string> split = new List<string>(userIds.Split(','));
+
+                string userid = Convert.ToString(ctx.Member.Id);
+
+                if (split.Contains(userid))
+                {
+                    split.Remove(userid);
+
+                    string newIds = utils.ArrayToString(split.ToArray(), ',');
+                    string sqlupdate = $"UPDATE groupStorage SET users='{newIds}' WHERE id='{index}';";
+
+                    SqliteCommand command2 = new SqliteCommand(sqlupdate, m_DbConnection);
+                    command2.ExecuteNonQuery();
+
+                    ctx.RespondAsync($"You have been removed from notifications channel: {groupName}");
+                    ctx.Client.Logger.Log(LogLevel.Information, $"User {ctx.Member.DisplayName} has been removed from notificaitions channel {groupName}");
+
+                    return Task.FromResult(true);
+                }
+                else
+                {
+                    ctx.RespondAsync($"You are aren't subscribed to notifications channel {groupName}");
+                    ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to subscribe to notificaitions channel {groupName}, but wasn't in it.");
+
+                    return Task.FromResult(false);
+                }
+            }
+
+            ctx.RespondAsync($"Couldn't find a notificaton channel with name {groupName}");
+            ctx.Client.Logger.Log(LogLevel.Warning, $"User {ctx.Member.DisplayName} tried to subscribe to notificaitions channel {groupName}, but such channel doesn't exist!");
+
+            return Task.FromResult(false);
+        }
+
 
         public Task<bool> AddNotificationToGroup(CommandContext ctx, string groupName, string name, string message, string timespan, int hour, int minute, int day, int mounth, int year)
         {

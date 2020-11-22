@@ -9,7 +9,7 @@ Properties/
 
 hosting-key.json
 config-linux.json
-config-release.json
+config-test.json
 
 # User-specific files
 *.rsuser
