@@ -215,7 +215,7 @@ namespace todor_reloaded
             return Task.FromResult(false);
         }
 
-        public Task<bool> UnsubscribeUserToGroup(CommandContext ctx, string groupName)
+        public Task<bool> UnsubscribeUserFromGroup(CommandContext ctx, string groupName)
         {
             SqliteCommand command = new SqliteCommand($"SELECT id,users FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;", m_DbConnection);
             SqliteDataReader rdr = command.ExecuteReader();
