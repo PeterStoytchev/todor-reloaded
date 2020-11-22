@@ -153,27 +153,24 @@ namespace todor_reloaded
             }
         }
 
-        public async Task DebugQueueExecutor(CommandContext ctx, string outputLocation)
+        public async Task DebugQueueExecutor(CommandContext ctx)
         {
-            PrintDest dest = utils.ParseDest(outputLocation);
-
-            await utils.OutputToConsole($"Song queue for guild {ctx.Guild.Name}", ctx, outputLocation, dest);
+            utils.DebugLog($"Song queue for guild {ctx.Guild.Name}");
 
             int tracker = 1;
             foreach (Song s in SongQueue)
             {
-                await utils.OutputToConsole("====================", ctx, outputLocation, dest);
-                await utils.OutputToConsole($"{tracker}) name: {s.name}", ctx, outputLocation, dest);
-                await utils.OutputToConsole($"{tracker}) type: {s.type}", ctx, outputLocation, dest);
-                await utils.OutputToConsole($"{tracker}) uploader: {s.uploader}", ctx, outputLocation, dest);
-                await utils.OutputToConsole($"{tracker}) path: {s.path}", ctx, outputLocation, dest);
-                await utils.OutputToConsole("====================", ctx, outputLocation, dest);
+                utils.DebugLog("====================");
+                utils.DebugLog($"{tracker}) name: {s.name}");
+                utils.DebugLog($"{tracker}) type: {s.type}");
+                utils.DebugLog($"{tracker}) uploader: {s.uploader}");
+                utils.DebugLog($"{tracker}) path: {s.path}");
+                utils.DebugLog("====================");
 
                 tracker++;
             }
 
-            await ctx.RespondAsync($"Queue printed to {outputLocation} console!");
-
+            await ctx.RespondAsync($"Queue printed to console!");
         }
 
         public async Task QueueExecutor(CommandContext ctx)

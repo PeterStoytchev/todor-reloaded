@@ -30,30 +30,6 @@ namespace todor_reloaded
             }
         }
 
-        //TODO: GET RID OF THIS
-        public static async Task OutputToConsole(string str, CommandContext ctx, string printDest = "", PrintDest dest = PrintDest.Empty)
-        {
-            if (dest == PrintDest.Empty)
-            {
-                dest = ParseDest(printDest);
-            }
-
-            switch (dest)
-            {
-                case PrintDest.VSDebug:
-                    Debug.WriteLine(str);
-                    break;
-
-                case PrintDest.ConsoleOut:
-                    ctx.Client.Logger.LogInformation(str);
-                    break;
-
-                case PrintDest.DiscordChn:
-                    await ctx.Channel.SendMessageAsync(str);
-                    break;
-            }
-        }
-        
         public static TimeSpan CreateTimeSpan(string stringRep)
         {
             //monthly:2 <-- stringRep string
@@ -88,26 +64,6 @@ namespace todor_reloaded
                 default:
                     throw new Exception("Invalid repetition parrern provided!");
             }
-        }
-
-        public static PrintDest ParseDest(string str)
-        {
-            //for later: load these from config.json
-            string[] vsdebug = { "debug", "vsdebug", "debugconsole" };
-            string[] dischannel = { "discord", "discordchannel" };
-
-            str = str.ToLower();
-
-            if (vsdebug.Contains(str))
-            {
-                return PrintDest.VSDebug;
-            }
-            else if (dischannel.Contains(str))
-            {
-                return PrintDest.DiscordChn;
-            }
-
-            return PrintDest.ConsoleOut;
         }
 
         public static string[] Cachify(string src)
@@ -194,14 +150,4 @@ namespace todor_reloaded
             return EmbedBuilder;
         }
     }
-
-    public enum PrintDest
-    {
-        VSDebug,
-        ConsoleOut,
-        DiscordChn,
-        Empty
-    }
-
-
 }

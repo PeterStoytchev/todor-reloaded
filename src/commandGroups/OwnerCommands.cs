@@ -23,13 +23,11 @@ namespace todor_reloaded
         [Command("printCache")]
         [Description("Prints the contents of the song cache k/v to the console.")]
         [Aliases("pc")]
-        public async Task PrintCache(CommandContext ctx, string destStr)
+        public async Task PrintCache(CommandContext ctx)
         {
             var pairs = global.songCache.GetPairs();
 
             int index = 1;
-
-            PrintDest dest = utils.ParseDest(destStr);
 
             foreach (var pair in pairs)
             {
@@ -37,15 +35,13 @@ namespace todor_reloaded
 
                 for (int i = 0; i < details.Length - 1; i++)
                 {
-                    string toPrint = $"{index}) {details[i]}";
-
-                    await utils.OutputToConsole(toPrint, ctx, destStr, dest);
+                    utils.DebugLog($"{index}) {details[i]}");
                 }
 
                 index++;
             }
 
-            await ctx.RespondAsync($"Cache printed to {destStr} console");
+            await ctx.RespondAsync($"Cache printed to console");
         }
 
         [Command("reloadConfig")]
@@ -62,19 +58,6 @@ namespace todor_reloaded
                 await ctx.RespondAsync($"Couldn't find config file at: {global.botConfig.configDir}"); 
             }
 
-        }
-
-        [Command("debugChannels")]
-        [Aliases("dc")]
-        public async Task debugChannels(CommandContext ctx)
-        {
-            Debug.WriteLine("Printing notificaiton groups");
-            /*
-            foreach (NotificationGroup notificationGroup in global.notificationSystem.GetGroups())
-            {
-                Debug.WriteLine(notificationGroup.m_Name);
-            }
-            */
         }
     }
 

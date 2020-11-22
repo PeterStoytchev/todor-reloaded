@@ -104,9 +104,9 @@ namespace todor_reloaded
         [Command("debugqueue")]
         [Description("a command that pritns the queeue to the visual studio debug console, do not use")]
         [RequireOwner]
-        public async Task Queue(CommandContext ctx, [Optional, DefaultParameterValue("")] string printDest)
+        public async Task DebugQueueExecutor(CommandContext ctx)
         {
-            await global.player.DebugQueueExecutor(ctx, printDest);
+            await global.player.DebugQueueExecutor(ctx);
 
         }
     }
