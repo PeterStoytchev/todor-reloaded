@@ -258,7 +258,6 @@ namespace todor_reloaded
             return Task.FromResult(false);
         }
 
-
         public Task<bool> AddNotificationToGroup(CommandContext ctx, string groupName, string name, string message, string timespan, int hour, int minute, int day, int mounth, int year)
         {
             string checkValidGroupNameSQL = $"SELECT id FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;";
@@ -303,7 +302,17 @@ namespace todor_reloaded
 
             return Task.FromResult(false);
         }
+        public Task<bool> RemoveNotification(CommandContext ctx, string notificationName)
+        {
+            SqliteCommand command = new SqliteCommand($"DELETE FROM data WHERE notificationName='{notificationName}';", m_DbConnection);
+            command.ExecuteNonQuery();
+            
+            ctx.RespondAsync($"Notificaion with name {notificationName} has been removed!");
+            ctx.Client.Logger.Log(LogLevel.Information, $"User {ctx.Member.DisplayName} added a notification with name {notificationName} has been removed!");
 
+            return Task.FromResult(true);
+
+        }
         ~NotificationSystem()
         {
             m_DbConnection.Close();
