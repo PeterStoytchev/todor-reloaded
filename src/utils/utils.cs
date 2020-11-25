@@ -32,7 +32,7 @@ namespace todor_reloaded
 
         public static TimeSpan CreateTimeSpan(string stringRep)
         {
-            //monthly:2 <-- stringRep string
+            //days:2 <-- stringRep string
 
             string[] components = stringRep.Split(':');
 

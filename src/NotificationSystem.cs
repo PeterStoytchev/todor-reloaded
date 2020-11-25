@@ -199,7 +199,7 @@ namespace todor_reloaded
             {
                 DiscordEmbedBuilder EmbedBuilder = new DiscordEmbedBuilder
                 {
-                    Title = "Notification Groups",
+                    Title = "Notification channels:",
                     Color = DiscordColor.Azure,
                 };
 
@@ -393,7 +393,7 @@ namespace todor_reloaded
             {
                 DiscordEmbedBuilder EmbedBuilder = new DiscordEmbedBuilder
                 {
-                    Title = $"Notifications for group: {groupName}",
+                    Title = $"Notifications for channel {groupName}:",
                     Color = DiscordColor.Cyan,
                 };
 
