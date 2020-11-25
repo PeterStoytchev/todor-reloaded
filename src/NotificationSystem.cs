@@ -111,15 +111,15 @@ namespace todor_reloaded
 
                             member.SendMessageAsync(notificationMsg).GetAwaiter().GetResult();
                         }
-
-                        DateTime newTime = DateTime.Now.Add(rescheduleTimeSpan);
-
-                        //update the activation time, based on the reshedule timespan
-                        SqliteCommand command3 = new SqliteCommand($"UPDATE data SET notificationActivationDate='{newTime.Ticks}' WHERE id='{notificationId}';", m_DbConnection);
-                        command3.ExecuteNonQuery();
-
-                        utils.DebugLog($"Notification's trigger time updated to {newTime}");
                     }
+
+                    DateTime newTime = DateTime.Now.Add(rescheduleTimeSpan);
+
+                    //update the activation time, based on the reshedule timespan
+                    SqliteCommand command3 = new SqliteCommand($"UPDATE data SET notificationActivationDate='{newTime.Ticks}' WHERE id='{notificationId}';", m_DbConnection);
+                    command3.ExecuteNonQuery();
+
+                    utils.DebugLog($"Notification's trigger time updated to {newTime}");
                 }
             }
         }
