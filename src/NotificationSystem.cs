@@ -173,6 +173,58 @@ namespace todor_reloaded
             return Task.FromResult(false);
         }
 
+        public Task<bool> ListGroups(CommandContext ctx)
+        {
+            string sql = $"SELECT groupName FROM groupStorage;";
+
+            SqliteCommand command = new SqliteCommand(sql, m_DbConnection);
+            SqliteDataReader rdr = command.ExecuteReader();
+
+            DiscordEmbedBuilder EmbedBuilder = new DiscordEmbedBuilder
+            {
+                Title = "Notification Groups",
+                Color = DiscordColor.Azure,
+            };
+
+            bool hasRead = false;
+
+            while (hasRead = rdr.Read())
+            {
+                string name = rdr.GetString(0);
+
+                try
+                {
+                    EmbedBuilder.AddField("Group name:", name, true);
+                }
+                catch (Exception e)
+                {
+                    ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
+
+                    EmbedBuilder.ClearFields();
+                    return Task.FromResult(true);
+                }
+
+            }
+
+            if (EmbedBuilder.Fields.Count != 0)
+            {
+                ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
+            }
+
+            if (!hasRead)
+            {
+                ctx.Channel.SendMessageAsync("There are no message channels!");
+
+                return Task.FromResult(false);
+
+            }
+            else
+            {
+                return Task.FromResult(true);
+            }
+
+        }
+
         public Task<bool> SubscribeUserToGroup(CommandContext ctx, string groupName)
         {
             SqliteCommand command = new SqliteCommand($"SELECT id,users FROM 'groupStorage' WHERE groupName='{groupName}' LIMIT 1;", m_DbConnection);
@@ -302,6 +354,7 @@ namespace todor_reloaded
 
             return Task.FromResult(false);
         }
+        
         public Task<bool> RemoveNotification(CommandContext ctx, string notificationName)
         {
             SqliteCommand command = new SqliteCommand($"DELETE FROM data WHERE notificationName='{notificationName}';", m_DbConnection);
@@ -313,6 +366,50 @@ namespace todor_reloaded
             return Task.FromResult(true);
 
         }
+        
+        public Task<bool> ListNotifications(CommandContext ctx, string groupName)
+        {
+            string sql = $"SELECT id FROM groupStorage WHERE groupName='{groupName}' LIMIT 1;";
+            SqliteCommand command = new SqliteCommand(sql, m_DbConnection);
+            SqliteDataReader rdr = command.ExecuteReader();
+            
+            rdr.Read();
+            short groupId = rdr.GetInt16(0);
+
+            string sql2 = $"SELECT notificationName,notificationMessage,notificationActivationDate,notificaionRescheduleSpan FROM data WHERE notificationGroupId='{groupId}';";
+            SqliteCommand command2 = new SqliteCommand(sql2, m_DbConnection);
+            SqliteDataReader rdr2 = command2.ExecuteReader();
+
+            DiscordEmbedBuilder EmbedBuilder = new DiscordEmbedBuilder
+            {
+                Title = $"Notifications for group: {groupName}",
+                Color = DiscordColor.Cyan,
+            };
+
+            while (rdr2.Read())
+            {
+                string notName = rdr2.GetString(0);
+                string notMessage = rdr2.GetString(1);
+                
+                DateTime nextDate = new DateTime(rdr2.GetInt64(2));
+                TimeSpan repetitionPattern = new TimeSpan(rdr2.GetInt64(3));
+
+                EmbedBuilder.AddField("Name:", notName, true);
+                EmbedBuilder.AddField("Message:", notMessage, true);
+                EmbedBuilder.AddField("Next date:", nextDate.ToString(), true);
+                EmbedBuilder.AddField("Repetition pattern:", repetitionPattern.ToString(), true);
+
+                ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
+
+                EmbedBuilder.ClearFields();
+
+                return Task.FromResult(true);
+            }
+
+            ctx.Channel.SendMessageAsync($"There are not notifications for {groupName}");
+            return Task.FromResult(false);
+        }
+
         ~NotificationSystem()
         {
             m_DbConnection.Close();

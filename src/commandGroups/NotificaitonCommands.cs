@@ -72,5 +72,21 @@ namespace todor_reloaded
         {
             await global.notificationSystem.RemoveNotification(ctx, name);
         }
+
+        [Command("listgroups")]
+        [Description("Lists all notifiction groups.")]
+        [Aliases("lg")]
+        public async Task ListNotificationGroupsExecutor(CommandContext ctx)
+        {
+            await global.notificationSystem.ListGroups(ctx);
+        }
+
+        [Command("listnotifications")]
+        [Description("Lists all notifiction groups.")]
+        [Aliases("ln")]
+        public async Task ListNotificationsExecutor(CommandContext ctx, string groupName)
+        {
+            await global.notificationSystem.ListNotifications(ctx, groupName);
+        }
     }
 }
