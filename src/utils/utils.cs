@@ -35,9 +35,14 @@ namespace todor_reloaded
             //monthly:2 <-- stringRep string
 
             string[] components = stringRep.Split(':');
-            int time = int.Parse(components[1]);
 
-            if (time < 1) { time = 1; }
+            int time = 0;            
+            if (components.Length == 2)
+            {
+                time = int.Parse(components[1]);
+
+                if (time < 1) { time = 1; }
+            }
 
             switch (components[0].ToLower())
             {
@@ -59,8 +64,8 @@ namespace todor_reloaded
                 case "seconds":
                     return new TimeSpan(0, 0, time);
 
-                case "NULL":
-                    return new TimeSpan();
+                case "none":
+                    return new TimeSpan(0);
                 default:
                     throw new Exception("Invalid repetition parrern provided!");
             }

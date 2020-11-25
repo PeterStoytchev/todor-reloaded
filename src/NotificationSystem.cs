@@ -68,7 +68,8 @@ namespace todor_reloaded
 
         private void M_ProcessingTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            m_ProcessingWorker.RunWorkerAsync();
+            if (!m_ProcessingWorker.IsBusy)
+                m_ProcessingWorker.RunWorkerAsync();
         }
 
         public void ProcessNotifications(object sender, DoWorkEventArgs e)
@@ -104,12 +105,15 @@ namespace todor_reloaded
                         //get the member from discord by the id and send him the message
                         foreach (string str in users)
                         {
-                            ulong id = Convert.ToUInt64(str);
-                            DiscordMember member = guild.GetMemberAsync(id).GetAwaiter().GetResult();
+                            if (!String.IsNullOrWhiteSpace(str))
+                            {
+                                ulong id = Convert.ToUInt64(str);
+                                DiscordMember member = guild.GetMemberAsync(id).GetAwaiter().GetResult();
 
-                            utils.DebugLog($"[{DateTime.Now}] Sending notification scheduled for {triggerTime.ToString()} to user {member.Username}");
+                                utils.DebugLog($"[{DateTime.Now}] Sending notification scheduled for {triggerTime.ToString()} to user {member.Username}");
 
-                            member.SendMessageAsync(notificationMsg).GetAwaiter().GetResult();
+                                member.SendMessageAsync(notificationMsg).GetAwaiter().GetResult();
+                            }
                         }
                     }
 
@@ -366,7 +370,7 @@ namespace todor_reloaded
         
         public Task<bool> ListNotifications(CommandContext ctx, string groupName)
         {
-            string sql = $"SELECT id FROM groupStorage WHERE groupName='{groupName}' LIMIT 1;";
+            string sql = $"SELECT id FROM groupStorage WHERE groupName='{groupName}';";
             SqliteCommand command = new SqliteCommand(sql, m_DbConnection);
             SqliteDataReader rdr = command.ExecuteReader();
             
