@@ -75,17 +75,17 @@ namespace todor_reloaded
         {
             utils.DebugLog($"[{DateTime.Now}] Starting notificaitons processing...");
 
-            SqliteCommand command = new SqliteCommand("SELECT * FROM data;", m_DbConnection);
+            SqliteCommand command = new SqliteCommand("SELECT id,notificationMessage,notificationGroupId,notificationActivationDate,notificaionRescheduleSpan FROM data;", m_DbConnection);
             SqliteDataReader rdr = command.ExecuteReader();
 
             while (rdr.Read())
             {
                 short notificationId = rdr.GetInt16(0);
-                string notificationMsg = rdr.GetString(2);
-                short groupId = rdr.GetInt16(3);
+                string notificationMsg = rdr.GetString(1);
+                short groupId = rdr.GetInt16(2);
 
-                DateTime triggerTime = new DateTime(rdr.GetInt64(4));
-                TimeSpan rescheduleTimeSpan = new TimeSpan(rdr.GetInt64(5));
+                DateTime triggerTime = new DateTime(rdr.GetInt64(3));
+                TimeSpan rescheduleTimeSpan = new TimeSpan(rdr.GetInt64(4));
 
                 int cmp = DateTime.Compare(triggerTime, DateTime.Now);
                 if (cmp < 0 || cmp == 0) //check if the time for the notification has passed or is now
