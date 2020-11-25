@@ -117,13 +117,24 @@ namespace todor_reloaded
                         }
                     }
 
-                    DateTime newTime = DateTime.Now.Add(rescheduleTimeSpan);
+                    if (rescheduleTimeSpan != new TimeSpan(0))
+                    {
+                        DateTime newTime = DateTime.Now.Add(rescheduleTimeSpan);
 
-                    //update the activation time, based on the reshedule timespan
-                    SqliteCommand command3 = new SqliteCommand($"UPDATE data SET notificationActivationDate='{newTime.Ticks}' WHERE id='{notificationId}';", m_DbConnection);
-                    command3.ExecuteNonQuery();
+                        //update the activation time, based on the reshedule timespan
+                        SqliteCommand command3 = new SqliteCommand($"UPDATE data SET notificationActivationDate='{newTime.Ticks}' WHERE id='{notificationId}';", m_DbConnection);
+                        command3.ExecuteNonQuery();
 
-                    utils.DebugLog($"Notification's trigger time updated to {newTime}");
+                        utils.DebugLog($"Notification's trigger time updated to {newTime}");
+                    }
+                    else
+                    {
+                        //if it is a one time notification, remove it from the db
+                        SqliteCommand command3 = new SqliteCommand($"DELETE FROM data WHERE id='{notificationId}';", m_DbConnection);
+                        command3.ExecuteNonQuery();
+
+                        utils.DebugLog($"One-time notification removed!");
+                    }
                 }
             }
         }
@@ -184,46 +195,43 @@ namespace todor_reloaded
             SqliteCommand command = new SqliteCommand(sql, m_DbConnection);
             SqliteDataReader rdr = command.ExecuteReader();
 
-            DiscordEmbedBuilder EmbedBuilder = new DiscordEmbedBuilder
+            if (rdr.HasRows)
             {
-                Title = "Notification Groups",
-                Color = DiscordColor.Azure,
-            };
-
-            bool hasRead;
-            while (hasRead = rdr.Read())
-            {
-                string name = rdr.GetString(0);
-
-                try
+                DiscordEmbedBuilder EmbedBuilder = new DiscordEmbedBuilder
                 {
-                    EmbedBuilder.AddField("Group name:", name, true);
+                    Title = "Notification Groups",
+                    Color = DiscordColor.Azure,
+                };
+
+                while (rdr.Read())
+                {
+                    string name = rdr.GetString(0);
+
+                    try
+                    {
+                        EmbedBuilder.AddField("Group name:", name, true);
+                    }
+                    catch (Exception e)
+                    {
+                        ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
+
+                        EmbedBuilder.ClearFields();
+                    }
+
                 }
-                catch (Exception e)
+
+                if (EmbedBuilder.Fields.Count != 0)
                 {
                     ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
-
-                    EmbedBuilder.ClearFields();
-                    return Task.FromResult(true);
                 }
 
+                return Task.FromResult(true);
             }
-
-            if (EmbedBuilder.Fields.Count != 0)
-            {
-                ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
-            }
-
-            if (!hasRead)
+            else
             {
                 ctx.Channel.SendMessageAsync("There are no notification channels!");
                 return Task.FromResult(false);
             }
-            else
-            {
-                return Task.FromResult(true);
-            }
-
         }
 
         public Task<bool> SubscribeUserToGroup(CommandContext ctx, string groupName)
@@ -381,34 +389,39 @@ namespace todor_reloaded
             SqliteCommand command2 = new SqliteCommand(sql2, m_DbConnection);
             SqliteDataReader rdr2 = command2.ExecuteReader();
 
-            DiscordEmbedBuilder EmbedBuilder = new DiscordEmbedBuilder
+            if (rdr2.HasRows)
             {
-                Title = $"Notifications for group: {groupName}",
-                Color = DiscordColor.Cyan,
-            };
+                DiscordEmbedBuilder EmbedBuilder = new DiscordEmbedBuilder
+                {
+                    Title = $"Notifications for group: {groupName}",
+                    Color = DiscordColor.Cyan,
+                };
 
-            while (rdr2.Read())
-            {
-                string notName = rdr2.GetString(0);
-                string notMessage = rdr2.GetString(1);
-                
-                DateTime nextDate = new DateTime(rdr2.GetInt64(2));
-                TimeSpan repetitionPattern = new TimeSpan(rdr2.GetInt64(3));
+                while (rdr2.Read())
+                {
+                    string notName = rdr2.GetString(0);
+                    string notMessage = rdr2.GetString(1);
 
-                EmbedBuilder.AddField("Name:", notName, true);
-                EmbedBuilder.AddField("Message:", notMessage, true);
-                EmbedBuilder.AddField("Next date:", nextDate.ToString(), true);
-                EmbedBuilder.AddField("Repetition pattern:", repetitionPattern.ToString(), true);
+                    DateTime nextDate = new DateTime(rdr2.GetInt64(2));
+                    TimeSpan repetitionPattern = new TimeSpan(rdr2.GetInt64(3));
 
-                ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
+                    EmbedBuilder.AddField("Name:", notName, true);
+                    EmbedBuilder.AddField("Message:", notMessage, true);
+                    EmbedBuilder.AddField("Next date:", nextDate.ToString(), true);
+                    EmbedBuilder.AddField("Repetition pattern:", repetitionPattern.ToString(), true);
 
-                EmbedBuilder.ClearFields();
+                    ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
+
+                    EmbedBuilder.ClearFields();
+                }
 
                 return Task.FromResult(true);
             }
-
-            ctx.Channel.SendMessageAsync($"There are no notifications for group {groupName}");
-            return Task.FromResult(false);
+            else
+            {
+                ctx.Channel.SendMessageAsync($"There are no notifications for group {groupName}");
+                return Task.FromResult(false);
+            }
         }
 
         ~NotificationSystem()
