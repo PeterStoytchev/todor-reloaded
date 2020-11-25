@@ -11,7 +11,6 @@ using DSharpPlus.Entities;
 
 namespace todor_reloaded
 {
-    //TODO: add info for the discord help command (ref. SoundPlayback.cs)
     class NotificaitonCommands : BaseCommandModule
     {
         [Command("subscribe")]

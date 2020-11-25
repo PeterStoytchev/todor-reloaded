@@ -217,7 +217,7 @@ namespace todor_reloaded
             if (commandSenderVoiceState?.Channel == null)
             {
                 //the user isnt in a voice channel, quit
-                await ctx.RespondAsync(CommonMessages.VoiceChannelCouldNotConnect);
+                await ctx.RespondAsync("Could not connect to a voice channel! Are you in one?");
                 return false;
             }
 
@@ -233,7 +233,7 @@ namespace todor_reloaded
             if (connection == null)
             {
                 // not connected
-                await ctx.RespondAsync(CommonMessages.NotConnectedGuild);
+                await ctx.RespondAsync("Not connected in this guild.");
                 return;
             }
 
@@ -270,7 +270,7 @@ namespace todor_reloaded
             }
             else
             {
-                await ctx.RespondAsync(CommonMessages.NoPlayingToSkip);
+                await ctx.RespondAsync("No song is playing for me to skip!");
             }
         }
 

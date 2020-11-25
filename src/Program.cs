@@ -43,7 +43,6 @@ namespace todor_reloaded
             global.commands.RegisterCommands<GeneralCommands>();
             global.commands.RegisterCommands<OwnerCommands>();
             global.commands.RegisterCommands<SoundPlayback>();
-            global.commands.RegisterCommands<NotificaitonCommands>();
 
             if (global.botConfig.spotifyEnabled)
             {
@@ -57,8 +56,13 @@ namespace todor_reloaded
 
             //connect
             await global.bot.ConnectAsync();
-            
-            global.notificationSystem = new NotificationSystem(@"C:\Users\Seph\Desktop\todor-reloaded\notifications.db");
+
+            //notification system
+            if (global.botConfig.notificationSystemEnabled)
+            {
+                global.notificationSystem = new NotificationSystem(global.botConfig.notificationDataPath); //this needs to be created, after the bot has conencted because the notifications processor in it starts immidiately
+                global.commands.RegisterCommands<NotificaitonCommands>();
+            }
 
             await Task.Delay(-1);
 
