@@ -186,8 +186,7 @@ namespace todor_reloaded
                 Color = DiscordColor.Azure,
             };
 
-            bool hasRead = false;
-
+            bool hasRead;
             while (hasRead = rdr.Read())
             {
                 string name = rdr.GetString(0);
@@ -213,10 +212,8 @@ namespace todor_reloaded
 
             if (!hasRead)
             {
-                ctx.Channel.SendMessageAsync("There are no message channels!");
-
+                ctx.Channel.SendMessageAsync("There are no notification channels!");
                 return Task.FromResult(false);
-
             }
             else
             {
@@ -406,7 +403,7 @@ namespace todor_reloaded
                 return Task.FromResult(true);
             }
 
-            ctx.Channel.SendMessageAsync($"There are not notifications for {groupName}");
+            ctx.Channel.SendMessageAsync($"There are no notifications for group {groupName}");
             return Task.FromResult(false);
         }
 
