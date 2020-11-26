@@ -112,7 +112,15 @@ namespace todor_reloaded
 
                                 utils.DebugLog($"[{DateTime.Now}] Sending notification scheduled for {triggerTime.ToString()} to user {member.Username}");
 
-                                member.SendMessageAsync(notificationMsg).GetAwaiter().GetResult();
+                                try
+                                {
+                                    member.SendMessageAsync(notificationMsg).GetAwaiter().GetResult();
+                                }
+                                catch (DSharpPlus.Exceptions.UnauthorizedException es)
+                                {
+                                    member.Guild.SystemChannel.SendMessageAsync($"<@{id}> {notificationMsg}");
+                                    member.Guild.SystemChannel.SendMessageAsync($"<@{id}> Warning! You have direct messages blocked in your discord privacy settings. Please, unblock them, so that I can send the notifictions there. Thank you!");
+                                }
                             }
                         }
                     }
