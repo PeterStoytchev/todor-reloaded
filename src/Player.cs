@@ -307,8 +307,6 @@ namespace todor_reloaded
 
             await discordStream.FlushAsync();
 
-            discordStream.Dispose();
-
             transcoder.StandardOutput.BaseStream.Dispose();
             
             transcoder.Close();
@@ -334,7 +332,7 @@ namespace todor_reloaded
                     break;
                 }
 
-                output.WriteAsync(buffer, 0, read);
+                output.WriteAsync(buffer, 0, read).GetAwaiter().GetResult();
 
                 Thread.Sleep(threadSleepTime);
             }
