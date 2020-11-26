@@ -53,6 +53,7 @@ namespace todor_reloaded
              [Description("The name of the notification.")] string name,
              [Description("When should the notification be sent first (format: hour/minute/day/month/year")] string timeString,
              [Description("After what period of time should the notification repeat itself (example: days:2). If you don't want it to repeat, type none.")] string rescheduleTimespan,
+             [Description("Your timezone's offset comapred to UTC (eg. If you are in timezone UTC+02:00, type in 2.0.")] double utcOffset,
              [Description("What should the notification say.")] params string[] message) 
         {
             //format: hour/minute/day/month/year
@@ -66,7 +67,7 @@ namespace todor_reloaded
             int mounth = int.Parse(components[3]);
             int year = int.Parse(components[4]);
 
-            await global.notificationSystem.AddNotificationToGroup(ctx, channelName, name, utils.ArrayToString(message, ' '), rescheduleTimespan, hour, minute, day, mounth, year);
+            await global.notificationSystem.AddNotificationToGroup(ctx, channelName, name, utils.ArrayToString(message, ' '), rescheduleTimespan, hour, minute, day, mounth, year, utcOffset);
         }
 
         [Command("removenotification")]
