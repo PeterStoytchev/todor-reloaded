@@ -47,7 +47,6 @@ namespace todor_reloaded
             'notificationGroupId' INTEGER NOT NULL, 
             'notificationActivationDate' INTEGER NOT NULL, 
             'notificaionRescheduleSpan' INTEGER NOT NULL, 
-            'notificaionUtcOffset' INTEGER NOT NULL, 
             PRIMARY KEY('id' AUTOINCREMENT));";
 
             SqliteCommand cmd = new SqliteCommand(sqlstring, m_DbConnection);
@@ -89,7 +88,7 @@ namespace todor_reloaded
                 DateTime triggerTime = new DateTime(rdr.GetInt64(3));
                 TimeSpan rescheduleTimeSpan = new TimeSpan(rdr.GetInt64(4));
 
-                int cmp = DateTime.Compare(triggerTime, DateTime.UtcNow);
+                int cmp = DateTime.Compare(triggerTime, DateTime.Now);
                 if (cmp < 0 || cmp == 0) //check if the time for the notification has passed or is now
                 {
                     //get the users from the db
@@ -128,7 +127,7 @@ namespace todor_reloaded
 
                     if (rescheduleTimeSpan != new TimeSpan(0))
                     {
-                        DateTime newTime = DateTime.UtcNow.Add(rescheduleTimeSpan);
+                        DateTime newTime = triggerTime.Add(rescheduleTimeSpan);
 
                         //update the activation time, based on the reshedule timespan
                         SqliteCommand command3 = new SqliteCommand($"UPDATE data SET notificationActivationDate='{newTime.Ticks}' WHERE id='{notificationId}';", m_DbConnection);
@@ -341,11 +340,10 @@ namespace todor_reloaded
                 int channelId = rdr.GetInt16(0);
 
                 DateTime dt = new DateTime(year, mounth, day, hour, minute, 0, 0);
-                dt = dt.AddHours(utcOffset * -1.0); //convert the dt to utc based on the offset
                
                 TimeSpan ts = utils.CreateTimeSpan(timespan);
 
-                string insertSQL = $"INSERT INTO data(notificationName, notificationMessage, notificationGroupId, notificationActivationDate, notificaionRescheduleSpan, notificaionUtcOffset) VALUES('{name}', '{message}', '{channelId}', '{dt.Ticks}', '{ts.Ticks}', '{utcOffset}');";
+                string insertSQL = $"INSERT INTO data(notificationName, notificationMessage, notificationGroupId, notificationActivationDate, notificaionRescheduleSpan) VALUES('{name}', '{message}', '{channelId}', '{dt.Ticks}', '{ts.Ticks}');";
 
                 SqliteCommand insertCommand = new SqliteCommand(insertSQL, m_DbConnection);
                 
@@ -396,7 +394,7 @@ namespace todor_reloaded
             rdr.Read();
             short groupId = rdr.GetInt16(0);
 
-            string sql2 = $"SELECT notificationName,notificationMessage,notificationActivationDate,notificaionRescheduleSpan,notificaionUtcOffset FROM data WHERE notificationGroupId='{groupId}';";
+            string sql2 = $"SELECT notificationName,notificationMessage,notificationActivationDate,notificaionRescheduleSpan FROM data WHERE notificationGroupId='{groupId}';";
             SqliteCommand command2 = new SqliteCommand(sql2, m_DbConnection);
             SqliteDataReader rdr2 = command2.ExecuteReader();
 
@@ -413,7 +411,7 @@ namespace todor_reloaded
                     string notName = rdr2.GetString(0);
                     string notMessage = rdr2.GetString(1);
 
-                    DateTime nextDate = new DateTime(rdr2.GetInt64(2)).AddHours(rdr2.GetDouble(4));
+                    DateTime nextDate = new DateTime(rdr2.GetInt64(2));
                     TimeSpan repetitionPattern = new TimeSpan(rdr2.GetInt64(3));
 
                     EmbedBuilder.AddField("Name:", notName, true);
