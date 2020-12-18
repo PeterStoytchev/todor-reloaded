@@ -1,17 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
-using System.Collections.Generic;
-using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
-using System.Threading;
-using Google.Apis.YouTube.v3.Data;
 
 namespace todor_reloaded
 {

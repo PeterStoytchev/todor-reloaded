@@ -4,6 +4,8 @@ using DSharpPlus.VoiceNext;
 using DSharpPlus.VoiceNext.Codec;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
+using DSharpPlus.Lavalink;
+using DSharpPlus.Net;
 using SpotifyAPI.Web;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,7 +30,6 @@ namespace todor_reloaded
             global.botConfig = await BotConfig.CreateConfig(args[0]);
             global.bot = new DiscordClient(global.botConfig.GetDiscordConfiguration());
 
-            global.songCache = new PersistentDictionary(global.botConfig.songCacheDir + "kvPairs.kolba");
 
             //bot events
             global.bot.Ready += BotEvents.Bot_Ready;
@@ -42,22 +43,40 @@ namespace todor_reloaded
             //command definitions
             global.commands.RegisterCommands<GeneralCommands>();
             global.commands.RegisterCommands<OwnerCommands>();
-            global.commands.RegisterCommands<SoundPlayback>();
 
-            if (global.botConfig.spotifyEnabled)
+            if (global.botConfig.lavalinkEnabled)
             {
-                global.spotify = new SpotifyClient(global.botConfig.GetClientConfig());
-                global.commands.RegisterCommands<SpotifyCommands>();
-            }
 
-            //voice stuffs
-            global.player = new Player();
-            global.googleClient = new GoogleClient(global.botConfig.googleServiceKey, global.botConfig.countryCode);
+            }
+            else
+            {
+                global.commands.RegisterCommands<SoundPlayback>();
+
+                if (global.botConfig.spotifyEnabled)
+                {
+                    global.spotify = new SpotifyClient(global.botConfig.GetClientConfig());
+                    global.commands.RegisterCommands<SpotifyCommands>();
+                }
+
+                global.songCache = new PersistentDictionary(global.botConfig.songCacheDir + "kvPairs.kolba");
+
+                //voice stuffs
+                global.player = new Player();
+                global.googleClient = new GoogleClient(global.botConfig.googleServiceKey, global.botConfig.countryCode);
+            }
 
             //connect
             await global.bot.ConnectAsync();
 
-            //notification system
+            if (global.botConfig.lavalinkEnabled)
+            {
+                LavalinkConfiguration lavaConfig = global.botConfig.GetLavalinkConfiguration();
+                LavalinkExtension lavalink = global.bot.UseLavalink();
+
+                await lavalink.ConnectAsync(lavaConfig);
+            }
+
+                //notification system
             if (global.botConfig.notificationSystemEnabled)
             {
                 global.notificationSystem = new NotificationSystem(global.botConfig.notificationDataPath); //this needs to be created, after the bot has conencted because the notifications processor in it starts immidiately

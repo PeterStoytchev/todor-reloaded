@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Reflection.Metadata;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using DSharpPlus;
+using DSharpPlus.Net;
+using DSharpPlus.Lavalink;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.EventArgs;
-using DSharpPlus.VoiceNext;
-using DSharpPlus.VoiceNext.Codec;
-using Google.Apis.Services;
-using Google.Apis.YouTube.v3;
+
 using Newtonsoft.Json;
 using SpotifyAPI.Web;
 
@@ -19,6 +14,18 @@ namespace todor_reloaded
 {
     public class BotConfig
     {
+        [JsonProperty("lavalinkEnabled")]
+        public bool lavalinkEnabled { get; private set; }
+
+        [JsonProperty("lavalinkServerIp")]
+        public string lavalinkServerIp { get; private set; }
+
+        [JsonProperty("lavalinkServerPort")]
+        public int lavalinkServerPort { get; private set; }
+
+        [JsonProperty("lavalinkPassword")]
+        public string lavalinkPassword { get; private set; }
+
         [JsonProperty("DebugMode")]
         public bool DebugMode { get; private set; }
 
@@ -81,7 +88,7 @@ namespace todor_reloaded
                 Token = discordToken,
                 TokenType = TokenType.Bot,
 
-                AutoReconnect = true,
+                AutoReconnect = true
             };
 
             return configuration;
@@ -97,6 +104,24 @@ namespace todor_reloaded
             };
 
             return configuration;
+        }
+
+        public LavalinkConfiguration GetLavalinkConfiguration()
+        {
+            ConnectionEndpoint endpoint = new ConnectionEndpoint
+            {
+                Hostname = global.botConfig.lavalinkServerIp,
+                Port = global.botConfig.lavalinkServerPort
+            };
+
+            LavalinkConfiguration config = new LavalinkConfiguration
+            {
+                Password = global.botConfig.lavalinkPassword,
+                RestEndpoint = endpoint,
+                SocketEndpoint = endpoint,
+            };
+
+            return config;
         }
 
         public static async Task<BotConfig> CreateConfig(string path)
