@@ -1,5 +1,8 @@
 ﻿using System.Threading.Tasks;
 
+using System.Collections.Generic;
+using System;
+
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Lavalink;
@@ -8,57 +11,144 @@ namespace todor_reloaded
 {
     class LavaSoundPlayback : BaseCommandModule
     {
-        [Command("join")]
-        [Description("Joins the voice channel that you are in.")]
-        [Aliases("joint", "j")]
-        public async Task Join(CommandContext ctx)
+        [Command("play")]
+        [Description("Plays a song")]
+        [Aliases("p")]
+        public async Task Play(CommandContext ctx, [RemainingText] string search)
         {
-            var lava = ctx.Client.GetLavalink();
-            
-            if (lava.ConnectedNodes.Count == 0)
+            if (await global.lavaPlayer.Join(ctx))
             {
-                await ctx.RespondAsync("The Lavalink connection is not established");
-                return;
+                LavalinkTrack track;
+                if (search.StartsWith("http://") || search.StartsWith("https://"))
+                {
+                    track = await LavaPlayer.UriToTrack(ctx, search);
+                }
+                else
+                {
+                    track = await LavaPlayer.SearchToTrack(ctx, search);
+                }
+
+                await global.lavaPlayer.Play(ctx, track);
             }
-
-            var node = lava.GetIdealNodeConnection();
-
-            if (ctx.Channel.Type != DSharpPlus.ChannelType.Voice)
-            {
-                await ctx.RespondAsync("Not a valid voice channel.");
-                return;
-            }
-
-            await node.ConnectAsync(ctx.Channel);
-            await ctx.RespondAsync($"Joined {ctx.Channel.Name}!");
         }
+
+        [Command("playlist")]
+        [Description("Plays a song video")]
+        [Aliases("pl")]
+        public async Task Playlist(CommandContext ctx, string link)
+        {
+            if (await global.lavaPlayer.Join(ctx))
+            {
+                var tracks = await LavaPlayer.UrisToPlaylist(ctx, link);
+
+                await global.lavaPlayer.PlayTracks(ctx, tracks);
+            }
+
+        }
+
+        [Command("soundcloud")]
+        [Description("Plays a song video from soundcloud.")]
+        [Aliases("sc")]
+        public async Task PlaySoundcloud(CommandContext ctx, [RemainingText] string search)
+        {
+            if (await global.lavaPlayer.Join(ctx))
+            {
+                if (search.StartsWith("http://") || search.StartsWith("https://"))
+                {
+                    string[] splitSearch = search.Split("/");
+                    search = $"{splitSearch[splitSearch.Length - 1]} - {splitSearch[splitSearch.Length - 2]}";
+                }
+
+                LavalinkTrack track = await LavaPlayer.SearchToTrack(ctx, search, LavalinkSearchType.SoundCloud);
+
+                await global.lavaPlayer.Play(ctx, track);
+            }
+        }
+
+
+        [Command("direct")]
+        [Description("Plays a song video from soundcloud.")]
+        [Aliases("d")]
+        public async Task PlayDirect(CommandContext ctx, string link)
+        {
+            if (await global.lavaPlayer.Join(ctx))
+            {
+                LavalinkTrack track = await LavaPlayer.UriToTrack(ctx, link);
+
+                await global.lavaPlayer.Play(ctx, track);
+            }
+
+        }
+
+        [Command("seek")]
+        [Description("Seeks into the song.")]
+        [Aliases("ds")]
+        public async Task PlayDirectSeek(CommandContext ctx, int seconds)
+        {
+            await global.lavaPlayer.Seek(ctx, new TimeSpan(0, 0, seconds));
+        }
+
+        [Command("volume")]
+        [Description("Sets the playback volume.")]
+        [Aliases("vol")]
+        public async Task SetVolume(CommandContext ctx, int percentage)
+        {
+            await global.lavaPlayer.SetVol(ctx, percentage);
+        }
+
+        [Command("pause")]
+        [Description("Plays a song video")]
+        public async Task Pause(CommandContext ctx)
+        {
+            await global.lavaPlayer.Pause(ctx);
+        }
+
+        [Command("skip")]
+        [Description("Skips a song.")]
+        [Aliases("ss")]
+        public async Task Skip(CommandContext ctx, int count = 1)
+        {
+            await global.lavaPlayer.Skip(ctx, count);
+        }
+
+
+        [Command("status")]
+        [Description("Prints the current status.")]
+        public async Task Status(CommandContext ctx)
+        {
+            await global.lavaPlayer.Status(ctx);
+        }
+
+        [Command("queue")]
+        [Description("Prints the current queue.")]
+        [Aliases("q")]
+        public async Task Queue(CommandContext ctx)
+        {
+            await global.lavaPlayer.Queue(ctx);
+        }
+
+        /*
+        [Command("BaseBoost")]
+        [Description("Adds base to the current song")]
+        [Aliases("bb")]
+        public async Task BaseBoost(CommandContext ctx)
+        {
+        }
+
+        [Command("eq")]
+        [Description("Applies a custom EQ curve to the current track")]
+        public async Task BaseBoost(CommandContext ctx, int low, int mid, int high)
+        {
+
+        }
+        */
 
         [Command("leave")]
         [Description("Leaves a voice channel.")]
-        [Aliases("l", "aufwiedersehen")]
+        [Aliases("stop", "l", "aufwiedersehen")]
         public async Task Leave(CommandContext ctx)
         {
-            var lava = ctx.Client.GetLavalink();
-
-            if (lava.ConnectedNodes.Count == 0)
-            {
-                await ctx.RespondAsync("The Lavalink connection is not established");
-                return;
-            }
-
-            var node = lava.GetIdealNodeConnection();
-
-            var conn = node.GetGuildConnection(ctx.Channel.Guild);
-
-            if (conn == null)
-            {
-                await ctx.RespondAsync("Lavalink is not connected.");
-                return;
-            }
-
-            await conn.DisconnectAsync();
-            await ctx.RespondAsync($"Left {ctx.Channel.Name}!");
+            await global.lavaPlayer.Leave(ctx);
         }
-
     }
 }

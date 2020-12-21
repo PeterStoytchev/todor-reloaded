@@ -44,9 +44,21 @@ namespace todor_reloaded
             global.commands.RegisterCommands<GeneralCommands>();
             global.commands.RegisterCommands<OwnerCommands>();
 
+            
+
+            //connect
+            await global.bot.ConnectAsync();
+            
             if (global.botConfig.lavalinkEnabled)
             {
+                global.lavaPlayer = new LavaPlayer();
+                global.commands.RegisterCommands<LavaSoundPlayback>();
 
+                if (global.botConfig.spotifyEnabled)
+                {
+                    global.spotify = new SpotifyClient(global.botConfig.GetClientConfig());
+                    global.commands.RegisterCommands<LavaSpotifyCommands>();
+                }
             }
             else
             {
@@ -65,18 +77,7 @@ namespace todor_reloaded
                 global.googleClient = new GoogleClient(global.botConfig.googleServiceKey, global.botConfig.countryCode);
             }
 
-            //connect
-            await global.bot.ConnectAsync();
-
-            if (global.botConfig.lavalinkEnabled)
-            {
-                LavalinkConfiguration lavaConfig = global.botConfig.GetLavalinkConfiguration();
-                LavalinkExtension lavalink = global.bot.UseLavalink();
-
-                await lavalink.ConnectAsync(lavaConfig);
-            }
-
-                //notification system
+            //notification system
             if (global.botConfig.notificationSystemEnabled)
             {
                 global.notificationSystem = new NotificationSystem(global.botConfig.notificationDataPath); //this needs to be created, after the bot has conencted because the notifications processor in it starts immidiately
