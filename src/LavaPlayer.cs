@@ -15,24 +15,30 @@ namespace todor_reloaded
 {
     public class LavaPlayer
     {
-        private Queue<LavalinkTrack> m_Queue = new Queue<LavalinkTrack>();
+        private Queue<LavaSong> m_Queue = new Queue<LavaSong>();
+        private DiscordChannel lastChannel = null;
         private bool isPaused = false;
-
-        private async Task Conn_PlaybackStarted(LavalinkGuildConnection sender, DSharpPlus.Lavalink.EventArgs.TrackStartEventArgs e)
-        {
-            await sender.Guild.GetDefaultChannel().SendMessageAsync($"Playing {e.Track.Title}");
-        }
 
         private async Task Conn_PlaybackFinished(LavalinkGuildConnection sender, DSharpPlus.Lavalink.EventArgs.TrackFinishEventArgs e)
         {
             if (m_Queue.Count != 0)
             {
                 var track = m_Queue.Dequeue();
-                await sender.PlayAsync(track);
+                await sender.PlayAsync(track.lavaTrack);
+                await track.requestChannel.SendMessageAsync($"Plating {track.lavaTrack.Title}");
+                lastChannel = track.requestChannel;
             }
             else
             {
-                await sender.Guild.GetDefaultChannel().SendMessageAsync("Queue end!");
+                if (lastChannel != null)
+                {
+                    await lastChannel.SendMessageAsync("Queue end!");
+                }
+                else
+                {
+                    await sender.Guild.GetDefaultChannel().SendMessageAsync("Queue end!");
+                }
+
                 isPaused = false;
             }
         }
@@ -56,10 +62,13 @@ namespace todor_reloaded
             if (conn.CurrentState.CurrentTrack == null)
             {
                 await conn.PlayAsync(track);
+                await ctx.Message.Channel.SendMessageAsync($"Playing {track.Title}");
             }
             else
             {
-                m_Queue.Enqueue(track);
+                LavaSong s = new LavaSong(track, ctx.Message.Channel);
+                
+                m_Queue.Enqueue(s);
                 await ctx.Message.Channel.SendMessageAsync($"Track added to queue. Currently there are {m_Queue.Count} tracks in the queue!");
             }
         }
@@ -84,11 +93,15 @@ namespace todor_reloaded
                 {
                     if (index != 0)
                     {
-                        m_Queue.Enqueue(track);
+                        LavaSong s = new LavaSong(track, ctx.Message.Channel);
+
+                        m_Queue.Enqueue(s);
                     }
                     else
                     {
                         await conn.PlayAsync(track);
+                        await ctx.Message.Channel.SendMessageAsync($"Playing {track.Title}");
+                        
                         index++;
                     }
                 }
@@ -98,6 +111,7 @@ namespace todor_reloaded
                 foreach (LavalinkTrack track in tracks)
                 {
                     await conn.PlayAsync(track);
+                    await ctx.Message.Channel.SendMessageAsync($"Playing {track.Title}");
                 }
             }
         }
@@ -215,7 +229,6 @@ namespace todor_reloaded
                 conn = node.GetGuildConnection(ctx.Member.Guild);
                 
                 conn.PlaybackFinished += Conn_PlaybackFinished;
-                conn.PlaybackStarted += Conn_PlaybackStarted;
 
                 await ctx.RespondAsync($"Joined {ctx.Member.VoiceState.Channel.Name}!");
             }
@@ -286,13 +299,13 @@ namespace todor_reloaded
             };
 
             int index = 1;
-            foreach (LavalinkTrack s in m_Queue)
+            foreach (LavaSong s in m_Queue)
             {
                 try
                 {
                     EmbedBuilder.AddField($"{index})", $"{ index})", true);
-                    EmbedBuilder.AddField("Title", s.Title, true);
-                    EmbedBuilder.AddField("Uploaded by", s.Author, true);
+                    EmbedBuilder.AddField("Title", s.lavaTrack.Title, true);
+                    EmbedBuilder.AddField("Uploaded by", s.lavaTrack.Author, true);
                     index++;
                 }
                 catch (Exception e)
