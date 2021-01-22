@@ -29,12 +29,6 @@ namespace todor_reloaded
         [JsonProperty("DebugMode")]
         public bool DebugMode { get; private set; }
 
-        [JsonProperty("notificationSystemEnabled")]
-        public bool notificationSystemEnabled { get; private set; }
-
-        [JsonProperty("notificationDataPath")]
-        public string notificationDataPath { get; private set; }
-
         [JsonProperty("transcoderThreadSleepTime")]
         public int transcoderThreadSleepTime { get; private set; }
 
