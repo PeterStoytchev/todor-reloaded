@@ -77,13 +77,6 @@ namespace todor_reloaded
                 global.googleClient = new GoogleClient(global.botConfig.googleServiceKey, global.botConfig.countryCode);
             }
 
-            //notification system
-            if (global.botConfig.notificationSystemEnabled)
-            {
-                global.notificationSystem = new NotificationSystem(global.botConfig.notificationDataPath); //this needs to be created, after the bot has conencted because the notifications processor in it starts immidiately
-                global.commands.RegisterCommands<NotificaitonCommands>();
-            }
-
             await Task.Delay(-1);
 
         }

@@ -28,8 +28,6 @@ namespace todor_reloaded
 
         public static LavaPlayer lavaPlayer { get; set; }
 
-        public static NotificationSystem notificationSystem { get; set; }
-
         public static int queueCounter { get; set; }
     }
 }

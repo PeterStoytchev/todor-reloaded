@@ -25,7 +25,7 @@ namespace todor_reloaded
             {
                 var track = m_Queue.Dequeue();
                 await sender.PlayAsync(track.lavaTrack);
-                await track.requestChannel.SendMessageAsync($"Plating {track.lavaTrack.Title}");
+                await track.requestChannel.SendMessageAsync($"Playing {track.lavaTrack.Title}");
                 lastChannel = track.requestChannel;
             }
             else
