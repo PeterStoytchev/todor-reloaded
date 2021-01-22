@@ -127,9 +127,11 @@ namespace todor_reloaded
         [Aliases("ss")]
         public async Task Skip(CommandContext ctx, int count = 1)
         {
-            await global.lavaPlayer.Skip(ctx, count);
+            await SafeCall(ctx, async () =>
+            {
+                await global.lavaPlayer.Skip(ctx, count);
+            });
         }
-
 
         [Command("status")]
         [Description("Prints the current status.")]
