@@ -16,20 +16,23 @@ namespace todor_reloaded
         [Aliases("p")]
         public async Task Play(CommandContext ctx, [RemainingText] string search)
         {
-            if (await global.lavaPlayer.Join(ctx))
+            await SafeCall(ctx, async () =>
             {
-                LavalinkTrack track;
-                if (search.StartsWith("http://") || search.StartsWith("https://"))
+                if (await global.lavaPlayer.Join(ctx))
                 {
-                    track = await LavaPlayer.UriToTrack(ctx, search);
-                }
-                else
-                {
-                    track = await LavaPlayer.SearchToTrack(ctx, search);
-                }
+                    LavalinkTrack track;
+                    if (search.StartsWith("http://") || search.StartsWith("https://"))
+                    {
+                        track = await LavaPlayer.UriToTrack(ctx, search);
+                    }
+                    else
+                    {
+                        track = await LavaPlayer.SearchToTrack(ctx, search);
+                    }
 
-                await global.lavaPlayer.Play(ctx, track);
-            }
+                    await global.lavaPlayer.Play(ctx, track);
+                }
+            });
         }
 
         [Command("playlist")]
@@ -37,13 +40,15 @@ namespace todor_reloaded
         [Aliases("pl")]
         public async Task Playlist(CommandContext ctx, string link)
         {
-            if (await global.lavaPlayer.Join(ctx))
+            await SafeCall(ctx, async () =>
             {
-                var tracks = await LavaPlayer.UrisToPlaylist(ctx, link);
+                if (await global.lavaPlayer.Join(ctx))
+                {
+                    var tracks = await LavaPlayer.UrisToPlaylist(ctx, link);
 
-                await global.lavaPlayer.PlayTracks(ctx, tracks);
-            }
-
+                    await global.lavaPlayer.PlayTracks(ctx, tracks);
+                }
+            });
         }
 
         [Command("soundcloud")]
@@ -51,18 +56,21 @@ namespace todor_reloaded
         [Aliases("sc")]
         public async Task PlaySoundcloud(CommandContext ctx, [RemainingText] string search)
         {
-            if (await global.lavaPlayer.Join(ctx))
+            await SafeCall(ctx, async () =>
             {
-                if (search.StartsWith("http://") || search.StartsWith("https://"))
+                if (await global.lavaPlayer.Join(ctx))
                 {
-                    string[] splitSearch = search.Split("/");
-                    search = $"{splitSearch[splitSearch.Length - 1]} - {splitSearch[splitSearch.Length - 2]}";
+                    if (search.StartsWith("http://") || search.StartsWith("https://"))
+                    {
+                        string[] splitSearch = search.Split("/");
+                        search = $"{splitSearch[splitSearch.Length - 1]} - {splitSearch[splitSearch.Length - 2]}";
+                    }
+
+                    LavalinkTrack track = await LavaPlayer.SearchToTrack(ctx, search, LavalinkSearchType.SoundCloud);
+
+                    await global.lavaPlayer.Play(ctx, track);
                 }
-
-                LavalinkTrack track = await LavaPlayer.SearchToTrack(ctx, search, LavalinkSearchType.SoundCloud);
-
-                await global.lavaPlayer.Play(ctx, track);
-            }
+            });
         }
 
 
@@ -71,13 +79,15 @@ namespace todor_reloaded
         [Aliases("d")]
         public async Task PlayDirect(CommandContext ctx, string link)
         {
-            if (await global.lavaPlayer.Join(ctx))
+            await SafeCall(ctx, async () =>
             {
-                LavalinkTrack track = await LavaPlayer.UriToTrack(ctx, link);
+                if (await global.lavaPlayer.Join(ctx))
+                {
+                    LavalinkTrack track = await LavaPlayer.UriToTrack(ctx, link);
 
-                await global.lavaPlayer.Play(ctx, track);
-            }
-
+                    await global.lavaPlayer.Play(ctx, track);
+                }
+            });
         }
 
         [Command("seek")]
@@ -85,7 +95,10 @@ namespace todor_reloaded
         [Aliases("ds")]
         public async Task PlayDirectSeek(CommandContext ctx, int seconds)
         {
-            await global.lavaPlayer.Seek(ctx, new TimeSpan(0, 0, seconds));
+            await SafeCall(ctx, async () =>
+            {
+                await global.lavaPlayer.Seek(ctx, new TimeSpan(0, 0, seconds));
+            });
         }
 
         [Command("volume")]
@@ -93,14 +106,20 @@ namespace todor_reloaded
         [Aliases("vol")]
         public async Task SetVolume(CommandContext ctx, int percentage)
         {
-            await global.lavaPlayer.SetVol(ctx, percentage);
+            await SafeCall(ctx, async () =>
+            {
+                await global.lavaPlayer.SetVol(ctx, percentage);
+            });
         }
 
         [Command("pause")]
         [Description("Plays a song video")]
         public async Task Pause(CommandContext ctx)
         {
-            await global.lavaPlayer.Pause(ctx);
+            await SafeCall(ctx, async () =>
+            {
+                await global.lavaPlayer.Pause(ctx);
+            });
         }
 
         [Command("skip")]
@@ -116,7 +135,10 @@ namespace todor_reloaded
         [Description("Prints the current status.")]
         public async Task Status(CommandContext ctx)
         {
-            await global.lavaPlayer.Status(ctx);
+            await SafeCall(ctx, async () =>
+            {
+                await global.lavaPlayer.Status(ctx);
+            });
         }
 
         [Command("queue")]
@@ -124,9 +146,13 @@ namespace todor_reloaded
         [Aliases("q")]
         public async Task Queue(CommandContext ctx)
         {
-            await global.lavaPlayer.Queue(ctx);
+            await SafeCall(ctx, async () =>
+            {
+                await global.lavaPlayer.Queue(ctx);
+            });
         }
 
+        //TODO: IMPLEMENT
         /*
         [Command("BaseBoost")]
         [Description("Adds base to the current song")]
@@ -148,7 +174,24 @@ namespace todor_reloaded
         [Aliases("stop", "l", "aufwiedersehen")]
         public async Task Leave(CommandContext ctx)
         {
-            await global.lavaPlayer.Leave(ctx);
+            await SafeCall(ctx, async () =>
+            {
+                await global.lavaPlayer.Leave(ctx);
+            });
+        }
+
+        private async Task SafeCall(CommandContext ctx, Func<Task> func)
+        {
+            ulong channelId = global.botConfig.discordMusicChannelId;
+            if (ctx.Message.ChannelId == channelId)
+            {
+                await func();
+            }
+            else
+            {
+                await ctx.Message.DeleteAsync();
+                await ctx.Member.SendMessageAsync($"The bot can only be used in channel '{ctx.Guild.GetChannel(channelId).Name}'");
+            }
         }
     }
 }

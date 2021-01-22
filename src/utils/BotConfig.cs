@@ -35,8 +35,8 @@ namespace todor_reloaded
         [JsonProperty("transcoderBufferSize")]
         public int transcoderBufferSize { get; private set; }
         
-        [JsonProperty("discordGuildId")]
-        public ulong discordGuildId { get; private set; }
+        [JsonProperty("discordMusicChannelId")]
+        public ulong discordMusicChannelId { get; private set; }
 
         [JsonProperty("discordToken")]
         public string discordToken { get; private set; }
