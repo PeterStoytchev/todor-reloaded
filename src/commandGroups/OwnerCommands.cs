@@ -20,30 +20,6 @@ namespace todor_reloaded
     [RequireOwner]
     public class OwnerCommands : BaseCommandModule
     {
-        [Command("printCache")]
-        [Description("Prints the contents of the song cache k/v to the console.")]
-        [Aliases("pc")]
-        public async Task PrintCache(CommandContext ctx)
-        {
-            var pairs = global.songCache.GetPairs();
-
-            int index = 1;
-
-            foreach (var pair in pairs)
-            {
-                string[] details = pair.Value.GetDebug();
-
-                for (int i = 0; i < details.Length - 1; i++)
-                {
-                    utils.DebugLog($"{index}) {details[i]}");
-                }
-
-                index++;
-            }
-
-            await ctx.RespondAsync($"Cache printed to console");
-        }
-
         [Command("reloadConfig")]
         [Description("Reloads the bot configuration from config.json")]
         public async Task ReloadConfigExecutor(CommandContext ctx)

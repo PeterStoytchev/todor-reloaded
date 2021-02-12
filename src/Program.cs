@@ -48,33 +48,14 @@ namespace todor_reloaded
 
             //connect
             await global.bot.ConnectAsync();
-            
-            if (global.botConfig.lavalinkEnabled)
+
+            global.lavaPlayer = new LavaPlayer();
+            global.commands.RegisterCommands<LavaSoundPlayback>();
+
+            if (global.botConfig.spotifyEnabled)
             {
-                global.lavaPlayer = new LavaPlayer();
-                global.commands.RegisterCommands<LavaSoundPlayback>();
-
-                if (global.botConfig.spotifyEnabled)
-                {
-                    global.spotify = new SpotifyClient(global.botConfig.GetClientConfig());
-                    global.commands.RegisterCommands<LavaSpotifyCommands>();
-                }
-            }
-            else
-            {
-                global.commands.RegisterCommands<SoundPlayback>();
-
-                if (global.botConfig.spotifyEnabled)
-                {
-                    global.spotify = new SpotifyClient(global.botConfig.GetClientConfig());
-                    global.commands.RegisterCommands<SpotifyCommands>();
-                }
-
-                global.songCache = new PersistentDictionary(global.botConfig.songCacheDir + "kvPairs.kolba");
-
-                //voice stuffs
-                global.player = new Player();
-                global.googleClient = new GoogleClient(global.botConfig.googleServiceKey, global.botConfig.countryCode);
+                global.spotify = new SpotifyClient(global.botConfig.GetClientConfig());
+                global.commands.RegisterCommands<LavaSpotifyCommands>();
             }
 
             await Task.Delay(-1);

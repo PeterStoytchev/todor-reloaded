@@ -18,16 +18,8 @@ namespace todor_reloaded
 
         public static BotConfig botConfig { get; set; }
 
-        public static Player player { get; set; }
-
-        public static GoogleClient googleClient { get; set; }
-
-        public static PersistentDictionary songCache { get; set; }
-
         public static SpotifyClient spotify { get; set; }
 
         public static LavaPlayer lavaPlayer { get; set; }
-
-        public static int queueCounter { get; set; }
     }
 }

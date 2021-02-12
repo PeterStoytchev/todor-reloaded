@@ -29,23 +29,11 @@ namespace todor_reloaded
         [JsonProperty("DebugMode")]
         public bool DebugMode { get; private set; }
 
-        [JsonProperty("transcoderThreadSleepTime")]
-        public int transcoderThreadSleepTime { get; private set; }
-
-        [JsonProperty("transcoderBufferSize")]
-        public int transcoderBufferSize { get; private set; }
-        
         [JsonProperty("discordMusicChannelId")]
         public ulong discordMusicChannelId { get; private set; }
 
         [JsonProperty("discordToken")]
         public string discordToken { get; private set; }
-
-        [JsonProperty("googleServiceKey")]
-        public string googleServiceKey { get; private set; }
-
-        [JsonProperty("countryCode")]
-        public string countryCode { get; private set; }
 
         [JsonProperty("spotifyEnabled")]
         public bool spotifyEnabled { get; private set; }
@@ -56,15 +44,9 @@ namespace todor_reloaded
         [JsonProperty("spotifyClientSecret")]
         public string spotifyClientSecret { get; private set; }
 
-        [JsonProperty("ytdlPath")]
-        public string ytdlPath { get; private set; }
-
         [JsonProperty("ffmpegPath")]
         public string ffmpegPath { get; private set; }
         
-        [JsonProperty("songCacheDir")]
-        public string songCacheDir { get; private set; }
-
         [JsonProperty("commandPrefixes")]
         public IEnumerable<string> prefixes { get; private set; }
         
