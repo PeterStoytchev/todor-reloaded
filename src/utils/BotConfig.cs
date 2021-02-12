@@ -1,14 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.Lavalink;
+using DSharpPlus.Net;
+using Newtonsoft.Json;
+using SpotifyAPI.Web;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using DSharpPlus;
-using DSharpPlus.Net;
-using DSharpPlus.Lavalink;
-using DSharpPlus.CommandsNext;
-
-using Newtonsoft.Json;
-using SpotifyAPI.Web;
 
 namespace todor_reloaded
 {
@@ -46,10 +45,10 @@ namespace todor_reloaded
 
         [JsonProperty("ffmpegPath")]
         public string ffmpegPath { get; private set; }
-        
+
         [JsonProperty("commandPrefixes")]
         public IEnumerable<string> prefixes { get; private set; }
-        
+
         public string configDir { get; set; }
 
         public SpotifyClientConfig GetClientConfig()
