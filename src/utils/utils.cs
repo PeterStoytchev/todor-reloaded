@@ -15,21 +15,12 @@ using DSharpPlus.VoiceNext;
 using System.Runtime.InteropServices;
 using System.Data;
 using System.Linq;
-using Google.Apis.Http;
 using Microsoft.Extensions.Logging;
 
 namespace todor_reloaded
 {
     public static class utils
     {
-        public static void DebugLog(string message, LogLevel logLevel = LogLevel.Information)
-        {
-            if (global.botConfig.DebugMode)
-            {
-                global.bot.Logger.Log(logLevel, message);
-            }
-        }
-
         public static TimeSpan CreateTimeSpan(string stringRep)
         {
             //days:2 <-- stringRep string
@@ -69,77 +60,6 @@ namespace todor_reloaded
                 default:
                     throw new Exception("Invalid repetition parrern provided!");
             }
-        }
-
-        public static string[] Cachify(string src)
-        {
-            string[] toReturn;
-
-            if (!src.StartsWith("https"))
-            {
-                toReturn = src.ToLower().Split(" ");
-
-                for (int i = 0; i < toReturn.Length; i++)
-                {
-                    StringBuilder sb = new StringBuilder();
-
-                    foreach (char c in toReturn[i])
-                    {
-                        int code = (int)c;
-
-                        //check if it is not a symbol and add it
-                        if ((code > 47 && code < 58) || (code > 64 && code < 91) || code > 96)
-                        {
-                            sb.Append(c);
-                        }
-                    }
-
-                    toReturn[i] = sb.ToString();
-                }
-            }
-            else
-            {
-                toReturn = new string[1];
-                toReturn[0] = src;
-            }
-
-            return toReturn;
-        }
-
-
-        //a temporary function for extracting youtube urls, will be used until support for YouTube Data API V3 arrives
-        public static string ExtractYoutubeId(string link)
-        {
-            //a normal youtube url contains a '='
-            if (link.Length >= 43)
-            {
-                return link.Substring(32, 11);
-            }
-            //a shortened youtube url is 28 chars long
-            else if (link.Length >= 28 && link.Length < 43)
-            {
-                return link.Substring(17, 11);
-            }
-            //the function doesnt support any other types
-            else
-            {
-                throw new InvalidDataException("Invalid or unsuported url given.");
-            }
-
-        }
-
-
-        public static string ArrayToString(string[] arr, char seperator)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            foreach (string str in arr)
-            {
-                sb.Append(str + seperator);
-            }
-
-            return sb.ToString();
-
         }
 
         public static DiscordEmbedBuilder GetEmbedBuilderForSong(DiscordColor color, string title, string source)

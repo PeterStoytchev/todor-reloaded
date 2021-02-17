@@ -13,9 +13,6 @@ namespace todor_reloaded
 {
     public class BotConfig
     {
-        [JsonProperty("lavalinkEnabled")]
-        public bool lavalinkEnabled { get; private set; }
-
         [JsonProperty("lavalinkServerIp")]
         public string lavalinkServerIp { get; private set; }
 
@@ -24,9 +21,6 @@ namespace todor_reloaded
 
         [JsonProperty("lavalinkPassword")]
         public string lavalinkPassword { get; private set; }
-
-        [JsonProperty("DebugMode")]
-        public bool DebugMode { get; private set; }
 
         [JsonProperty("discordMusicChannelId")]
         public ulong discordMusicChannelId { get; private set; }
@@ -42,9 +36,6 @@ namespace todor_reloaded
 
         [JsonProperty("spotifyClientSecret")]
         public string spotifyClientSecret { get; private set; }
-
-        [JsonProperty("ffmpegPath")]
-        public string ffmpegPath { get; private set; }
 
         [JsonProperty("commandPrefixes")]
         public IEnumerable<string> prefixes { get; private set; }

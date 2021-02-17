@@ -1,7 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.VoiceNext;
-using Google.Apis.YouTube.v3;
 using System;
 using System.Collections.Generic;
 using System.Text;

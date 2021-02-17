@@ -11,6 +11,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
+using DSharpPlus.VoiceNext;
+
 namespace todor_reloaded
 {
     public class GeneralCommands : BaseCommandModule
@@ -23,6 +25,7 @@ namespace todor_reloaded
             await ctx.RespondAsync($"The current time is: {DateTime.Now}");
         }
 
+        //TODO: fix this one so that it works with channels who have a space in their name
         [Command("move")]
         [Description("moves everyone from one discord channel to another")]
         [Aliases("m")]

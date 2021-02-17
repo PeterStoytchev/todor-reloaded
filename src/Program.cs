@@ -2,8 +2,6 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.VoiceNext;
 using DSharpPlus.VoiceNext.Codec;
-using Google.Apis.Services;
-using Google.Apis.YouTube.v3;
 using DSharpPlus.Lavalink;
 using DSharpPlus.Net;
 using SpotifyAPI.Web;
@@ -43,7 +41,6 @@ namespace todor_reloaded
             //command definitions
             global.commands.RegisterCommands<GeneralCommands>();
             global.commands.RegisterCommands<OwnerCommands>();
-
             
 
             //connect
@@ -59,7 +56,6 @@ namespace todor_reloaded
             }
 
             await Task.Delay(-1);
-
         }
     }
 }

@@ -11,6 +11,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
 
+//TODO: check for bugs related to conn == null
 namespace todor_reloaded
 {
     public class LavaPlayer
@@ -325,7 +326,7 @@ namespace todor_reloaded
                 await ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
             }
         }
-
+        
         public static async Task<LavalinkTrack> SearchToTrack(CommandContext ctx, string search, LavalinkSearchType searchType = LavalinkSearchType.Youtube)
         {
             var lava = ctx.Client.GetLavalink();
