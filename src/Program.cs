@@ -15,17 +15,16 @@ namespace todor_reloaded
 {
     class Program
     {
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
-            var prog = new Program();
-            prog.RunBotAsync(args).GetAwaiter().GetResult();
+            MainAsync(args).GetAwaiter().GetResult();
         }
 
 
-        public async Task RunBotAsync(string[] args)
+        static async Task MainAsync(string[] args)
         {
             //bot init 
-            global.botConfig = await BotConfig.CreateConfig("C:/Users/Seph/Desktop/todor-reloaded/config.json");
+            global.botConfig = await BotConfig.CreateConfig(args[0]);
             global.bot = new DiscordClient(global.botConfig.GetDiscordConfiguration());
 
 

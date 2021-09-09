@@ -45,7 +45,6 @@ namespace todor_reloaded
                     //FullPlaylist playlist = await global.spotify.Playlists.Get(uri);
                 }
 
-
                 if (await global.lavaPlayer.Join(ctx) && tracks.Count != 0)
                 {
                     await global.lavaPlayer.PlayTracksList(ctx, tracks);
