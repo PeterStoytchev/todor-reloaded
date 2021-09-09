@@ -92,12 +92,8 @@ namespace todor_reloaded
 
         public static async Task<BotConfig> CreateConfig(string path)
         {
-            var json = "";
-            using (var fs = File.OpenRead(path))
-            using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
-                json = await sr.ReadToEndAsync();
-
-            var cfgjson = JsonConvert.DeserializeObject<BotConfig>(json);
+            string text = File.ReadAllText(path);
+            var cfgjson = JsonConvert.DeserializeObject<BotConfig>(text);
             cfgjson.configDir = path;
 
             return cfgjson;

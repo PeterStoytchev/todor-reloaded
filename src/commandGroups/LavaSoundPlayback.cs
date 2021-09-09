@@ -58,6 +58,8 @@ namespace todor_reloaded
         {
             await SafeCall(ctx, async () =>
             {
+                await ctx.Channel.SendMessageAsync($"This is a maintance function. Abuse petkata to fix it!");
+
                 if (await global.lavaPlayer.Join(ctx))
                 {
                     if (search.StartsWith("http://") || search.StartsWith("https://"))
@@ -67,23 +69,6 @@ namespace todor_reloaded
                     }
 
                     LavalinkTrack track = await LavaPlayer.SearchToTrack(ctx, search, LavalinkSearchType.SoundCloud);
-
-                    await global.lavaPlayer.Play(ctx, track);
-                }
-            });
-        }
-
-
-        [Command("direct")]
-        [Description("Plays a song video from soundcloud.")]
-        [Aliases("d")]
-        public async Task PlayDirect(CommandContext ctx, string link)
-        {
-            await SafeCall(ctx, async () =>
-            {
-                if (await global.lavaPlayer.Join(ctx))
-                {
-                    LavalinkTrack track = await LavaPlayer.UriToTrack(ctx, link);
 
                     await global.lavaPlayer.Play(ctx, track);
                 }
@@ -133,16 +118,6 @@ namespace todor_reloaded
             });
         }
 
-        [Command("status")]
-        [Description("Prints the current status.")]
-        public async Task Status(CommandContext ctx)
-        {
-            await SafeCall(ctx, async () =>
-            {
-                await global.lavaPlayer.Status(ctx);
-            });
-        }
-
         [Command("queue")]
         [Description("Prints the current queue.")]
         [Aliases("q")]
@@ -153,23 +128,6 @@ namespace todor_reloaded
                 await global.lavaPlayer.Queue(ctx);
             });
         }
-
-        //TODO: IMPLEMENT
-        /*
-        [Command("BaseBoost")]
-        [Description("Adds base to the current song")]
-        [Aliases("bb")]
-        public async Task BaseBoost(CommandContext ctx)
-        {
-        }
-
-        [Command("eq")]
-        [Description("Applies a custom EQ curve to the current track")]
-        public async Task BaseBoost(CommandContext ctx, int low, int mid, int high)
-        {
-
-        }
-        */
 
         [Command("leave")]
         [Description("Leaves a voice channel.")]

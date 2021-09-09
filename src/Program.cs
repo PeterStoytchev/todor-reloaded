@@ -25,7 +25,7 @@ namespace todor_reloaded
         public async Task RunBotAsync(string[] args)
         {
             //bot init 
-            global.botConfig = await BotConfig.CreateConfig(args[0]);
+            global.botConfig = await BotConfig.CreateConfig("C:/Users/Seph/Desktop/todor-reloaded/config.json");
             global.bot = new DiscordClient(global.botConfig.GetDiscordConfiguration());
 
 

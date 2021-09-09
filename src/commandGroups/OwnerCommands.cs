@@ -19,6 +19,13 @@ namespace todor_reloaded
     [RequireOwner]
     public class OwnerCommands : BaseCommandModule
     {
+        [Command("status")]
+        [Description("Prints the current status.")]
+        public async Task Status(CommandContext ctx)
+        {
+            await global.lavaPlayer.Status(ctx);
+        }
+
         [Command("reloadConfig")]
         [Description("Reloads the bot configuration from config.json")]
         public async Task ReloadConfigExecutor(CommandContext ctx)

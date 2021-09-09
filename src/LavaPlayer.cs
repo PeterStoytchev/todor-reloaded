@@ -258,12 +258,14 @@ namespace todor_reloaded
                 return false;
             }
 
+            string voice_channel_name = conn.Channel.Name;
+
             await conn.DisconnectAsync();
 
             m_Queue.Clear();
             isPaused = false;
 
-            await ctx.RespondAsync($"Left {ctx.Channel.Name}!");
+            await ctx.RespondAsync($"Left {voice_channel_name }!");
             
             return true;
         }
@@ -291,39 +293,46 @@ namespace todor_reloaded
 
         public async Task Queue(CommandContext ctx)
         {
-            await ctx.Channel.SendMessageAsync($"Song queue for guild {ctx.Guild.Name}");
-
-            DiscordEmbedBuilder EmbedBuilder = new DiscordEmbedBuilder
+            if (m_Queue.Count != 0)
             {
-                Title = "Current queue",
-                Color = DiscordColor.Gold,
-            };
+                await ctx.Channel.SendMessageAsync($"Song queue for guild {ctx.Guild.Name}");
 
-            int index = 1;
-            foreach (LavaSong s in m_Queue)
-            {
-                try
+                DiscordEmbedBuilder EmbedBuilder = new DiscordEmbedBuilder
                 {
-                    EmbedBuilder.AddField($"{index})", $"{ index})", true);
-                    EmbedBuilder.AddField("Title", s.lavaTrack.Title, true);
-                    EmbedBuilder.AddField("Uploaded by", s.lavaTrack.Author, true);
-                    index++;
+                    Title = "Current queue",
+                    Color = DiscordColor.Gold,
+                };
+
+                int index = 1;
+                foreach (LavaSong s in m_Queue)
+                {
+                    try
+                    {
+                        EmbedBuilder.AddField($"{index})", $"{ index})", true);
+                        EmbedBuilder.AddField("Title", s.lavaTrack.Title, true);
+                        EmbedBuilder.AddField("Uploaded by", s.lavaTrack.Author, true);
+                        index++;
+                    }
+                    catch (Exception e)
+                    {
+                        await ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
+
+                        EmbedBuilder = new DiscordEmbedBuilder
+                        {
+                            Title = "Current queue",
+                            Color = DiscordColor.Gold,
+                        };
+                    }
                 }
-                catch (Exception e)
+
+                if (EmbedBuilder.Fields.Count != 0)
                 {
                     await ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
-
-                    EmbedBuilder = new DiscordEmbedBuilder
-                    {
-                        Title = "Current queue",
-                        Color = DiscordColor.Gold,
-                    };
                 }
             }
-
-            if (EmbedBuilder.Fields.Count != 0)
+            else
             {
-                await ctx.Channel.SendMessageAsync(embed: EmbedBuilder.Build());
+                await ctx.Channel.SendMessageAsync($"The queue for the server is empty!");
             }
         }
         
@@ -334,9 +343,15 @@ namespace todor_reloaded
             
             var result = await node.Rest.GetTracksAsync(search, searchType);
 
-            if (result.LoadResultType == LavalinkLoadResultType.LoadFailed || result.LoadResultType == LavalinkLoadResultType.NoMatches)
+            if (result.LoadResultType == LavalinkLoadResultType.LoadFailed)
             {
                 await ctx.Channel.SendMessageAsync($"Couldn't load track with name {search}");
+                return null;
+            }
+            
+            if (result.LoadResultType == LavalinkLoadResultType.NoMatches)
+            {
+                await ctx.Channel.SendMessageAsync($"Couldn't find track with name {search}");
                 return null;
             }
 
