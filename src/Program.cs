@@ -27,7 +27,6 @@ namespace todor_reloaded
             global.botConfig = await BotConfig.CreateConfig(args[0]);
             global.bot = new DiscordClient(global.botConfig.GetDiscordConfiguration());
 
-
             //bot events
             global.bot.Ready += BotEvents.Bot_Ready;
             global.bot.ClientErrored += BotEvents.Bot_ClientErrored;
@@ -40,7 +39,6 @@ namespace todor_reloaded
             //command definitions
             global.commands.RegisterCommands<GeneralCommands>();
             global.commands.RegisterCommands<OwnerCommands>();
-            
 
             //connect
             await global.bot.ConnectAsync();

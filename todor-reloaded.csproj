@@ -22,7 +22,7 @@
     <PackageReference Include="DSharpPlus.Lavalink" Version="4.1.0" />
     <PackageReference Include="DSharpPlus.VoiceNext" Version="4.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="SpotifyAPI.Web" Version="6.2.1" />
+    <PackageReference Include="SpotifyAPI.Web" Version="6.2.2" />
   </ItemGroup>
 
 </Project>
