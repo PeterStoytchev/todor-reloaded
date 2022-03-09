@@ -1,15 +1,12 @@
 ﻿{
-  "discordToken": "<Discord bot token goes here>",
-  "googleServiceKey": "<the .json key for a google service account with permissions for the youtube api>",
-  "countryCode": "<your countryCode's code (eg. US)>",
-  "spotifyEnabled": true,
-  "spotifyClientId": "<Spotify client id, get it from spotify developer portal, doesnt matter if spotify is disabled>",
-  "spotifyClientSecret": "<Spotify client secret, get it from spotify developer portal, doesnt matter if spotify is disabled>",
-  "discordLogLevel": "Debug",
-  "commandPrefixes": [ "<array of strings, it contains the prefixes that this bot can respond to> eg. ->", "prefix1", "prefix2" ],
-  "songCacheDir": "<path to a directory where that the bot can use to store audio files>",
-  "ffmpegPath": "<path to ffmpeg executable, if on linux, just type in ffmpeg>",
-  "ytdlPath": "<path to youtube-dl executable, if on linux, just type in youtube-dl>",
-  "transcoderThreadSleepTime": 1,
-  "transcoderBufferSize": 4200
+	"lavalinkServerIp": "127.0.0.1",
+    "lavalinkServerPort": "2333",
+    "lavalinkPassword": "youshallnotpass",
+    "discordMusicChannelId": "",
+    "discordToken": "",
+    "spotifyEnabled": true,
+    "spotifyClientId": "",
+    "spotifyClientSecret": "",
+    "commandPrefixes": [""],
+	"privateChannelId": ""
 }

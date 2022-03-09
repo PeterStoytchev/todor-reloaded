@@ -20,7 +20,6 @@ namespace todor_reloaded
             MainAsync(args).GetAwaiter().GetResult();
         }
 
-
         static async Task MainAsync(string[] args)
         {
             //bot init 
