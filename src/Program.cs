@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
+using DSharpPlus.Entities;
 
 namespace todor_reloaded
 {
@@ -26,9 +27,22 @@ namespace todor_reloaded
             global.botConfig = await BotConfig.CreateConfig(args[0]);
             global.bot = new DiscordClient(global.botConfig.GetDiscordConfiguration());
 
+            //Setup the private channel feature
+            global.pcm = null;
+            ulong privateChannelId = 0;
+            if (ulong.TryParse(global.botConfig.privateChannelId, out privateChannelId))
+            {
+                DiscordChannel ch = await global.bot.GetChannelAsync(privateChannelId);
+                global.pcm = new PrivateChannelManager(ch);
+
+                //register the commands for it
+                global.commands.RegisterCommands<PrivateChannelCommands>();
+            }
+
             //bot events
             global.bot.Ready += BotEvents.Bot_Ready;
             global.bot.ClientErrored += BotEvents.Bot_ClientErrored;
+            global.bot.VoiceStateUpdated += BotEvents.Bot_VoiceStateUpdated;
 
             //commands setup and events
             global.commands = global.bot.UseCommandsNext(global.botConfig.GetCommandsNextConfiguration());
@@ -53,5 +67,7 @@ namespace todor_reloaded
 
             await Task.Delay(-1);
         }
+
+        
     }
 }

@@ -6,6 +6,8 @@ using DSharpPlus.EventArgs;
 
 using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.Logging;
+using DSharpPlus.Entities;
+using DSharpPlus.Net.Models;
 
 namespace todor_reloaded
 {
@@ -26,6 +28,25 @@ namespace todor_reloaded
             return Task.CompletedTask;
         }
 
+        public static async Task Bot_VoiceStateUpdated(DiscordClient sender, DSharpPlus.EventArgs.VoiceStateUpdateEventArgs e)
+        {
+            if (e.After.Channel.Id == global.pcm.channel.Id)
+            {
+                if (!global.pcm.JoinToChannel(e.User.Id))
+                {
+                    DiscordMember m = await e.After.Guild.GetMemberAsync(e.User.Id);
+                    await m.ModifyAsync(delegate (MemberEditModel kick)
+                    {
+                        kick.VoiceChannel = null;
+                    });
+                }
+            }
+
+            if (e.Before.Channel.Id == global.pcm.channel.Id)
+            {
+                global.pcm.LeaveFromChannel(e.User.Id);
+            }
+        }
 
         public static Task Commands_CommandExecuted(CommandsNextExtension extension, CommandExecutionEventArgs e)
         {
