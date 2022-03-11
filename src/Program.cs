@@ -27,6 +27,15 @@ namespace todor_reloaded
             global.botConfig = await BotConfig.CreateConfig(args[0]);
             global.bot = new DiscordClient(global.botConfig.GetDiscordConfiguration());
 
+            //bot events
+            global.bot.Ready += BotEvents.Bot_Ready;
+            global.bot.ClientErrored += BotEvents.Bot_ClientErrored;
+
+            //commands setup and events
+            global.commands = global.bot.UseCommandsNext(global.botConfig.GetCommandsNextConfiguration());
+            global.commands.CommandExecuted += BotEvents.Commands_CommandExecuted;
+            global.commands.CommandErrored += BotEvents.Commands_CommandErrored;
+
             //Setup the private channel feature
             global.pcm = null;
             ulong privateChannelId = 0;
@@ -35,19 +44,11 @@ namespace todor_reloaded
                 DiscordChannel ch = await global.bot.GetChannelAsync(privateChannelId);
                 global.pcm = new PrivateChannelManager(ch);
 
+                global.bot.VoiceStateUpdated += BotEvents.Bot_VoiceStateUpdated;
+
                 //register the commands for it
                 global.commands.RegisterCommands<PrivateChannelCommands>();
             }
-
-            //bot events
-            global.bot.Ready += BotEvents.Bot_Ready;
-            global.bot.ClientErrored += BotEvents.Bot_ClientErrored;
-            global.bot.VoiceStateUpdated += BotEvents.Bot_VoiceStateUpdated;
-
-            //commands setup and events
-            global.commands = global.bot.UseCommandsNext(global.botConfig.GetCommandsNextConfiguration());
-            global.commands.CommandExecuted += BotEvents.Commands_CommandExecuted;
-            global.commands.CommandErrored += BotEvents.Commands_CommandErrored;
 
             //command definitions
             global.commands.RegisterCommands<GeneralCommands>();

@@ -9,6 +9,11 @@ using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
 using DSharpPlus.Net.Models;
 
+using DSharpPlus;
+using DSharpPlus.EventArgs;
+
+using Microsoft.Extensions.Logging;
+
 namespace todor_reloaded
 {
     public class PrivateChannelManager
@@ -29,7 +34,8 @@ namespace todor_reloaded
         {
             List<ulong> members = new List<ulong>();
             foreach (var member in channel.Users)
-                members.Add(member.Id);
+                if (member.VoiceState.Channel == channel)
+                    members.Add(member.Id);
 
             return members;
         }
@@ -75,6 +81,11 @@ namespace todor_reloaded
                 m_whitelist.Add(member);
             
             return true;
+        }
+
+        public ulong GetOwner()
+        {
+            return m_currentChannelOwner;
         }
     }
 }

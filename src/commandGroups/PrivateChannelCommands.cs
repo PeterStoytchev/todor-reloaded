@@ -33,5 +33,22 @@ namespace todor_reloaded
                 await ctx.RespondAsync("The private channel feature is not enabled! Contact Kiro Slepoto!");
             }
         }
+
+        [Command("gowner")]
+        [Aliases("go")]
+        public async Task Allow(CommandContext ctx)
+        {
+            await ctx.RespondAsync("THIS IS A DEBUG COMMAND. REMOVE IT!");
+            ulong ownerid = global.pcm.GetOwner();
+
+            if (ownerid == 0)
+            {
+                await ctx.RespondAsync("No current owner!");
+                return;
+            }
+
+            DiscordMember m = await ctx.Guild.GetMemberAsync(ownerid);
+            await ctx.RespondAsync($"Current owner: {m.Username}");
+        }
     }
 }

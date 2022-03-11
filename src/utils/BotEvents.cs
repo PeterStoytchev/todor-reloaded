@@ -28,24 +28,32 @@ namespace todor_reloaded
             return Task.CompletedTask;
         }
 
-        public static async Task Bot_VoiceStateUpdated(DiscordClient sender, DSharpPlus.EventArgs.VoiceStateUpdateEventArgs e)
+        public static async Task Bot_VoiceStateUpdated(DiscordClient sender, VoiceStateUpdateEventArgs e)
         {
-            if (e.After.Channel.Id == global.pcm.channel.Id)
+            try
             {
-                if (!global.pcm.JoinToChannel(e.User.Id))
+                if (e.After.Channel.Id == global.pcm.channel.Id)
                 {
-                    DiscordMember m = await e.After.Guild.GetMemberAsync(e.User.Id);
-                    await m.ModifyAsync(delegate (MemberEditModel kick)
+                    if (!global.pcm.JoinToChannel(e.User.Id))
                     {
-                        kick.VoiceChannel = null;
-                    });
+                        DiscordMember m = await e.After.Guild.GetMemberAsync(e.User.Id);
+                        await m.ModifyAsync(delegate (MemberEditModel kick)
+                        {
+                            kick.VoiceChannel = null;
+                        });
+                    }
+                }
+
+                if (e.Before.Channel.Id == global.pcm.channel.Id)
+                {
+                    global.pcm.LeaveFromChannel(e.User.Id);
                 }
             }
-
-            if (e.Before.Channel.Id == global.pcm.channel.Id)
+            catch (NullReferenceException nre)
             {
-                global.pcm.LeaveFromChannel(e.User.Id);
+                global.bot.Logger.LogDebug(nre.ToString());
             }
+           
         }
 
         public static Task Commands_CommandExecuted(CommandsNextExtension extension, CommandExecutionEventArgs e)
@@ -60,7 +68,6 @@ namespace todor_reloaded
             extension.Client.Logger.LogWarning($"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}");
 
             await e.Context.RespondAsync(e.Exception.Message ?? "<no message>");
-
         }
 
     }
