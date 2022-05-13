@@ -40,8 +40,8 @@ namespace todor_reloaded
         [JsonProperty("commandPrefixes")]
         public IEnumerable<string> prefixes { get; private set; }
 
-        [JsonProperty("privateChannelId")]
-        public string privateChannelId { get; private set; }
+        //[JsonProperty("privateChannelId")]
+        //public string privateChannelId { get; private set; }
 
         public string configDir { get; set; }
 

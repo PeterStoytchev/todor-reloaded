@@ -37,6 +37,7 @@ namespace todor_reloaded
             global.commands.CommandErrored += BotEvents.Commands_CommandErrored;
 
             //Setup the private channel feature
+            /*
             global.pcm = null;
             ulong privateChannelId = 0;
             if (ulong.TryParse(global.botConfig.privateChannelId, out privateChannelId))
@@ -49,6 +50,7 @@ namespace todor_reloaded
                 //register the commands for it
                 global.commands.RegisterCommands<PrivateChannelCommands>();
             }
+            */
 
             //command definitions
             global.commands.RegisterCommands<GeneralCommands>();
