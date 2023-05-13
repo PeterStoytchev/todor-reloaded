@@ -17,7 +17,6 @@ namespace todor_reloaded
     public class LavaPlayer
     {
         private Queue<LavaSong> m_Queue = new Queue<LavaSong>();
-        private DiscordChannel lastChannel = null;
         private bool isPaused = false;
 
         private async Task Conn_PlaybackFinished(LavalinkGuildConnection sender, DSharpPlus.Lavalink.EventArgs.TrackFinishEventArgs e)
@@ -27,19 +26,13 @@ namespace todor_reloaded
                 var track = m_Queue.Dequeue();
                 await sender.PlayAsync(track.lavaTrack);
                 await track.requestChannel.SendMessageAsync($"Playing {track.lavaTrack.Title}");
-                lastChannel = track.requestChannel;
             }
             else
             {
-                if (lastChannel != null)
-                {
-                    await lastChannel.SendMessageAsync("Queue end!");
-                }
-                else
-                {
-                    await sender.Guild.GetDefaultChannel().SendMessageAsync("Queue end!");
-                }
-
+                // Send "Queue end" to the music channel
+                DiscordChannel channel = await global.bot.GetChannelAsync(global.botConfig.discordMusicChannelId);
+                await channel.SendMessageAsync("Queue end!");
+                
                 isPaused = false;
             }
         }

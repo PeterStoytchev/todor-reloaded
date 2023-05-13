@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  todor:
+    image: todor-reloaded:latest-x86
+    container_name: todor
+    restart: unless-stopped
+    depends_on:
+      - lavalink
+    volumes:
+      - ./config.json:/App/config.json:ro
+
+  lavalink:
+    image: fredboat/lavalink:dev
+    container_name: lavalink
+    restart: unless-stopped
+    volumes:
+      - ./application.yml:/opt/Lavalink/application.yml:ro
