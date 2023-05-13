@@ -46,6 +46,8 @@ namespace todor_reloaded
             global.lavaPlayer = new LavaPlayer();
             global.commands.RegisterCommands<LavaSoundPlayback>();
 
+            global.bot.VoiceStateUpdated += BotEvents.Bot_VoiceStateUpdated;
+
             if (global.botConfig.spotifyEnabled)
             {
                 global.spotify = new SpotifyClient(global.botConfig.GetClientConfig());

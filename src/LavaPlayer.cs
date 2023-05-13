@@ -234,6 +234,7 @@ namespace todor_reloaded
         public async Task<bool> Leave(CommandContext ctx)
         {
             var lava = ctx.Client.GetLavalink();
+            global.bot.GetLavalink();
 
             if (lava.ConnectedNodes.Count == 0)
             {
@@ -260,6 +261,38 @@ namespace todor_reloaded
 
             await ctx.RespondAsync($"Left {voice_channel_name }!");
             
+            return true;
+        }
+
+        //Not tested under many conditons, use with caution!
+        public async Task<bool> LeaveDueToEmpty(DiscordGuild guild)
+        {
+            var lava = global.bot.GetLavalink();
+
+            if (lava.ConnectedNodes.Count == 0)
+            {
+                return false;
+            }
+
+            var node = lava.GetIdealNodeConnection();
+
+            var conn = node.GetGuildConnection(guild);
+
+            if (conn == null)
+            {
+                return false;
+            }
+
+            string voice_channel_name = conn.Channel.Name;
+
+            await conn.DisconnectAsync();
+
+            m_Queue.Clear();
+            isPaused = false;
+
+            DiscordChannel musicChannel = await global.bot.GetChannelAsync(global.botConfig.discordMusicChannelId);
+            await musicChannel.SendMessageAsync($"Left {voice_channel_name} because there is no one in it anymore!");
+
             return true;
         }
 
