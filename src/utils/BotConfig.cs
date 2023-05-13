@@ -54,7 +54,8 @@ namespace todor_reloaded
                 Token = discordToken,
                 TokenType = TokenType.Bot,
 
-                AutoReconnect = true
+                AutoReconnect = true,
+                Intents = DiscordIntents.All
             };
 
             return configuration;
