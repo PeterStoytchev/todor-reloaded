@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 
 namespace todor_reloaded
 {
-    [Description("Commands that are ment to be executed only by the bot owner (petkata)")]
+    [Description("Commands that are ment to be executed only by the bot owner.")]
     [RequireOwner]
     public class OwnerCommands : BaseCommandModule
     {

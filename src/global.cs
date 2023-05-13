@@ -20,7 +20,5 @@ namespace todor_reloaded
         public static SpotifyClient spotify { get; set; }
 
         public static LavaPlayer lavaPlayer { get; set; }
-
-        public static PrivateChannelManager pcm { get; set; }
     }
 }

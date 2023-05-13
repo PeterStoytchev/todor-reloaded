@@ -36,22 +36,6 @@ namespace todor_reloaded
             global.commands.CommandExecuted += BotEvents.Commands_CommandExecuted;
             global.commands.CommandErrored += BotEvents.Commands_CommandErrored;
 
-            //Setup the private channel feature
-            /*
-            global.pcm = null;
-            ulong privateChannelId = 0;
-            if (ulong.TryParse(global.botConfig.privateChannelId, out privateChannelId))
-            {
-                DiscordChannel ch = await global.bot.GetChannelAsync(privateChannelId);
-                global.pcm = new PrivateChannelManager(ch);
-
-                global.bot.VoiceStateUpdated += BotEvents.Bot_VoiceStateUpdated;
-
-                //register the commands for it
-                global.commands.RegisterCommands<PrivateChannelCommands>();
-            }
-            */
-
             //command definitions
             global.commands.RegisterCommands<GeneralCommands>();
             global.commands.RegisterCommands<OwnerCommands>();
