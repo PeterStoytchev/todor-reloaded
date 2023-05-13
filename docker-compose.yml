@@ -2,7 +2,7 @@ version: "3"
 
 services:
   todor:
-    image: todor-reloaded:latest-x86
+    image: peterstoychev/todor-reloaded:latest-x86
     container_name: todor
     restart: unless-stopped
     depends_on:
