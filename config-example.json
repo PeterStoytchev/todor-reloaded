@@ -1,5 +1,5 @@
 ﻿{
-	"lavalinkServerIp": "127.0.0.1",
+	"lavalinkServerIp": "lavalink",
     "lavalinkServerPort": "2333",
     "lavalinkPassword": "youshallnotpass",
     "discordMusicChannelId": "",
@@ -7,6 +7,5 @@
     "spotifyEnabled": true,
     "spotifyClientId": "",
     "spotifyClientSecret": "",
-    "commandPrefixes": [""],
-	"privateChannelId": ""
+    "commandPrefixes": [">", "!", "?"]
 }

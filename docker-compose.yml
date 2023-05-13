@@ -11,7 +11,7 @@ services:
       - ./config.json:/App/config.json:ro
 
   lavalink:
-    image: fredboat/lavalink:dev
+    image: ghcr.io/freyacodes/lavalink:3
     container_name: lavalink
     restart: unless-stopped
     volumes:
